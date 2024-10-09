@@ -4,6 +4,7 @@
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<OutputType>Library</OutputType>
+        <Nullable>enable</Nullable>
 		<RootNamespace>EasyParse</RootNamespace>
 		<AssemblyName>EasyParse</AssemblyName>
 		<Deterministic>true</Deterministic>
@@ -11,10 +12,6 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Compile Include="Properties\AssemblyInfo.cs" />
 	</ItemGroup>
 
 </Project>
