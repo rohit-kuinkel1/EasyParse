@@ -1,0 +1,13 @@
+EasyParse will be a replacement for current parsing libraries like System.Commandline and CLP
+The main focus will be on the user facing API and user definitions where the tool will streamline the userexperience
+as much as possible
+EP will also aim to overcome the issue of some PLibs of very vague errors.
+EP will pin point exactly if and here something was wrong with potential improvement suggestions
+
+As to how the args will be defined, not decided yet.
+for definiton of the class and the args, i will probably take inspiration from CLP since it has pretty good definitions.
+error handling will be a huge focus with potential suggestions along the way if mistakes were made
+there will be some kind of an export function, smth like EasyParse.ExportDefaultConfig(), which will create a cs file with 
+default class EasyParser and some discrete options and verbs containing string,int,float,bool etc, this file will also have a 
+section which will describe how to use this class(will incl summary comments as well)
+

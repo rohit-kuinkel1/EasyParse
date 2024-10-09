@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyParse", "EasyParse.csproj", "{C03B6FB5-FCC9-49DE-8E71-6291D314F8A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyParse.UnitTests", "..\EasyParse.UnitTests\EasyParse.UnitTests.csproj", "{6DD86615-8E4F-4C29-8BFA-A7AB24AB00CE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C03B6FB5-FCC9-49DE-8E71-6291D314F8A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C03B6FB5-FCC9-49DE-8E71-6291D314F8A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C03B6FB5-FCC9-49DE-8E71-6291D314F8A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C03B6FB5-FCC9-49DE-8E71-6291D314F8A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DD86615-8E4F-4C29-8BFA-A7AB24AB00CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DD86615-8E4F-4C29-8BFA-A7AB24AB00CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DD86615-8E4F-4C29-8BFA-A7AB24AB00CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DD86615-8E4F-4C29-8BFA-A7AB24AB00CE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4B261980-BBA2-45BD-B8D2-8246DFED3FCC}
+	EndGlobalSection
+EndGlobal
