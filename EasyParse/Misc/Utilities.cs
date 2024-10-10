@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
 
-namespace EasyParse.Core.Utility
+namespace EasyParse.Utility
 {
     /// <summary>
     /// Contains misc Utilities for use by the tool.
@@ -56,7 +56,7 @@ namespace EasyParse.Core.Utility
                 {
                     string errorMessage = customErrorMessage ??
                         $"Parameter '{parameterName}' cannot be null or empty. " +
-                        $"Called from {memberName} at {filePath}: {lineNumber}";
+                        $"Called from {memberName} at {filePath} @line:{lineNumber}";
                     throw new NullException( errorMessage, typeof( T ) );
                 }
                 return false;

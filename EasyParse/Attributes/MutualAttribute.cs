@@ -23,7 +23,7 @@ namespace EasyParse.Core
     /// </summary>
 
     [AttributeUsage( AttributeTargets.Property | AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true )]
-    internal sealed class MutualAttribute : BaseAttribute
+    public sealed class MutualAttribute : BaseAttribute
     {
         /// <summary>
         /// The name of the entity that is part of the mutual relationship.

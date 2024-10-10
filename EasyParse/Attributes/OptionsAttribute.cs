@@ -6,7 +6,7 @@ namespace EasyParse.Core
     /// Attribute for defining command-line options.
     /// </summary>
     [AttributeUsage( AttributeTargets.Property, AllowMultiple = false )]
-    internal sealed class OptionsAttribute : BaseAttribute
+    public sealed class OptionsAttribute : BaseAttribute
     {
         /// <summary>
         /// Gets the short name for the option (single-character).
@@ -14,19 +14,19 @@ namespace EasyParse.Core
         public char ShortName { get; }
 
         /// <summary>
-        /// Gets the long name given to this verb.
+        /// Gets the long name given to this option.
         /// </summary>
         public string LongName { get; }
 
         /// <summary>
-        /// Specifies the necessity of the attribute
+        /// Specifies the necessity of the attribute.
         /// </summary>
-        public bool IsRequired { get; set; }
+        public bool Required { get; set; }
 
         /// <summary>
         /// Gets the default value for the option.
         /// </summary>
-        public object? DefaultValue { get; }
+        public object? Default { get; set; }
 
         /// <summary>
         /// Gets or sets the custom error message for invalid input.
@@ -42,7 +42,7 @@ namespace EasyParse.Core
         /// <param name="defaultValue">The default value for the option.</param>
         /// <param name="helpText">The help text for the option.</param>
         /// <param name="errorMessage">The custom error message for invalid input.</param>
-        /// <param name="aliases"> The aliases for the verb</param>
+        /// <param name="aliases">The aliases for the verb.</param>
         public OptionsAttribute(
             char shortName,
             string longName,
@@ -51,14 +51,28 @@ namespace EasyParse.Core
             string helpText = "",
             string errorMessage = "",
             params string[] aliases
-        ) 
+        )
             : base( helpText, aliases )
         {
             ShortName = shortName;
             LongName = longName;
-            IsRequired = isRequired;
-            DefaultValue = defaultValue;
+            Required = isRequired;
+            Default = defaultValue;
             ErrorMessage = errorMessage;
+        }
+
+        /// <summary>
+        /// Returns a string representation of the <see cref="OptionsAttribute"/> instance,
+        /// including its short name, long name, whether it is required, default value, help text, and error message.
+        /// </summary>
+        /// <returns>A string representing the options attribute.</returns>
+        public override string ToString()
+        {
+            return $"OptionsAttribute: {LongName} (Short Name: {ShortName}, " +
+                   $"Is Required: {Required}, " +
+                   $"Default Value: {Default}, " +
+                   $"Help Text: {HelpText}, " +
+                   $"Error Message: {ErrorMessage}) \n";
         }
     }
 }

@@ -8,7 +8,7 @@ namespace EasyParse.Core
     /// Includes properties for color, validation ranges, and regex pattern matching.
     /// </summary>
     [AttributeUsage( AttributeTargets.Property, AllowMultiple = false )]
-    internal sealed class SettingsAttribute : BaseAttribute
+    public sealed class SettingsAttribute : BaseAttribute
     {
         /// <summary>
         /// The color associated with the option (e.g., for console output).

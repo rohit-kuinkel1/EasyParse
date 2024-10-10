@@ -7,7 +7,7 @@ namespace EasyParse.Core
     /// Base class for defining shared properties between options and verbs.
     /// Only contains very very generic attributes like <see cref="HelpText"/>.
     /// </summary>
-    internal abstract class BaseAttribute : Attribute
+    public abstract class BaseAttribute : Attribute
     {
         /// <summary>
         /// Gets or sets the help text for the command.
