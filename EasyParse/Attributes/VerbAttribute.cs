@@ -9,27 +9,44 @@ namespace EasyParse.Core
     [AttributeUsage( AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false )]
     internal sealed class VerbAttribute : BaseAttribute
     {
+
         /// <summary>
-        /// Gets the description of the verb.
+        /// Gets the short name for the option (single-character).
         /// </summary>
-        public string Description { get; set; }
+        public char ShortName { get; }
+
+        /// <summary>
+        /// Gets the long name given to this verb
+        /// </summary>
+        public string LongName { get; }
+
+        /// <summary>
+        /// Specifies the necessity of the attribute
+        /// </summary>
+        public bool IsRequired { get; set; }
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VerbAttribute"/> class.
         /// </summary>
-        /// <param name="name">The name of the verb.</param>
+        /// <param name="shortName"> The short name of the verb.</param>
+        /// <param name="longName">The long name of the verb.</param>
         /// <param name="isRequired">Indicates whether the verb is required.</param>
-        /// <param name="description">The description of the verb.</param>
         /// <param name="helpText">The help text for the verb.</param>
+        /// <param name="aliases"> The aliases for the verb</param>
         public VerbAttribute(
-            string name,
+            char shortName,
+            string longName,
             bool isRequired = false,
-            string description = "",
-            string helpText = ""
-        ) 
-            : base( name, isRequired, helpText )
+            string helpText = "",
+            params string[] aliases
+        )
+            : base( helpText, aliases )
         {
-            Description = description;
+            ShortName = shortName;
+            LongName = longName;
+            IsRequired = isRequired;
+
         }
     }
 }

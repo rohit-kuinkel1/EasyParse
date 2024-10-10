@@ -14,9 +14,19 @@ namespace EasyParse.Core
         public char ShortName { get; }
 
         /// <summary>
-        /// Gets or sets the default value for the option.
+        /// Gets the long name given to this verb.
         /// </summary>
-        public object? DefaultValue { get; set; }
+        public string LongName { get; }
+
+        /// <summary>
+        /// Specifies the necessity of the attribute
+        /// </summary>
+        public bool IsRequired { get; set; }
+
+        /// <summary>
+        /// Gets the default value for the option.
+        /// </summary>
+        public object? DefaultValue { get; }
 
         /// <summary>
         /// Gets or sets the custom error message for invalid input.
@@ -32,17 +42,21 @@ namespace EasyParse.Core
         /// <param name="defaultValue">The default value for the option.</param>
         /// <param name="helpText">The help text for the option.</param>
         /// <param name="errorMessage">The custom error message for invalid input.</param>
+        /// <param name="aliases"> The aliases for the verb</param>
         public OptionsAttribute(
             char shortName,
             string longName,
             bool isRequired = false,
             object? defaultValue = null,
             string helpText = "",
-            string errorMessage = ""
+            string errorMessage = "",
+            params string[] aliases
         ) 
-            : base( longName, isRequired, helpText )
+            : base( helpText, aliases )
         {
             ShortName = shortName;
+            LongName = longName;
+            IsRequired = isRequired;
             DefaultValue = defaultValue;
             ErrorMessage = errorMessage;
         }

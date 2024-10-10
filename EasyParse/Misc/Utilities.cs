@@ -5,7 +5,8 @@ using System.Runtime.CompilerServices;
 namespace EasyParse.Core.Utility
 {
     /// <summary>
-    /// Contains all the misc Utilities used by the tool.
+    /// Contains misc Utilities for use by the tool.
+    /// https://github.com/rohit-kuinkel1/EverydayAutomation/blob/main/C%23/NotNullValidation.cs
     /// </summary>
     public static partial class Utility
     {

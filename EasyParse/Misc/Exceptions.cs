@@ -4,6 +4,7 @@ namespace EasyParse.Core.Utility
 {
     /// <summary>
     /// Base class for all utility-related exceptions.
+    /// https://github.com/rohit-kuinkel1/EverydayAutomation/blob/main/C%23/Exceptions.cs
     /// </summary>
     internal class EasyParseException : Exception
     {

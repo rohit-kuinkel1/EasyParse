@@ -1,41 +1,36 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace EasyParse.Core
 {
     /// <summary>
     /// Base class for defining shared properties between options and verbs.
+    /// Only contains very very generic attributes like <see cref="HelpText"/>.
     /// </summary>
     internal abstract class BaseAttribute : Attribute
     {
-        /// <summary>
-        /// Gets the long name for the command.
-        /// </summary>
-        public string LongName { get; }
-
         /// <summary>
         /// Gets or sets the help text for the command.
         /// </summary>
         public string HelpText { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the command is required.
+        /// Gets or sets the aliases for the option or verb.
         /// </summary>
-        public bool IsRequired { get; set; }
+        public IEnumerable<string> Aliases { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseAttribute"/> class.
         /// </summary>
-        /// <param name="longName">The long name of the command.</param>
-        /// <param name="isRequired">Indicates whether the command is required.</param>
         /// <param name="helpText">The help text for the command.</param>
+        /// <param name="aliases">The aliases for the attribute used.</param>
         protected BaseAttribute(
-            string longName,
-            bool isRequired = false,
-            string helpText = "" )
+            string helpText,
+            params string[] aliases
+        )
         {
-            LongName = longName;
-            IsRequired = isRequired;
             HelpText = helpText;
+            Aliases = aliases;
         }
     }
 }
