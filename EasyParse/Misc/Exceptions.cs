@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Parser.Utility.Exceptions
+namespace EasyParse.Core.Utility
 {
     /// <summary>
     /// Base class for all utility-related exceptions.
@@ -33,7 +33,10 @@ namespace Parser.Utility.Exceptions
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public EasyParseException( string message, Exception innerException )
+        public EasyParseException(
+            string message,
+            Exception innerException
+            )
             : base( message, innerException )
         {
         }
@@ -66,7 +69,10 @@ namespace Parser.Utility.Exceptions
         /// </summary>
         /// <param name="message"></param>
         /// <param name="type"></param>
-        public NullException( string message, Type type )
+        public NullException(
+            string message,
+            Type type
+            )
             : base( string.Concat( Prefix, message, $" Type: {type}" ) )
         {
         }
@@ -76,7 +82,10 @@ namespace Parser.Utility.Exceptions
         /// </summary>
         /// <param name="message">The error message.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public NullException( string message, Exception innerException )
+        public NullException(
+            string message,
+            Exception innerException
+            )
             : base( $"{Prefix} {message}", innerException )
         {
         }
@@ -109,7 +118,10 @@ namespace Parser.Utility.Exceptions
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public InvalidValueException( string message, Exception innerException )
+        public InvalidValueException(
+            string message,
+            Exception innerException
+            )
             : base( $"{Prefix} {message}", innerException )
         {
         }
@@ -120,7 +132,11 @@ namespace Parser.Utility.Exceptions
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
         /// <param name="invalidValue">The invalid value that caused the exception.</param>
-        public InvalidValueException( string message, Exception innerException, object invalidValue )
+        public InvalidValueException(
+            string message,
+            Exception innerException,
+            object invalidValue
+            )
             : base( $"{Prefix} {message} Invalid value type: {invalidValue.GetType().Name}", innerException )
         {
         }
@@ -154,7 +170,10 @@ namespace Parser.Utility.Exceptions
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public IllegalOperation( string message, Exception innerException )
+        public IllegalOperation(
+            string message,
+            Exception innerException
+            )
             : base( $"{Prefix} {message}", innerException )
         {
         }
@@ -187,7 +206,10 @@ namespace Parser.Utility.Exceptions
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public DeserializationException( string message, Exception innerException )
+        public DeserializationException(
+            string message,
+            Exception innerException
+            )
             : base( $"{Prefix} {message}", innerException )
         {
         }
@@ -220,7 +242,10 @@ namespace Parser.Utility.Exceptions
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public InvalidFileFormat( string message, Exception innerException )
+        public InvalidFileFormat(
+            string message,
+            Exception innerException
+            )
             : base( $"{Prefix} {message}", innerException )
         {
         }

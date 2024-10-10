@@ -1,9 +1,8 @@
-﻿using System.Runtime.CompilerServices;
-using System;
+﻿using System;
 using System.Collections;
-using Parser.Utility.Exceptions;
+using System.Runtime.CompilerServices;
 
-namespace Parser.Utility
+namespace EasyParse.Core.Utility
 {
     /// <summary>
     /// Contains all the misc Utilities used by the tool.
