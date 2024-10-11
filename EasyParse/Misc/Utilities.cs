@@ -38,10 +38,10 @@ namespace EasyParse.Utility
         {
             if( typeof( T ).IsValueType && !typeof( T ).IsNullable() )
             {
-                return true; // Non-nullable value types are never null
+                return true; // Non-nullable value types like int, float, double, char, bool are never null
             }
 
-            bool isNullOrEmpty = obj switch
+            var isNullOrEmpty = obj switch
             {
                 null => true,
                 string s => string.IsNullOrWhiteSpace( s ),
@@ -54,7 +54,7 @@ namespace EasyParse.Utility
             {
                 if( hardFail )
                 {
-                    string errorMessage = customErrorMessage ??
+                    var errorMessage = customErrorMessage ??
                         $"Parameter '{parameterName}' cannot be null or empty. " +
                         $"Called from {memberName} at {filePath} @line:{lineNumber}";
                     throw new NullException( errorMessage, typeof( T ) );
