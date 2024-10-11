@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EasyParse.Core
+namespace EasyParser.Core
 {
     /// <summary>
     /// Attribute for defining command-line options.

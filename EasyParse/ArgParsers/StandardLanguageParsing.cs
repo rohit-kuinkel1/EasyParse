@@ -1,4 +1,4 @@
-﻿namespace EasyParse.Parsing
+﻿namespace EasyParser.Parsing
 {
     /// <summary>
     /// This class in contrary to <see cref="NaturalLanguageParsing"/>, aims to parse the args provided to EasyParser where the args are passed in the standard flow
@@ -12,7 +12,7 @@
         /// <inheritdoc/>
         /// </summary>
         /// <param name="args"></param>
-        public void Parse( string[] args )
+        public bool Parse( string[] args )
         {
         }
     }

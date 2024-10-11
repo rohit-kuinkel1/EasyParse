@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using EasyParse.Utility;
 
-namespace EasyParse.Core
+namespace EasyParser.Core
 {
     /// <summary>
     /// 

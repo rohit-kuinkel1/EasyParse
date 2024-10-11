@@ -1,8 +1,11 @@
 ﻿using System;
-using EasyParse.Parsing;
-using EasyParse.Utility;
+using System.Collections.Generic;
+using System.Linq;
+using EasyParser.Enums;
+using EasyParser.Parsing;
+using EasyParser.Utility;
 
-namespace Parser
+namespace EasyParser
 {
     /*
      parsing of args and how easyparse will accept args
@@ -43,7 +46,16 @@ namespace Parser
     /// </summary>
     public class EasyParse
     {
+        /// <summary>
+        /// abstraction of the parsing type to parse the args
+        /// </summary>
         private IParsing? _parsing;
+
+        /// <summary>
+        /// HashSet of reserved keywords during arg parsing.
+        /// Contains all the values of the <see cref="EasyParser.Enums.ParsingKeyword"/> in string format.
+        /// </summary>
+        private static readonly HashSet<string> Keywords = new HashSet<string>( Enum.GetNames( typeof( ParsingKeyword ) ).Select( k => k.ToLowerInvariant() ) );
 
         /// <summary>
         /// Default Constructor for <see cref="EasyParse"/>
@@ -60,26 +72,34 @@ namespace Parser
         /// <param name="args"></param>
         /// <returns>True if the parsing was successful, False if an exception was thrown or parsing failed.</returns>
         /// <exception cref="NullException"> When the provided <paramref name="args"/> was null.</exception>
+        /// <exception cref="BadFormatException"> When the provided <paramref name="args"/> was badly formatted.</exception>
         /// <exception cref="Exception"> For general unforseen exceptions.</exception>
         public bool Parse( string[] args )
         {
             try
             {
-                _ = Utility.NotNullValidation( args, true );
+                _ = Utility.Utility.NotNullValidation( args, true );
 
-                _parsing = args.Length > 1 && string.Equals( args[1], "where", StringComparison.OrdinalIgnoreCase )
+                // Determine if we are using Natural Language or Standard Language parsing
+                var hasWhere = args.Length > 1 && string.Equals( args[1], ParsingKeyword.Where.ToString(), StringComparison.OrdinalIgnoreCase );
+                var containsKeywords = args.Any( arg => Keywords.Equals( arg.ToLowerInvariant() ) );
+
+                _parsing = hasWhere && containsKeywords
                     ? new NaturalLanguageParsing()
-                    : new StandardLanguageParsing();
+                    : !containsKeywords
+                        ? (IParsing)new StandardLanguageParsing()
+                        : throw new BadFormatException( "Invalid structure for input args. Reserved keywords were detected for standard parsing." +
+                        "Please refrain from mixing natural language and standard language format and try again." );
 
-                _parsing?.Parse( args );
-                return true;
+                var wasParseSuccessful = _parsing.Parse( args );
+                return wasParseSuccessful;
             }
             catch( Exception ex ) when( ex is NullException )
             {
                 Console.WriteLine( ex.Message );
                 return false;
             }
-            catch( Exception ex )
+            catch( Exception ex ) //include StackTrace for general errors including BadFormatException
             {
                 Console.WriteLine( ex.Message );
                 Console.WriteLine( ex.StackTrace );

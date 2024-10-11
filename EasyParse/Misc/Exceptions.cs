@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EasyParse.Utility
+namespace EasyParser.Utility
 {
     /// <summary>
     /// Base class for all utility-related exceptions.
@@ -172,6 +172,43 @@ namespace EasyParse.Utility
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
         public IllegalOperation(
+            string message,
+            Exception innerException
+            )
+            : base( $"{Prefix} {message}", innerException )
+        {
+        }
+    }
+
+
+    /// <summary>
+    /// Exception thrown when a badly formatted argument is passed
+    /// </summary>
+    internal class BadFormatException : EasyParseException
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BadFormatException"/> class.
+        /// </summary>
+        public BadFormatException()
+            : base( $"{Prefix} Argument did not match the expected structure." )
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BadFormatException"/> class with a specified message.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public BadFormatException( string message )
+            : base( $"{Prefix} {message}" )
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BadFormatException"/> class with a specified message and inner exception.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception.</param>
+        public BadFormatException(
             string message,
             Exception innerException
             )

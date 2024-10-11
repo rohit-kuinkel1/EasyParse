@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
 
-namespace EasyParse.Utility
+namespace EasyParser.Utility
 {
     /// <summary>
     /// Contains misc Utilities for use by the tool.

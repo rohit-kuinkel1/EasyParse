@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyParse.Parsing
+namespace EasyParser.Parsing
 {
     /// <summary>
     /// contract for all the parsers to follow
@@ -15,6 +15,6 @@ namespace EasyParse.Parsing
         /// Parses the provided <paramref name="args"/> to be used and stored internally for later use.
         /// </summary>
         /// <param name="args"></param>
-        void Parse( string[] args );
+        bool Parse( string[] args );
     }
 }

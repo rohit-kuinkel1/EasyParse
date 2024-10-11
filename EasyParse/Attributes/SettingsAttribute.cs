@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace EasyParse.Core
+namespace EasyParser.Core
 {
     /// <summary>
     /// Attribute for defining settings for options.
