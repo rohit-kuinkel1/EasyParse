@@ -6,8 +6,16 @@ using EasyParse.Utility;
 
 namespace EasyParse.Core
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class OptionsDeserializer
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="optionsType"></param>
+        /// <returns></returns>
         public static IEnumerable<OptionStore> DeserializeOptions( Type optionsType )
         {
             try
