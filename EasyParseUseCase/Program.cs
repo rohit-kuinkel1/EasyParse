@@ -1,4 +1,4 @@
-﻿using EasyParse.Core;
+﻿using EasyParser.Core;
 
 namespace Program
 {
@@ -18,10 +18,20 @@ namespace Program
                 If no such class with verb attribute tag was found, the library gracefully closes,
                 lets the user know that it didnt find a class defined with the verb attribute addFile which had
                 all of these attributes
+
+
+    12/10/2024:
+    since we will have to use reflection to access the classes and its properties, it makes sense for the parse to take in one more arg, this will significantly reduce the 
+    reflection needed during runtime since the library will only have to run the reflection on that one class, and since we are supporting natural language as well as the 
+    standard way to parse, an object will be required.
+    var parser = new EasyParse();
+    parser.Parse( arg, typeof( ParseOptions ) )
+
+
      */
     public static class Program
     {
-        public static void Main( string[] args)
+        public static void Main( string[] args )
         {
             var options = OptionsDeserializer.DeserializeOptions( typeof( ParseOptions ) );
             foreach( var option in options )

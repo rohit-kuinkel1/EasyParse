@@ -1,5 +1,5 @@
 ﻿using System;
-using EasyParse.Enums;
+using EasyParser.Enums;
 
 namespace EasyParser.Core
 {

@@ -73,24 +73,29 @@ namespace EasyParser
         /// Parses the arguments provided to an instance of <see cref="EasyParse"/> and delegates the processing to the respective class.
         /// If the natural language syntax was used, 'where' keyword must be used at index 1 to denote that natural language has been used.
         /// If the conventional syntax was used, there is no need to use the 'where' keyword.
+        /// <para>
+        /// Although <paramref name="type"/> is optional, it is highly recommended to facilitate Parse with type so that the cost of reflection is as low as possible during runtime.
+        /// </para>
         /// </summary>
         /// <param name="args"></param>
-        /// <returns>True if the parsing was successful, False if an exception was thrown or parsing failed.</returns>
+        /// <param name="type"></param>
+        /// <returns>True if the parsing was successful, False if the parsing was not successful.</returns>
         /// <exception cref="NullException"> When the provided <paramref name="args"/> was null.</exception>
         /// <exception cref="BadFormatException"> When the provided <paramref name="args"/> was badly formatted.</exception>
+        /// <exception cref="IllegalOperation"> When type mismatch occurs or when static/abstract class is provided as type for instance.</exception>
         /// <exception cref="Exception"> For general unforseen exceptions.</exception>
-        public bool Parse( string[] args )
+        public bool Parse( string[] args, Type? type )
         {
             try
             {
                 _ = Utility.Utility.NotNullValidation( args, true );
 
                 // determine if we are using Natural Language or Standard Language parsing
-                var isIndex1Where = args.Length > 1 && string.Equals( args[1], ParsingKeyword.Where.ToString(), StringComparison.OrdinalIgnoreCase );
+                var isStringAtIndex1EqualToWhereKeyword = args.Length > 1 && string.Equals( args[1], ParsingKeyword.Where.ToString(), StringComparison.OrdinalIgnoreCase );
                 var containsKeywords = args.Any( arg => Keywords.Equals( arg.ToLowerInvariant() ) );
 
-                // using ternary operator here will turn ugly real fast 
-                if( isIndex1Where && containsKeywords )
+                // using ternary operator here will turn ugly real fast
+                if( isStringAtIndex1EqualToWhereKeyword && containsKeywords )
                 {
                     _parsing = new NaturalLanguageParsing();
                 }
@@ -104,8 +109,7 @@ namespace EasyParser
                     "Please refrain from mixing natural language and standard language format and try again." );
                 }
 
-                var wasParseSuccessful = _parsing.Parse( args );
-                return wasParseSuccessful;
+                return _parsing.Parse( args, type );
             }
             catch( Exception ex ) when( ex is NullException )
             {

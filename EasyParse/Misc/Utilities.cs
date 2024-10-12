@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EasyParser.Utility
 {
@@ -12,13 +13,13 @@ namespace EasyParser.Utility
     {
         /// <summary>
         /// Provides detailed context about the caller and checks if the specified object is null or empty.
-        /// Throws a <see cref="NullException"/> if the object is null or empty and <paramref name="hardFail"/> is set to True.
+        /// Throws a <see cref="NullException"/> if the object is null or empty and <paramref name="throwIfNull"/> is set to True.
         /// Else conducts a soft fail by returning false.
         /// If the object was not null or empty, then returns true.
         /// </summary>
         /// <typeparam name="T">The type of the object being checked.</typeparam>
         /// <param name="obj">The object to check for null or emptiness.</param>
-        /// <param name="hardFail">Whether to throw an exception or just return false.</param>
+        /// <param name="throwIfNull">Whether to throw an exception or just return false.</param>
         /// <param name="customErrorMessage">Optional custom error message.</param>
         /// <param name="parameterName">The name of the parameter being checked. This is optional and is automatically populated by the compiler.</param>
         /// <param name="memberName">The name of the method or property that called this check. This is automatically populated by the compiler.</param>
@@ -27,8 +28,8 @@ namespace EasyParser.Utility
         /// <returns>True if the object is not null or empty, false otherwise (in soft fail mode).</returns>
         /// <exception cref="NullException">Thrown when the object is null or empty in hard fail mode.</exception>
         public static bool NotNullValidation<T>(
-            T obj,
-            bool hardFail = true,
+            [NotNullWhen( true )] T obj,
+            bool throwIfNull = true,
             string? customErrorMessage = null,
             [CallerArgumentExpression( "obj" )] string? parameterName = null,
             [CallerMemberName] string memberName = "",
@@ -52,7 +53,7 @@ namespace EasyParser.Utility
 
             if( isNullOrEmpty )
             {
-                if( hardFail )
+                if( throwIfNull )
                 {
                     var errorMessage = customErrorMessage ??
                         $"Parameter '{parameterName}' cannot be null or empty. " +

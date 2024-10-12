@@ -67,7 +67,7 @@ namespace EasyParser
             return level switch
             {
                 LogLevel.Debug => $"\u001b[37m{message}\u001b[0m", // White
-                LogLevel.Information => $"\u001b[32m{message}\u001b[0m", // Green
+                LogLevel.Info => $"\u001b[32m{message}\u001b[0m", // Green
                 LogLevel.Warning => $"\u001b[33m{message}\u001b[0m", // Yellow
                 LogLevel.Error => $"\u001b[31m{message}\u001b[0m", // Red
                 LogLevel.Critical => $"\u001b[35m{message}\u001b[0m", // Magenta
@@ -76,7 +76,7 @@ namespace EasyParser
         }
 
         internal static void Debug( string message ) => Log( LogLevel.Debug, message );
-        internal static void Info( string message ) => Log( LogLevel.Information, message );
+        internal static void Info( string message ) => Log( LogLevel.Info, message );
         internal static void Warn( string message ) => Log( LogLevel.Warning, message );
         internal static void Error( string message ) => Log( LogLevel.Error, message );
         internal static void Critical( string message ) => Log( LogLevel.Critical, message );

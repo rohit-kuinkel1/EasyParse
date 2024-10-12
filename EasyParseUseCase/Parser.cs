@@ -1,4 +1,4 @@
-﻿using EasyParse.Core;
+﻿using EasyParser.Core;
 
 namespace Program
 {
