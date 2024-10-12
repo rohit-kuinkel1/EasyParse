@@ -46,6 +46,8 @@ namespace EasyParser
     /// </summary>
     public class EasyParse
     {
+        #region privateFields
+
         /// <summary>
         /// abstraction of the parsing type to parse the args
         /// </summary>
@@ -57,11 +59,14 @@ namespace EasyParser
         /// </summary>
         private static readonly HashSet<string> Keywords = new HashSet<string>( Enum.GetNames( typeof( ParsingKeyword ) ).Select( k => k.ToLowerInvariant() ) );
 
+        #endregion
+
         /// <summary>
         /// Default Constructor for <see cref="EasyParse"/>
         /// </summary>
-        public EasyParse()
+        public EasyParse( LogLevel? logLevel )
         {
+            Logger.Initialize( logLevel ?? LogLevel.Info );
         }
 
         /// <summary>
@@ -80,16 +85,24 @@ namespace EasyParser
             {
                 _ = Utility.Utility.NotNullValidation( args, true );
 
-                // Determine if we are using Natural Language or Standard Language parsing
-                var hasWhere = args.Length > 1 && string.Equals( args[1], ParsingKeyword.Where.ToString(), StringComparison.OrdinalIgnoreCase );
+                // determine if we are using Natural Language or Standard Language parsing
+                var isIndex1Where = args.Length > 1 && string.Equals( args[1], ParsingKeyword.Where.ToString(), StringComparison.OrdinalIgnoreCase );
                 var containsKeywords = args.Any( arg => Keywords.Equals( arg.ToLowerInvariant() ) );
 
-                _parsing = hasWhere && containsKeywords
-                    ? new NaturalLanguageParsing()
-                    : !containsKeywords
-                        ? (IParsing)new StandardLanguageParsing()
-                        : throw new BadFormatException( "Invalid structure for input args. Reserved keywords were detected for standard parsing." +
-                        "Please refrain from mixing natural language and standard language format and try again." );
+                // using ternary operator here will turn ugly real fast 
+                if( isIndex1Where && containsKeywords )
+                {
+                    _parsing = new NaturalLanguageParsing();
+                }
+                else if( !containsKeywords )
+                {
+                    _parsing = new StandardLanguageParsing();
+                }
+                else
+                {
+                    throw new BadFormatException( "Invalid structure for input args. Reserved keywords were detected for standard parsing. " +
+                    "Please refrain from mixing natural language and standard language format and try again." );
+                }
 
                 var wasParseSuccessful = _parsing.Parse( args );
                 return wasParseSuccessful;
