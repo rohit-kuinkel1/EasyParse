@@ -11,11 +11,11 @@ namespace Program
         public string? ConfigPath { get; set; }
     }
 
-    [Verb( 'a', "add", HelpText = "Add file contents to the index." )]
+    [Verb( 'a', "add", Required = false, HelpText = "Add file contents to the index." )]
     public class ParseVerbs
     {
-        [Options( 'r', "read", Required = true, HelpText = "Input files to be processed." )]
-        public IEnumerable<string>? InputFiles { get; set; }
+        [Options( 'r', "read", Required = false, HelpText = "Input files to be processed." )]
+        public string? InputFile { get; set; }
 
         [Options( 'v', "verbose", Default = false, HelpText = "Prints all messages to standard output." )]
         public bool Verbose { get; set; }

@@ -34,7 +34,9 @@ namespace EasyParser.Core
         /// <returns>A string that represents the current OptionStore.</returns>
         public override string ToString()
         {
-            return $"OptionStore: {Property.Name} {OptionsAttribute.ToString()}";
+            return 
+                $"OptionStore:Name:{Property.Name}" +
+                $"{OptionsAttribute.ToString()}";
         }
     }
 }

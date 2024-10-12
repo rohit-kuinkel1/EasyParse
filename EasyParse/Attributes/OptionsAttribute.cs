@@ -68,11 +68,14 @@ namespace EasyParser.Core
         /// <returns>A string representing the options attribute.</returns>
         public override string ToString()
         {
-            return $"OptionsAttribute: {LongName} (Short Name: {ShortName}, " +
-                   $"Is Required: {Required}, " +
-                   $"Default Value: {Default}, " +
-                   $"Help Text: {HelpText}, " +
-                   $"Error Message: {ErrorMessage}) \n";
+            return 
+                $"OptionsAttribute: " +
+                $"LongName:{LongName}, " +
+                $"Short Name: {ShortName}, " +
+                $"Required: {Required}, " +
+                $"Default Value: {Default}, " +
+                $"Help Text: {HelpText}, " +
+                $"Error Message: {ErrorMessage})";
         }
     }
 }

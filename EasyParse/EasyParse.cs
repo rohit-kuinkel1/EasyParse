@@ -64,9 +64,9 @@ namespace EasyParser
         /// <summary>
         /// Default Constructor for <see cref="EasyParse"/>
         /// </summary>
-        public EasyParse( LogLevel? logLevel )
+        public EasyParse( LogLevel logLevel = LogLevel.Info )
         {
-            Logger.Initialize( logLevel ?? LogLevel.Info );
+            Logger.Initialize( logLevel );
         }
 
         /// <summary>

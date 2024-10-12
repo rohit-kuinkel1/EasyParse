@@ -22,7 +22,7 @@ namespace EasyParser.Core
         /// <summary>
         /// Specifies the necessity of the attribute.
         /// </summary>
-        public bool IsRequired { get; set; }
+        public bool Required { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VerbAttribute"/> class.
@@ -43,7 +43,7 @@ namespace EasyParser.Core
         {
             ShortName = shortName;
             LongName = longName;
-            IsRequired = isRequired;
+            Required = isRequired;
         }
 
         /// <summary>
@@ -53,7 +53,11 @@ namespace EasyParser.Core
         /// <returns>A string representing the verb attribute.</returns>
         public override string ToString()
         {
-            return $"VerbAttribute: {LongName} (Short Name: {ShortName}, Is Required: {IsRequired})\n";
+            return 
+                $"VerbAttribute: " +
+                $"LongName:{LongName}, " +
+                $"Short Name:{ShortName}, " +
+                $"Required: {Required})\n";
         }
     }
 }

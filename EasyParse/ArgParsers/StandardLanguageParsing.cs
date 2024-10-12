@@ -42,6 +42,7 @@ namespace EasyParser.Parsing
         /// <param name="type"></param>
         public bool Parse( string[] args, Type? type = null )
         {
+            Logger.Debug( "Entering StandardLanguageParsing.Parse(string[], Type?)" );
             _ = EasyParser.Utility.Utility.NotNullValidation( args );
 
             _verbStore = new VerbStore( type, null, new List<OptionStore>() );  // If type is null, we will reflect the whole assembly later
@@ -110,7 +111,7 @@ namespace EasyParser.Parsing
                     "Do you have at least one non-static public class marked with '[Verb(....)]' or '[VerbAttribute(....)]' ??" );
                 return false;
             }
-
+            Logger.Info(_verbStore.ToString() );
             return true;
         }
 
@@ -120,6 +121,7 @@ namespace EasyParser.Parsing
         /// <exception cref="EasyParser.Utility.IllegalOperation"></exception>
         private bool TypeIsInstantiable( Type? type, bool throwIfNotInstantiable = true )
         {
+            Logger.Debug( "Entering StandardLanguageParsing.TypeIsInstantiable( Type?, bool )" );
             if( type!.IsAbstract && type!.IsSealed )
             {
                 return throwIfNotInstantiable
@@ -145,6 +147,7 @@ namespace EasyParser.Parsing
         /// </summary>
         private void LogDebugPotentialNonPublicPropertyMarkedWithOptionsAttribute()
         {
+            Logger.Debug( "Entering StandardLanguageParsing.LogDebugPotentialNonPublicPropertyMarkedWithOptionsAttribute()" );
             var nonPublicPropertiesWithOptionsAttribute = GetPropertyBy( BindingFlags.NonPublic | BindingFlags.Instance );
             if( nonPublicPropertiesWithOptionsAttribute.Length != 0 )
             {
@@ -166,6 +169,7 @@ namespace EasyParser.Parsing
         /// <exception cref="Utility.NullException">Thrown when the <see cref="_propertyInfos"/> has no properties in it.</exception>
         private PropertyInfo[] GetPropertyBy( BindingFlags bindingFlags )
         {
+            Logger.Debug( "Entering StandardLanguageParsing.GetPropertyBy( BindingFlags )" );
             if( Utility.Utility.NotNullValidation( _propertyInfos ) )
             {
                 // Filter and return properties that are marked with OptionsAttribute
@@ -183,6 +187,7 @@ namespace EasyParser.Parsing
         // Helper method to handle option parsing logic
         private bool ParseOptions( string[] args, VerbStore verbStore, object? instance )
         {
+            Logger.Debug( "Entering StandardLanguageParsing. ParseOptions( string[], VerbStore, object? )" );
             _ = EasyParser.Utility.Utility.NotNullValidation( args );
             _ = EasyParser.Utility.Utility.NotNullValidation( verbStore );
             _ = EasyParser.Utility.Utility.NotNullValidation( instance );

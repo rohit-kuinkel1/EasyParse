@@ -1,4 +1,4 @@
-﻿using EasyParser.Core;
+﻿using EasyParser;
 
 namespace Program
 {
@@ -33,17 +33,11 @@ namespace Program
     {
         public static void Main( string[] args )
         {
-            var options = OptionsDeserializer.DeserializeOptions( typeof( ParseOptions ) );
-            foreach( var option in options )
-            {
-                Console.WriteLine( $"{option.ToString()} \n" );
-            }
+            var args1 = new[] {"add --read Help.txt --verbose true --stdin true"};
 
-            var optionsWithVerb = VerbDeserializer.DeserializeVerbs();
-            foreach( var option in optionsWithVerb )
-            {
-                Console.WriteLine( $"{option.ToString()} \n" );
-            }
+            var parser = new EasyParse(LogLevel.Debug);
+            _ = parser.Parse(args1,typeof(ParseVerbs));
+
         }
     }
 }

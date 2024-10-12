@@ -44,9 +44,12 @@ namespace EasyParser.Core
         public override string ToString()
         {
             var optionsSummary = string.Join( ", ", Options );
-            return $"Verb: {VerbAttribute?.LongName} (Short Name: {VerbAttribute?.ShortName}, " +
-                   $"Is Required: {VerbAttribute?.IsRequired}) " +
-                   $"Options: [{optionsSummary}]";
+            return 
+                $"Verb:" +
+                $"LongName:{VerbAttribute?.LongName}, " +
+                $"ShortName: {VerbAttribute?.ShortName}, " +
+                $"Required: {VerbAttribute?.Required}" +
+                $"Options:[{optionsSummary}]\n";
         }
     }
 }
