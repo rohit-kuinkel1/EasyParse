@@ -139,12 +139,12 @@ namespace EasyParser
             }
             catch( NullException ex )
             {
-                Console.WriteLine( ex.Message );
+                Console.WriteLine( $"{ex.GetType()} {ex.Message}" );
                 return new ParsingResult<T>( false, ex.Message, default );
             }
             catch( Exception ex ) // Include StackTrace for general errors including BadFormatException
             {
-                Console.WriteLine( ex.Message );
+                Console.WriteLine( $"{ex.GetType()} {ex.Message}" );
                 Console.WriteLine( ex.StackTrace );
                 return new ParsingResult<T>( false, ex.Message, default );
             }

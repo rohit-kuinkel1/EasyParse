@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using EasyParser.Core;
+using EasyParser.Utility;
 
 namespace EasyParser.Parsing
 {
@@ -94,12 +95,12 @@ namespace EasyParser.Parsing
         /// </summary>
         /// <exception cref="EasyParser.Utility.IllegalOperation"></exception>
         private bool TypeIsInstantiable(
-            Type? type,
+            Type type,
             bool throwIfNotInstantiable = true )
         {
             Logger.BackTrace( $"Entering StandardLanguageParsing.TypeIsInstantiable( Type?, bool ) with " +
-                $"type {type?.FullName} and throwIfNotInstantiable {throwIfNotInstantiable}" );
-            if( type!.IsAbstract && type!.IsSealed )
+                $"type {type.FullName} and throwIfNotInstantiable {throwIfNotInstantiable}" );
+            if( type.IsAbstract && type.IsSealed )
             {
                 var message = $"The provided type {type.FullName} is a static class hence cannot be instantiated." +
                         $" Please remove the static keyword and try again.";
@@ -109,7 +110,7 @@ namespace EasyParser.Parsing
                     ? throw new EasyParser.Utility.IllegalOperation( message )
                     : false;
             }
-            else if( type!.IsAbstract )
+            else if( type.IsAbstract )
             {
                 var message = $"The provided type {type.FullName} is an abstract class hence cannot be instantiated." +
                         $" Please remove the abstract keyword and try again.";
@@ -171,14 +172,29 @@ namespace EasyParser.Parsing
         }
 
 
-        // Helper method to handle option parsing logic
+        /// <summary>
+        /// Helper method to parse the actual input <paramref name="args"/>
+        /// Examples:
+        /// apple --banana car --dog elephant --isEdible false --count 10 (ok)
+        /// apple --banana --dog elephant --isEdible null --count noCount (wrong because isEdible is bool cant have null, count expects int cant have string)
+        /// apple --banana --dog --isEdible true --count 10 (ok, banana and dog will get the default values for the respective types)
+        /// apple --banana --dog --isEdible True --count 10.8 (ok, True will be converted to true, 10.8 will be rounded down to 10)
+        /// apple --banana Ferrari car super fast --dog elephant with 2 trunks --isEdible false --count 10 (ok, banana will get the whole string just till we reach --, same with dog)
+        /// apple --banana Ferrari car super fast --dog elephant with 2 trunks --isEdible false --count "10" (ok, EasyParser will convert the string to an int value
+        /// and if its a valid int value, will assign --count with the value)
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="verbStore"></param>
+        /// <param name="instance"></param>
+        /// <returns></returns>
         private bool ParseOptions(
             string[] args,
             VerbStore verbStore,
             object? instance )
         {
-            Logger.BackTrace( $"Entering StandardLanguageParsing. ParseOptions( string[], VerbStore, object? ) " +
-                $"with args with Len:{args.Length}, verbStore:{verbStore} and instance {instance?.ToString()}" );
+            Logger.BackTrace( $"Entering StandardLanguageParsing.ParseOptions(string[], VerbStore, object?) " +
+                $"with args Len:{args.Length}, verbStore:{verbStore}, instance {instance?.ToString()}" );
+
             _ = EasyParser.Utility.Utility.NotNullValidation( args );
             _ = EasyParser.Utility.Utility.NotNullValidation( verbStore );
             _ = EasyParser.Utility.Utility.NotNullValidation( instance );
@@ -187,23 +203,18 @@ namespace EasyParser.Parsing
 
             for( var i = 0; i < args.Length; i++ )
             {
-                // Check for long option
                 if( args[i].StartsWith( LongNamePrefix ) )
                 {
-                    var optionName = args[i].Substring( 2 ); // remove '--'
-                    if( i + 1 < args.Length && !args[i + 1].StartsWith( LongNamePrefix ) )
-                    {
-                        parsedOptions[optionName] = args[++i]; // advance to the value
-                    }
+                    var optionName = args[i].Substring( LongNamePrefix.Length );
+                    // Parse multi-word values until another option or end is reached
+                    var value = ParseMultiWordValue( args, ref i );
+                    parsedOptions[optionName] = value;
                 }
-                // Check for short option
                 else if( args[i].StartsWith( ShortNamePrefix ) )
                 {
-                    var optionName = args[i].Substring( 1 ); // remove '-'
-                    if( i + 1 < args.Length && !args[i + 1].StartsWith( ShortNamePrefix ) )
-                    {
-                        parsedOptions[optionName] = args[++i]; // advance to the value
-                    }
+                    var optionName = args[i].Substring( 1 );
+                    var value = ParseMultiWordValue( args, ref i );
+                    parsedOptions[optionName] = value;
                 }
             }
 
@@ -214,18 +225,90 @@ namespace EasyParser.Parsing
                 if( parsedOptions.TryGetValue( optionAttr.LongName, out var value ) ||
                     parsedOptions.TryGetValue( optionAttr.ShortName.ToString(), out value ) )
                 {
-                    // Convert the value to the appropriate property type and set it
-                    optionStore.Property.SetValue( instance, Convert.ChangeType( value, optionStore.Property.PropertyType ) );
+                    try
+                    {
+                        // Convert and assign value to the appropriate type
+                        var convertedValue = ConvertToOptionType( value, optionStore.Property.PropertyType );
+                        optionStore.Property.SetValue( instance, convertedValue );
+                    }
+                    catch( Exception ex )
+                    {
+                        Logger.Critical( $"{ex.Message}" );
+                        return false;
+                    }
                 }
                 else if( optionAttr.Required )
                 {
-                    // Handle missing required options
-                    Logger.Critical( $"Option {optionAttr.LongName} is marked as required but could not be parsed." );
+                    Logger.Critical( $"Option '{optionAttr.LongName}' is marked as required, but was not provided." +
+                        $" Please provide the corresponding value for {optionAttr.LongName} and try again." );
                     return false;
                 }
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Parses multi-word values until another option or the end of args is found.
+        /// </summary>
+        /// <param name="args"> the original args passed to <see cref="StandardLanguageParsing"/>.</param>
+        /// <param name="index"> the first index after the option.</param>
+        private string ParseMultiWordValue(
+            string[] args,
+            ref int index )
+        {
+            var valueBuilder = new List<string>();
+            index++;
+
+            while( index < args.Length && !args[index].StartsWith( LongNamePrefix ) && !args[index].StartsWith( ShortNamePrefix ) )
+            {
+                valueBuilder.Add( args[index] );
+                index++;
+            }
+
+            // Move back by one since we advanced too far
+            index--;
+
+            return string.Join( " ", valueBuilder );
+        }
+
+        /// <summary>
+        /// Converts a value to the expected property type, handling special cases like bool and numeric conversions.
+        /// </summary>
+        /// <param name="value">The value to be converted.</param>
+        /// <param name="targetType">The type to convert the value to.</param>
+        /// <returns>The converted value.</returns>
+        private object ConvertToOptionType( object value, Type targetType )
+        {
+            var valueStr = value.ToString()?.Trim( '"' ) ?? string.Empty; // Trim quotes if present
+
+            // Handle boolean conversion
+            if( targetType == typeof( bool ) )
+            {
+                if( bool.TryParse( valueStr, out bool boolResult ) )
+                {
+                    return boolResult;
+                }
+
+                var errorMessage = $"Invalid boolean value: {valueStr}";
+                throw new InvalidValueException( errorMessage );
+            }
+
+            // Handle integer conversion, including rounding decimals
+            if( targetType == typeof( int ) )
+            {
+                // Attempt to parse as decimal and round down
+                if( decimal.TryParse( valueStr, out var decimalResult ) )
+                {
+                    return (int)Math.Floor( decimalResult );
+                }
+
+                var errorMessage = $"Invalid integer value: {valueStr}";
+                throw new InvalidValueException( errorMessage );
+            }
+
+            // Default conversion for other types
+            return Convert.ChangeType( valueStr, targetType );
         }
     }
 }
