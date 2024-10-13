@@ -27,7 +27,13 @@ namespace Program
     var parser = new EasyParse();
     parser.Parse( arg, typeof( ParseOptions ) )
 
-
+    13/10/2024:
+    initial prototype for Parse with SLP.cs is finished.
+    Decided to go with a template style for the function call, this way it will remain clean while letting the users just pass the arg
+    Also the response from Parse contains a Success flag so users can choose to react on the status of the arg parsing themselves with a very simple if/else block
+    var result = easyParser.Parse<ClassWithVerb>(args);
+    if(result.Success){}
+    else{}
      */
     public static class Program
     {
@@ -35,7 +41,7 @@ namespace Program
         {
             var args1 = new[] { "add", "--read", "Help.txt", "--verbose", "true", "--stdin", "true" };
 
-            var parser = new EasyParse( LogLevel.Critical );
+            var parser = new EasyParse( LogLevel.BackTrace );
             var parsingResult = parser.Parse<ParseVerbs>( args1 );
             if( parsingResult.Success )
             {

@@ -43,12 +43,19 @@ namespace EasyParser.Parsing
         {
             Logger.BackTrace( $"Entering StandardLanguageParsing.Parse<string[]>(args) with args " +
                 $"with Len:{args.Length} and type {typeof( T ).FullName}" );
+
             _ = EasyParser.Utility.Utility.NotNullValidation( args );
 
-            // Initialize VerbStore
-            _verbStore = new VerbStore( typeof( T ), null, new List<OptionStore>() );
+            // Check if T is defined with VerbAttribute
+            if( typeof( T ).IsDefined( typeof( VerbAttribute ), inherit: false ) )
+            {
+                _verbStore = new VerbStore( typeof( T ), Attribute.GetCustomAttribute( typeof( T ), typeof( VerbAttribute ) ) as VerbAttribute, new List<OptionStore>() );
+            }
+            else
+            {
+                Logger.Debug( $"Type {typeof( T ).FullName} is not marked with VerbAttribute." );
+            }
 
-            // Create an instance of T
             var instance = new T();
 
             // Reflect to get all properties of the type
@@ -74,11 +81,12 @@ namespace EasyParser.Parsing
             // Parse the provided args
             if( !ParseOptions( args, _verbStore, instance ) )
             {
-                return new ParsingResult<T>( false, "Parsing failed.", default );
+                return new ParsingResult<T>( false, "Parsing failed.", default! );
             }
 
             // Return success with the populated instance
-            return new ParsingResult<T>( true, null, instance );
+            Logger.BackTrace( _verbStore.ToString() );
+            return new ParsingResult<T>( true, "status: OK", instance );
         }
 
         /// <summary>

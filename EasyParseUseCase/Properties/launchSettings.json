@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EasyParseUseCase": {
+      "commandName": "Project",
+      "commandLineArgs": "\"add --read Help.txt --verbose true --stdin true\""
+    }
+  }
+}

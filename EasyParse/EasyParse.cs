@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using EasyParser.Enums;
 using EasyParser.Parsing;
@@ -69,28 +70,46 @@ namespace EasyParser
         }
 
         /// <summary>
-        /// Parameterized Constructor for <see cref="EasyParse"/>
+        /// Parameterized Constructor for <see cref="EasyParse"/>.
+        /// <see cref="LogLevel.BackTrace"/> cannot be set by users.
         /// </summary>
         public EasyParse( LogLevel logLevel = LogLevel.Info )
         {
-            Logger.Initialize( logLevel );
+            //if( logLevel > LogLevel.BackTrace )
+            //{
+            //    Logger.Initialize( logLevel );
+            //}
+            //else
+            {
+                //Logger.Initialize( LogLevel.BackTrace );
+                Logger.Initialize( logLevel );
+            }
         }
 
         /// <summary>
         /// Parses the arguments provided to an instance of <see cref="EasyParse"/> and delegates the processing to the respective class.
         /// If the natural language syntax was used, 'where' keyword must be used at index 1 to denote that natural language has been used.
         /// If the conventional syntax was used, there is no need to use the 'where' keyword.
-        /// <para>
-        /// Although <paramref name="type"/> is optional, it is highly recommended to facilitate Parse with type so that the cost of reflection is as low as possible during runtime.
-        /// </para>
+        /// Save the value returned by <see cref="Parse{T}(string[])"/> locally to use it.
+        /// <code>
+        /// var result = easyParser.Parse{Type}(args);
+        /// if (result.Success)
+        /// {
+        ///     //do something
+        /// }
+        /// else
+        /// {
+        ///     //do something
+        /// }
+        /// </code>
         /// </summary>
         /// <param name="args"></param>
-        /// <param name="type"></param>
         /// <returns>Instance of <see cref="ParsingResult{Type}"/> along with <see cref="bool"/> <see cref="ParsingResult{Type}.Success"/> to denote success.</returns>
         /// <exception cref="NullException"> When the provided <paramref name="args"/> was null.</exception>
         /// <exception cref="BadFormatException"> When the provided <paramref name="args"/> was badly formatted.</exception>
         /// <exception cref="IllegalOperation"> When type mismatch occurs or when static/abstract class is provided as type for instance.</exception>
         /// <exception cref="Exception"> For general unforseen exceptions.</exception>
+        [Pure]
         public ParsingResult<T> Parse<T>( string[] args ) where T : new()
         {
             try
