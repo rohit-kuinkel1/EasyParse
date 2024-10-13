@@ -65,7 +65,7 @@ namespace EasyParser
         /// Default constructor for <see cref="EasyParse"/>
         /// </summary>
         public EasyParse()
-        { 
+        {
         }
 
         /// <summary>
@@ -86,22 +86,21 @@ namespace EasyParser
         /// </summary>
         /// <param name="args"></param>
         /// <param name="type"></param>
-        /// <returns>True if the parsing was successful, False if the parsing was not successful.</returns>
+        /// <returns>Instance of <see cref="ParsingResult{Type}"/> along with <see cref="bool"/> <see cref="ParsingResult{Type}.Success"/> to denote success.</returns>
         /// <exception cref="NullException"> When the provided <paramref name="args"/> was null.</exception>
         /// <exception cref="BadFormatException"> When the provided <paramref name="args"/> was badly formatted.</exception>
         /// <exception cref="IllegalOperation"> When type mismatch occurs or when static/abstract class is provided as type for instance.</exception>
         /// <exception cref="Exception"> For general unforseen exceptions.</exception>
-        public bool Parse( string[] args, Type? type = null )
+        public ParsingResult<T> Parse<T>( string[] args ) where T : new()
         {
             try
             {
                 _ = Utility.Utility.NotNullValidation( args, true );
 
-                // determine if we are using Natural Language or Standard Language parsing
+                // Determine if we are using Natural Language or Standard Language parsing
                 var isStringAtIndex1EqualToWhereKeyword = args.Length > 1 && string.Equals( args[1], ParsingKeyword.Where.ToString(), StringComparison.OrdinalIgnoreCase );
-                var containsKeywords = args.Any( arg => Keywords.Equals( arg.ToLowerInvariant() ) );
+                var containsKeywords = args.Any( arg => Keywords.Contains( arg.ToLowerInvariant() ) );
 
-                // using ternary operator here will turn ugly real fast
                 if( isStringAtIndex1EqualToWhereKeyword && containsKeywords )
                 {
                     _parsing = new NaturalLanguageParsing();
@@ -113,21 +112,22 @@ namespace EasyParser
                 else
                 {
                     throw new BadFormatException( "Invalid structure for input args. Reserved keywords were detected for standard parsing. " +
-                    "Please refrain from mixing natural language and standard language format and try again." );
+                        "Please refrain from mixing natural language and standard language format and try again." );
                 }
 
-                return _parsing.Parse( args, type );
+                // Call the appropriate Parse method and return the result
+                return _parsing.Parse<T>( args );
             }
-            catch( Exception ex ) when( ex is NullException )
+            catch( NullException ex )
             {
                 Console.WriteLine( ex.Message );
-                return false;
+                return new ParsingResult<T>( false, ex.Message, default );
             }
-            catch( Exception ex ) //include StackTrace for general errors including BadFormatException
+            catch( Exception ex ) // Include StackTrace for general errors including BadFormatException
             {
                 Console.WriteLine( ex.Message );
                 Console.WriteLine( ex.StackTrace );
-                return false;
+                return new ParsingResult<T>( false, ex.Message, default );
             }
         }
 
@@ -146,9 +146,9 @@ namespace EasyParser
         /// <exception cref="BadFormatException">When the provided <paramref name="args"/> is badly formatted.</exception>
         /// <exception cref="IllegalOperation">When type mismatch occurs or when a static/abstract class is provided as type for instance.</exception>
         /// <exception cref="Exception">For general unforeseen exceptions.</exception>
-        public bool Parse<T>( string[] args )
-        {
-            return Parse( args, typeof( T ) );
-        }
+        //public ParsingResult Parse<T>( string[] args )
+        //{
+        //    return Parse( args, typeof( T ) );
+        //}
     }
 }

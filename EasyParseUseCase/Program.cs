@@ -35,8 +35,18 @@ namespace Program
         {
             var args1 = new[] { "add", "--read", "Help.txt", "--verbose", "true", "--stdin", "true" };
 
-            var parser = new EasyParse( LogLevel.BackTrace );
-            _ = parser.Parse( args1, typeof(ParseVerbs) );
+            var parser = new EasyParse( LogLevel.Critical );
+            var parsingResult = parser.Parse<ParseVerbs>( args1 );
+            if( parsingResult.Success )
+            {
+                Console.WriteLine( parsingResult.ParsedInstance.Stdin );
+                Console.WriteLine( parsingResult.ParsedInstance.Verbose );
+                Console.WriteLine( parsingResult.ParsedInstance.InputFile );
+            }
+            else
+            {
+                Console.WriteLine( "Parsing was not successful" );
+            }
 
         }
     }

@@ -15,6 +15,6 @@ namespace EasyParser.Parsing
         /// </summary>
         /// <param name="args"></param>
         /// <param name="type"></param>
-        bool Parse( string[] args, Type? type );
+        ParsingResult<T> Parse<T>( string[] args ) where T : new();
     }
 }

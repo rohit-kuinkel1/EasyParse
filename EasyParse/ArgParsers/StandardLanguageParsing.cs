@@ -39,94 +39,46 @@ namespace EasyParser.Parsing
         /// <inheritdoc/>
         /// </summary>
         /// <param name="args"></param>
-        /// <param name="type"></param>
-        public bool Parse(
-            string[] args,
-            Type? type = null )
+        public ParsingResult<T> Parse<T>( string[] args ) where T : new()
         {
-            Logger.BackTrace( $"Entering StandardLanguageParsing.Parse(string[], Type?) with args " +
-                $"with Len:{args.Length} and type {type?.FullName}" );
+            Logger.BackTrace( $"Entering StandardLanguageParsing.Parse<string[]>(args) with args " +
+                $"with Len:{args.Length} and type {typeof( T ).FullName}" );
             _ = EasyParser.Utility.Utility.NotNullValidation( args );
 
-            _verbStore = new VerbStore( type, null, new List<OptionStore>() );
-            // we dont fail if the provided type is null or invalid since if thats the case, we will reflect the whole assembly later 
-            if(
-                EasyParser.Utility.Utility.NotNullValidation( type, throwIfNull: false )
-                && TypeIsInstantiable( type, throwIfNotInstantiable: false )
-                && type.IsDefined( typeof( VerbAttribute ), inherit: false ) )
+            // Initialize VerbStore
+            _verbStore = new VerbStore( typeof( T ), null, new List<OptionStore>() );
+
+            // Create an instance of T
+            var instance = new T();
+
+            // Reflect to get all properties of the type
+            _allPropertyInfosFromType = typeof( T ).GetProperties( BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance );
+
+            // Log potential non-public properties marked with OptionsAttribute
+            LogPotentialNonPublicPropertyMarkedWithOptionsAttribute();
+
+            // Get public properties with OptionsAttribute
+            var publicPropertiesWithOptionsAttribute = GetPropertyBy( BindingFlags.Public | BindingFlags.Instance );
+
+            // Store properties marked with OptionsAttribute
+            foreach( var property in publicPropertiesWithOptionsAttribute )
             {
-                //since we created _verbStore by setting the verb attribute to null, if the type that the user passed is legit, then extract the verbattribute from that class
-                _verbStore.VerbAttribute = Attribute.GetCustomAttribute( type, typeof( VerbAttribute ) ) as VerbAttribute;
-
-                var instance = Activator.CreateInstance( type );
-
-                // retrieve and store all the public and non-public properties marked with OptionsAttribute in the class that has a decorator [Verb] attached to it
-                _allPropertyInfosFromType = type.GetProperties( BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance );
-
-                //if there are non public properties that are marked with the [Option] attribute, log them in the debug level
-                LogPotentialNonPublicPropertyMarkedWithOptionsAttribute();
-                var publicPropertiesWithOptionsAttribute = GetPropertyBy( BindingFlags.Public | BindingFlags.Instance );
-
-                // Now fill the VerbStore with public properties
-                foreach( var property in publicPropertiesWithOptionsAttribute )
+                var optionsAttribute = Attribute.GetCustomAttribute( property, typeof( OptionsAttribute ) ) as OptionsAttribute;
+                if( EasyParser.Utility.Utility.NotNullValidation( optionsAttribute, throwIfNull: false ) )
                 {
-                    var optionsAttribute = Attribute.GetCustomAttribute( property, typeof( OptionsAttribute ) ) as OptionsAttribute;
-                    if( EasyParser.Utility.Utility.NotNullValidation( optionsAttribute, throwIfNull: false ) )
-                    {
-                        var optionStore = new OptionStore( property, optionsAttribute );
-                        _verbStore.Options.Add( optionStore );
-                    }
-                }
-
-                // Parse the provided args
-                if( !ParseOptions( args, _verbStore, instance ) )
-                {
-                    return false;
+                    var optionStore = new OptionStore( property, optionsAttribute );
+                    _verbStore.Options.Add( optionStore );
                 }
             }
-            else
+
+            // Parse the provided args
+            if( !ParseOptions( args, _verbStore, instance ) )
             {
-                // If type is null, reflect over the entire assembly
-                Logger.Debug( "Param Type? type in Parse(string[], Type?) was either null," +
-                    " did not have a [Verb(..)] decorator attached to it," +
-                    " or was static/abstract, forced to reflect the whole assembly..." );
-
-                var assembly = Assembly.GetExecutingAssembly();
-                var types = assembly.GetTypes();
-
-                foreach( var currentType in types )
-                {
-                    if( TypeIsInstantiable( currentType, false ) )
-                    {
-                        // Create an instance of each type to populate
-                        var instance = Activator.CreateInstance( currentType );
-                        var properties = GetPropertyBy( BindingFlags.Public | BindingFlags.Instance );
-
-                        // Fill the VerbStore with options
-                        foreach( var property in properties )
-                        {
-                            var optionsAttribute = Attribute.GetCustomAttribute( property, typeof( OptionsAttribute ) ) as OptionsAttribute;
-                            if( Utility.Utility.NotNullValidation( optionsAttribute, throwIfNull: false ) )
-                            {
-                                var optionStore = new OptionStore( property, optionsAttribute );
-                                _verbStore.Options.Add( optionStore );
-                            }
-                        }
-
-                        // Perform parsing logic
-                        if( ParseOptions( args, _verbStore, instance ) )
-                        {
-                            return true; // Parsing successful for one of the types
-                        }
-                    }
-                }
-
-                Logger.Critical( "No valid verb(s) found for the provided arguments. " +
-                    "Do you have at least one non-static public class marked with '[Verb(....)]' or '[VerbAttribute(....)]' ??" );
-                return false;
+                return new ParsingResult<T>( false, "Parsing failed.", default );
             }
-            Logger.BackTrace( _verbStore.ToString() );
-            return true;
+
+            // Return success with the populated instance
+            return new ParsingResult<T>( true, null, instance );
         }
 
         /// <summary>
