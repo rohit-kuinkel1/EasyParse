@@ -281,7 +281,11 @@ namespace EasyParser.Parsing
         private object ConvertToOptionType( object value, Type targetType )
         {
             var valueStr = value.ToString()?.Trim( '"' ) ?? string.Empty; // Trim quotes if present
-
+            if( valueStr.Length == 0 )
+            {
+                throw new InvalidValueException( "Missing value for one of the required parameters, please " +
+                    "check that you have values for all the required parameters and try again." );
+            }
             // Handle boolean conversion
             if( targetType == typeof( bool ) )
             {

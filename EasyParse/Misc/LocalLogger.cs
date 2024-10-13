@@ -109,8 +109,8 @@ namespace EasyParser
                 LogLevel.Debug => $"\u001b[37m{message}\u001b[0m", // White
                 LogLevel.Info => $"\u001b[32m{message}\u001b[0m", // Green
                 LogLevel.Warning => $"\u001b[33m{message}\u001b[0m", // Yellow
-                LogLevel.Error => $"\u001b[31m{message}\u001b[0m", // Red
-                LogLevel.Critical => $"\u001b[35m{message}\u001b[0m", // Magenta
+                LogLevel.Error => $"\u001b[35m{message}\u001b[0m", // Magenta
+                LogLevel.Critical => $"\u001b[1;37;41m{message}\u001b[0m", // Bold white text on red background for Critical
                 _ => message
             };
         }
