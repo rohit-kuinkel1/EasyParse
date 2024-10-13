@@ -62,7 +62,14 @@ namespace EasyParser
         #endregion
 
         /// <summary>
-        /// Default Constructor for <see cref="EasyParse"/>
+        /// Default constructor for <see cref="EasyParse"/>
+        /// </summary>
+        public EasyParse()
+        { 
+        }
+
+        /// <summary>
+        /// Parameterized Constructor for <see cref="EasyParse"/>
         /// </summary>
         public EasyParse( LogLevel logLevel = LogLevel.Info )
         {
@@ -84,9 +91,7 @@ namespace EasyParser
         /// <exception cref="BadFormatException"> When the provided <paramref name="args"/> was badly formatted.</exception>
         /// <exception cref="IllegalOperation"> When type mismatch occurs or when static/abstract class is provided as type for instance.</exception>
         /// <exception cref="Exception"> For general unforseen exceptions.</exception>
-        public bool Parse( 
-            string[] args, 
-            Type? type )
+        public bool Parse( string[] args, Type? type = null )
         {
             try
             {
@@ -124,6 +129,26 @@ namespace EasyParser
                 Console.WriteLine( ex.StackTrace );
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Parses the arguments provided to an instance of <see cref="EasyParse"/> using a generic type parameter and delegates the processing to the respective class.
+        /// If the natural language syntax was used, the 'where' keyword must be used at index 1 to denote that natural language has been used.
+        /// If the conventional syntax was used, there is no need to use the 'where' keyword.
+        /// <para>
+        /// Using a generic type <typeparamref name="T"/> allows for a more intuitive usage pattern, as the type is inferred from the calling context.
+        /// </para>
+        /// </summary>
+        /// <param name="args">The array of arguments to be parsed.</param>
+        /// <typeparam name="T">The type of the class that contains the options.</typeparam>
+        /// <returns>True if the parsing was successful, False if the parsing was not successful.</returns>
+        /// <exception cref="NullException">When the provided <paramref name="args"/> is null.</exception>
+        /// <exception cref="BadFormatException">When the provided <paramref name="args"/> is badly formatted.</exception>
+        /// <exception cref="IllegalOperation">When type mismatch occurs or when a static/abstract class is provided as type for instance.</exception>
+        /// <exception cref="Exception">For general unforeseen exceptions.</exception>
+        public bool Parse<T>( string[] args )
+        {
+            return Parse( args, typeof( T ) );
         }
     }
 }

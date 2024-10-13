@@ -35,8 +35,8 @@ namespace Program
         {
             var args1 = new[] { "add", "--read", "Help.txt", "--verbose", "true", "--stdin", "true" };
 
-            var parser = new EasyParse(LogLevel.BackTrace);
-            _ = parser.Parse(args1,typeof(ParseVerbs));
+            var parser = new EasyParse( LogLevel.BackTrace );
+            _ = parser.Parse( args1, typeof(ParseVerbs) );
 
         }
     }

@@ -11,7 +11,7 @@ namespace EasyParser.Utility
         /// <summary>
         /// Denotes the prefix for each error message for easier source recognition.
         /// </summary>
-        public static readonly string Prefix = "EasyParse";
+        public static readonly string Prefix = "EasyParse ";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EasyParseException"/> class.

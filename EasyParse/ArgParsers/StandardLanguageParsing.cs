@@ -15,12 +15,12 @@ namespace EasyParser.Parsing
     internal class StandardLanguageParsing : IParsing
     {
         /// <summary>
-        /// Stores all the propertyInfos for the classes marked with <see cref="VerbAttribute"/>
+        /// Stores all the propertyInfos for the classes marked with <see cref="VerbAttribute"/> regardless of the binding flags.
         /// </summary>
-        private PropertyInfo[]? _propertyInfos;
+        private PropertyInfo[]? _allPropertyInfosFromType;
 
         /// <summary>
-        /// Container to store the <see cref="VerbAttribute"/> and its related <see cref="OptionsAttribute"/>
+        /// Container to store the <see cref="VerbAttribute"/> and its related <see cref="OptionsAttribute"/>.
         /// </summary>
         private VerbStore? _verbStore;
 
@@ -61,7 +61,8 @@ namespace EasyParser.Parsing
                 var instance = Activator.CreateInstance( type );
 
                 // retrieve and store all the public and non-public properties marked with OptionsAttribute in the class that has a decorator [Verb] attached to it
-                _propertyInfos = type.GetProperties( BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance );
+                _allPropertyInfosFromType = type.GetProperties( BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance );
+
                 //if there are non public properties that are marked with the [Option] attribute, log them in the debug level
                 LogPotentialNonPublicPropertyMarkedWithOptionsAttribute();
                 var publicPropertiesWithOptionsAttribute = GetPropertyBy( BindingFlags.Public | BindingFlags.Instance );
@@ -188,14 +189,14 @@ namespace EasyParser.Parsing
         /// </summary>
         /// <param name="bindingFlags"></param>
         /// <returns> Array of <see cref="PropertyInfo"/></returns>
-        /// <exception cref="Utility.NullException">Thrown when the <see cref="_propertyInfos"/> has no properties in it.</exception>
+        /// <exception cref="Utility.NullException">Thrown when the <see cref="_allPropertyInfosFromType"/> has no properties in it.</exception>
         private PropertyInfo[] GetPropertyBy( BindingFlags bindingFlags )
         {
             Logger.BackTrace( $"Entering StandardLanguageParsing.GetPropertyBy(BindingFlags) with bindingFlags {bindingFlags}" );
 
-            if( Utility.Utility.NotNullValidation( _propertyInfos ) )
+            if( Utility.Utility.NotNullValidation( _allPropertyInfosFromType ) )
             {
-                return _propertyInfos
+                return _allPropertyInfosFromType
                     .Where( property =>
                         // Check if the property has the OptionsAttribute
                         Attribute.IsDefined( property, typeof( OptionsAttribute ) )
