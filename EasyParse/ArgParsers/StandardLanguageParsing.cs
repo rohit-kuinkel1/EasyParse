@@ -228,7 +228,7 @@ namespace EasyParser.Parsing
                     try
                     {
                         // Convert and assign value to the appropriate type
-                        var convertedValue = ConvertToOptionType( value, optionStore.Property.PropertyType );
+                        var convertedValue = ConvertToOptionType( value, optionStore.Property.PropertyType, optionStore.OptionsAttribute.LongName );
                         optionStore.Property.SetValue( instance, convertedValue );
                     }
                     catch( Exception ex )
@@ -278,14 +278,15 @@ namespace EasyParser.Parsing
         /// <param name="value">The value to be converted.</param>
         /// <param name="targetType">The type to convert the value to.</param>
         /// <returns>The converted value.</returns>
-        private object ConvertToOptionType( object value, Type targetType )
+        private object ConvertToOptionType( object value, Type targetType, string optionName )
         {
             var valueStr = value.ToString()?.Trim( '"' ) ?? string.Empty; // Trim quotes if present
             if( valueStr.Length == 0 )
             {
-                throw new InvalidValueException( "Missing value for one of the required parameters, please " +
+                throw new InvalidValueException( $"Missing value for the required parameter '{optionName}', please " +
                     "check that you have values for all the required parameters and try again." );
             }
+
             // Handle boolean conversion
             if( targetType == typeof( bool ) )
             {
