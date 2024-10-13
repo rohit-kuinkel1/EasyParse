@@ -1,4 +1,5 @@
 ﻿using System;
+using EasyParser.Utility;
 
 namespace EasyParser
 {
@@ -7,6 +8,10 @@ namespace EasyParser
     /// </summary>
     public enum LogLevel
     {
+        /// <summary>
+        /// For internal use case only.
+        /// </summary>
+        BackTrace,
         /// <summary>
         /// Log level debug for debugging.
         /// </summary>
@@ -56,9 +61,9 @@ namespace EasyParser
             {
                 return;
             }
-            var timestamp = DateTime.Now.ToString( "yyyy-MM-dd HH:mm:ss.fff" );
-            var logLevelString = level.ToString().ToUpper().PadRight( 11 );
-            var coloredMessage = GetColoredMessage( level, $"[{timestamp}] {logLevelString}: {message}" );
+            var timestamp = DateTime.Now.ToString( "MM/dd/yyyy HH:mm:ss.fffff" );
+            var logLevelString = level.ToString().ToUpper().PadRight( 10 );
+            var coloredMessage = GetColoredMessage( level, $"[{timestamp}] {EasyParseException.Prefix} {logLevelString}: {message}" );
             Console.WriteLine( coloredMessage );
         }
 
@@ -66,6 +71,7 @@ namespace EasyParser
         {
             return level switch
             {
+                LogLevel.BackTrace => $"\u001b[38;2;54;69;79m{message}\u001b[0m", //Gray
                 LogLevel.Debug => $"\u001b[37m{message}\u001b[0m", // White
                 LogLevel.Info => $"\u001b[32m{message}\u001b[0m", // Green
                 LogLevel.Warning => $"\u001b[33m{message}\u001b[0m", // Yellow
@@ -75,6 +81,7 @@ namespace EasyParser
             };
         }
 
+        internal static void BackTrace( string message ) => Log( LogLevel.BackTrace, message );
         internal static void Debug( string message ) => Log( LogLevel.Debug, message );
         internal static void Info( string message ) => Log( LogLevel.Info, message );
         internal static void Warn( string message ) => Log( LogLevel.Warning, message );

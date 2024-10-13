@@ -71,11 +71,11 @@ namespace EasyParser.Core
             return 
                 $"OptionsAttribute: " +
                 $"LongName:{LongName}, " +
-                $"Short Name: {ShortName}, " +
-                $"Required: {Required}, " +
-                $"Default Value: {Default}, " +
-                $"Help Text: {HelpText}, " +
-                $"Error Message: {ErrorMessage})";
+                $"ShortName:{ShortName}, " +
+                $"Required:{Required}, " +
+                $"DefaultValue:{Default}, " +
+                $"HelpText:{HelpText}, " +
+                $"ErrorMessage:{ErrorMessage}) ";
         }
     }
 }

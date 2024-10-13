@@ -40,20 +40,30 @@ namespace EasyParser.Parsing
         /// </summary>
         /// <param name="args"></param>
         /// <param name="type"></param>
-        public bool Parse( string[] args, Type? type = null )
+        public bool Parse(
+            string[] args,
+            Type? type = null )
         {
-            Logger.Debug( "Entering StandardLanguageParsing.Parse(string[], Type?)" );
+            Logger.BackTrace( $"Entering StandardLanguageParsing.Parse(string[], Type?) with args " +
+                $"with Len:{args.Length} and type {type?.FullName}" );
             _ = EasyParser.Utility.Utility.NotNullValidation( args );
 
-            _verbStore = new VerbStore( type, null, new List<OptionStore>() );  // If type is null, we will reflect the whole assembly later
-            if( EasyParser.Utility.Utility.NotNullValidation( type, false ) )  //we dont fail if the provided type is null since ^^^^^^^^^^^
+            _verbStore = new VerbStore( type, null, new List<OptionStore>() );
+            // we dont fail if the provided type is null or invalid since if thats the case, we will reflect the whole assembly later 
+            if(
+                EasyParser.Utility.Utility.NotNullValidation( type, throwIfNull: false )
+                && TypeIsInstantiable( type, throwIfNotInstantiable: false )
+                && type.IsDefined( typeof( VerbAttribute ), inherit: false ) )
             {
-                _ = TypeIsInstantiable( type, throwIfNotInstantiable: true );
+                //since we created _verbStore by setting the verb attribute to null, if the type that the user passed is legit, then extract the verbattribute from that class
+                _verbStore.VerbAttribute = Attribute.GetCustomAttribute( type, typeof( VerbAttribute ) ) as VerbAttribute;
+
                 var instance = Activator.CreateInstance( type );
 
-                // retrieve and store all the public and non-public properties marked with OptionsAttribute
+                // retrieve and store all the public and non-public properties marked with OptionsAttribute in the class that has a decorator [Verb] attached to it
                 _propertyInfos = type.GetProperties( BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance );
-                LogDebugPotentialNonPublicPropertyMarkedWithOptionsAttribute();
+                //if there are non public properties that are marked with the [Option] attribute, log them in the debug level
+                LogPotentialNonPublicPropertyMarkedWithOptionsAttribute();
                 var publicPropertiesWithOptionsAttribute = GetPropertyBy( BindingFlags.Public | BindingFlags.Instance );
 
                 // Now fill the VerbStore with public properties
@@ -76,7 +86,10 @@ namespace EasyParser.Parsing
             else
             {
                 // If type is null, reflect over the entire assembly
-                Logger.Debug( "Since type was not provided for EasyParse.Parse()" );
+                Logger.Debug( "Param Type? type in Parse(string[], Type?) was either null," +
+                    " did not have a [Verb(..)] decorator attached to it," +
+                    " or was static/abstract, forced to reflect the whole assembly..." );
+
                 var assembly = Assembly.GetExecutingAssembly();
                 var types = assembly.GetTypes();
 
@@ -107,11 +120,11 @@ namespace EasyParser.Parsing
                     }
                 }
 
-                Logger.Error( "No valid verb(s) found for the provided arguments. " +
+                Logger.Critical( "No valid verb(s) found for the provided arguments. " +
                     "Do you have at least one non-static public class marked with '[Verb(....)]' or '[VerbAttribute(....)]' ??" );
                 return false;
             }
-            Logger.Info(_verbStore.ToString() );
+            Logger.BackTrace( _verbStore.ToString() );
             return true;
         }
 
@@ -119,21 +132,30 @@ namespace EasyParser.Parsing
         /// validates that the provided <paramref name="type"/> is not a static or an abstract class since they cannot be instantiated.
         /// </summary>
         /// <exception cref="EasyParser.Utility.IllegalOperation"></exception>
-        private bool TypeIsInstantiable( Type? type, bool throwIfNotInstantiable = true )
+        private bool TypeIsInstantiable(
+            Type? type,
+            bool throwIfNotInstantiable = true )
         {
-            Logger.Debug( "Entering StandardLanguageParsing.TypeIsInstantiable( Type?, bool )" );
+            Logger.BackTrace( $"Entering StandardLanguageParsing.TypeIsInstantiable( Type?, bool ) with " +
+                $"type {type?.FullName} and throwIfNotInstantiable {throwIfNotInstantiable}" );
             if( type!.IsAbstract && type!.IsSealed )
             {
+                var message = $"The provided type {type.FullName} is a static class hence cannot be instantiated." +
+                        $" Please remove the static keyword and try again.";
+                Logger.Debug( message );
+
                 return throwIfNotInstantiable
-                    ? throw new EasyParser.Utility.IllegalOperation( $"The provided type {type.FullName} is a static class hence cannot be instantiated." +
-                        $" Please remove the static keyword and try again." )
+                    ? throw new EasyParser.Utility.IllegalOperation( message )
                     : false;
             }
             else if( type!.IsAbstract )
             {
+                var message = $"The provided type {type.FullName} is an abstract class hence cannot be instantiated." +
+                        $" Please remove the abstract keyword and try again.";
+                Logger.Debug( message );
+
                 return throwIfNotInstantiable
-                    ? throw new EasyParser.Utility.IllegalOperation( $"The provided type {type.FullName} is an abstract class hence cannot be instantiated." +
-                        $" Please remove the abstract keyword and try again." )
+                    ? throw new EasyParser.Utility.IllegalOperation( message )
                     : false;
             }
             else
@@ -145,9 +167,9 @@ namespace EasyParser.Parsing
         /// <summary>
         /// If the log level permits and some non-public properties are marked with <see cref="OptionsAttribute"/>, then let the user know about it using <see cref="Logger.Debug(string)"/>
         /// </summary>
-        private void LogDebugPotentialNonPublicPropertyMarkedWithOptionsAttribute()
+        private void LogPotentialNonPublicPropertyMarkedWithOptionsAttribute()
         {
-            Logger.Debug( "Entering StandardLanguageParsing.LogDebugPotentialNonPublicPropertyMarkedWithOptionsAttribute()" );
+            Logger.BackTrace( $"Entering StandardLanguageParsing.LogDebugPotentialNonPublicPropertyMarkedWithOptionsAttribute()" );
             var nonPublicPropertiesWithOptionsAttribute = GetPropertyBy( BindingFlags.NonPublic | BindingFlags.Instance );
             if( nonPublicPropertiesWithOptionsAttribute.Length != 0 )
             {
@@ -169,25 +191,33 @@ namespace EasyParser.Parsing
         /// <exception cref="Utility.NullException">Thrown when the <see cref="_propertyInfos"/> has no properties in it.</exception>
         private PropertyInfo[] GetPropertyBy( BindingFlags bindingFlags )
         {
-            Logger.Debug( "Entering StandardLanguageParsing.GetPropertyBy( BindingFlags )" );
+            Logger.BackTrace( $"Entering StandardLanguageParsing.GetPropertyBy(BindingFlags) with bindingFlags {bindingFlags}" );
+
             if( Utility.Utility.NotNullValidation( _propertyInfos ) )
             {
-                // Filter and return properties that are marked with OptionsAttribute
                 return _propertyInfos
-                    .Where( property => Attribute.IsDefined( property, typeof( OptionsAttribute ) ) &&
-                                      ( bindingFlags & BindingFlags.Public ) != 0 && property.GetGetMethod( true )?.IsPublic == true ||
-                                      ( bindingFlags & BindingFlags.NonPublic ) != 0 && property.GetGetMethod( true )?.IsFamily == true ||
-                                      ( bindingFlags & BindingFlags.Instance ) != 0 && !property.GetGetMethod( true )?.IsStatic == true )
-                    .ToArray();
+                    .Where( property =>
+                        // Check if the property has the OptionsAttribute
+                        Attribute.IsDefined( property, typeof( OptionsAttribute ) )
+
+                        // Apply binding flags for public or non-public instance properties
+                        && ( property.GetGetMethod( true )?.IsPublic == true && ( bindingFlags & BindingFlags.Public ) != 0
+                            || property.GetGetMethod( true )?.IsFamily == true && ( bindingFlags & BindingFlags.NonPublic ) != 0 )
+                        && ( bindingFlags & BindingFlags.Instance ) != 0 // Ensure the property is an instance property
+                    ).ToArray();
             }
             return [];
         }
 
 
         // Helper method to handle option parsing logic
-        private bool ParseOptions( string[] args, VerbStore verbStore, object? instance )
+        private bool ParseOptions(
+            string[] args,
+            VerbStore verbStore,
+            object? instance )
         {
-            Logger.Debug( "Entering StandardLanguageParsing. ParseOptions( string[], VerbStore, object? )" );
+            Logger.BackTrace( $"Entering StandardLanguageParsing. ParseOptions( string[], VerbStore, object? ) " +
+                $"with args with Len:{args.Length}, verbStore:{verbStore} and instance {instance?.ToString()}" );
             _ = EasyParser.Utility.Utility.NotNullValidation( args );
             _ = EasyParser.Utility.Utility.NotNullValidation( verbStore );
             _ = EasyParser.Utility.Utility.NotNullValidation( instance );
@@ -229,7 +259,7 @@ namespace EasyParser.Parsing
                 else if( optionAttr.Required )
                 {
                     // Handle missing required options
-                    Logger.Error( $"Option {optionAttr.LongName} is marked as required but could not be parsed." );
+                    Logger.Critical( $"Option {optionAttr.LongName} is marked as required but could not be parsed." );
                     return false;
                 }
             }

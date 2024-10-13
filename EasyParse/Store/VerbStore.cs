@@ -11,17 +11,17 @@ namespace EasyParser.Core
         /// <summary>
         /// Gets the type of the verb.
         /// </summary>
-        public Type? VerbType { get; }
+        public Type? VerbType { get; set; }
 
         /// <summary>
         /// Gets the attribute that defines the verb.
         /// </summary>
-        public VerbAttribute? VerbAttribute { get; }
+        public VerbAttribute? VerbAttribute { get; set; }
 
         /// <summary>
         /// Gets the list of options associated with the verb.
         /// </summary>
-        public List<OptionStore> Options { get; }
+        public List<OptionStore> Options { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VerbStore"/> class.
@@ -45,10 +45,10 @@ namespace EasyParser.Core
         {
             var optionsSummary = string.Join( ", ", Options );
             return 
-                $"Verb:" +
+                $"VerbStore: " +
                 $"LongName:{VerbAttribute?.LongName}, " +
-                $"ShortName: {VerbAttribute?.ShortName}, " +
-                $"Required: {VerbAttribute?.Required}" +
+                $"ShortName:{VerbAttribute?.ShortName}, " +
+                $"Required:{VerbAttribute?.Required} " +
                 $"Options:[{optionsSummary}]\n";
         }
     }

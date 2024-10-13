@@ -33,9 +33,9 @@ namespace Program
     {
         public static void Main( string[] args )
         {
-            var args1 = new[] {"add --read Help.txt --verbose true --stdin true"};
+            var args1 = new[] { "add", "--read", "Help.txt", "--verbose", "true", "--stdin", "true" };
 
-            var parser = new EasyParse(LogLevel.Debug);
+            var parser = new EasyParse(LogLevel.BackTrace);
             _ = parser.Parse(args1,typeof(ParseVerbs));
 
         }
