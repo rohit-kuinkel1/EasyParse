@@ -75,15 +75,7 @@ namespace EasyParser
         /// </summary>
         public EasyParse( LogLevel logLevel = LogLevel.Info )
         {
-            //if( logLevel > LogLevel.BackTrace )
-            //{
-            //    Logger.Initialize( logLevel );
-            //}
-            //else
-            {
-                //Logger.Initialize( LogLevel.BackTrace );
-                Logger.Initialize( logLevel );
-            }
+            Logger.Initialize( logLevel );
         }
 
         /// <summary>

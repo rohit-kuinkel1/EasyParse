@@ -277,6 +277,7 @@ namespace EasyParser.Parsing
         /// </summary>
         /// <param name="value">The value to be converted.</param>
         /// <param name="targetType">The type to convert the value to.</param>
+        /// <param name="optionName"> Name of the options for which the processing is being done.</param>
         /// <returns>The converted value.</returns>
         private object ConvertToOptionType( object value, Type targetType, string optionName )
         {

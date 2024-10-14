@@ -73,7 +73,15 @@ namespace EasyParser
         /// <param name="minLogLevel">The minimum log level for messages to be logged. Defaults to Debug.</param>
         internal static void Initialize( LogLevel minLogLevel = LogLevel.Debug )
         {
-            _minLogLevel = minLogLevel;
+            if( minLogLevel > LogLevel.BackTrace )
+            {
+                _minLogLevel = minLogLevel;
+            }
+            else 
+            {
+                 Logger.Debug( "Cannot set LogLevel.BackTrace for external usage" );
+                _minLogLevel = LogLevel.Debug;
+            }
         }
 
         /// <summary>
