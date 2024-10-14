@@ -11,7 +11,7 @@ namespace EasyParser.Parsing
     /// This class in contrary to <see cref="NaturalLanguageParsing"/>, aims to parse the args provided to EasyParser where the args are passed in the standard flow
     /// for instance: 
     /// addFile --name Text123.txt --filePath D:/git/Tools/ --smallerThan 5KB ......
-    /// af -n Text123.txt -f D:/git/Tools/ -s 5KB ......
+    /// a -n Text123.txt -f D:/git/Tools/ -s 5KB ......
     /// </summary>
     internal class StandardLanguageParsing : IParsing
     {
@@ -28,13 +28,23 @@ namespace EasyParser.Parsing
         /// <summary>
         /// Denotes the prefix for longNames.
         /// </summary>
-        private static readonly string LongNamePrefix = "--";
+        private readonly string _longNamePrefix;
 
         /// <summary>
         /// Denotes the prefix for shortNames.
         /// </summary>
+        private readonly char _shortNamePrefix;
 
-        private static readonly char ShortNamePrefix = '-';
+        /// <summary>
+        /// Default parameterized constructor for <see cref="StandardLanguageParsing"/>
+        /// </summary>
+        /// <param name="longNamePrefix"></param>
+        /// <param name="shortNamePrefix"></param>
+        public StandardLanguageParsing(string longNamePrefix = "--", char shortNamePrefix = '-') 
+        {
+            _longNamePrefix = longNamePrefix;
+            _shortNamePrefix = shortNamePrefix;
+        }
 
         /// <summary>
         /// <inheritdoc/>
@@ -46,11 +56,13 @@ namespace EasyParser.Parsing
                 $"with Len:{args.Length} and type {typeof( T ).FullName}" );
 
             _ = EasyParser.Utility.Utility.NotNullValidation( args );
+            _verbStore = new VerbStore( typeof( T ), null, new List<OptionStore>() );
 
             // Check if T is defined with VerbAttribute
             if( typeof( T ).IsDefined( typeof( VerbAttribute ), inherit: false ) )
             {
-                _verbStore = new VerbStore( typeof( T ), Attribute.GetCustomAttribute( typeof( T ), typeof( VerbAttribute ) ) as VerbAttribute, new List<OptionStore>() );
+                //we dont directly instantiate _verbStore here to avoid the pesky possible null refernce warnings
+                _verbStore.VerbAttribute = Attribute.GetCustomAttribute( typeof( T ), typeof( VerbAttribute ) ) as VerbAttribute;
             }
             else
             {
@@ -59,13 +71,8 @@ namespace EasyParser.Parsing
 
             var instance = new T();
 
-            // Reflect to get all properties of the type
             _allPropertyInfosFromType = typeof( T ).GetProperties( BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance );
-
-            // Log potential non-public properties marked with OptionsAttribute
             LogPotentialNonPublicPropertyMarkedWithOptionsAttribute();
-
-            // Get public properties with OptionsAttribute
             var publicPropertiesWithOptionsAttribute = GetPropertyBy( BindingFlags.Public | BindingFlags.Instance );
 
             // Store properties marked with OptionsAttribute
@@ -127,7 +134,8 @@ namespace EasyParser.Parsing
         }
 
         /// <summary>
-        /// If the log level permits and some non-public properties are marked with <see cref="OptionsAttribute"/>, then let the user know about it using <see cref="Logger.Debug(string)"/>
+        /// If the log level permits and some non-public properties are marked with <see cref="OptionsAttribute"/>, 
+        /// then let the user know about it using <see cref="Logger.Debug(string)"/>
         /// </summary>
         private void LogPotentialNonPublicPropertyMarkedWithOptionsAttribute()
         {
@@ -145,7 +153,7 @@ namespace EasyParser.Parsing
         }
 
         /// <summary>
-        /// retrieves the properties marked with the <see cref="OptionsAttribute"/> in the type provided to <see cref="Parse(string[],Type?)"/>.
+        /// retrieves the properties marked with the <see cref="OptionsAttribute"/> in the type provided to <see cref="Parse(string[])"/>.
         /// Param <paramref name="bindingFlags"/> is used to retrieve the properties with specific access specifiers.
         /// </summary>
         /// <param name="bindingFlags"></param>
@@ -188,9 +196,9 @@ namespace EasyParser.Parsing
         /// <param name="instance"></param>
         /// <returns></returns>
         private bool ParseOptions(
-            string[] args,
-            VerbStore verbStore,
-            object? instance )
+    string[] args,
+    VerbStore verbStore,
+    object? instance )
         {
             Logger.BackTrace( $"Entering StandardLanguageParsing.ParseOptions(string[], VerbStore, object?) " +
                 $"with args Len:{args.Length}, verbStore:{verbStore}, instance {instance?.ToString()}" );
@@ -203,17 +211,16 @@ namespace EasyParser.Parsing
 
             for( var i = 0; i < args.Length; i++ )
             {
-                if( args[i].StartsWith( LongNamePrefix ) )
+                if( args[i].StartsWith( _longNamePrefix ) )
                 {
-                    var optionName = args[i].Substring( LongNamePrefix.Length );
-                    // Parse multi-word values until another option or end is reached
-                    var value = ParseMultiWordValue( args, ref i );
+                    var optionName = args[i].Substring( _longNamePrefix.Length );
+                    var value = ParseMultiWordValue( args, ref i, _longNamePrefix, _shortNamePrefix );
                     parsedOptions[optionName] = value;
                 }
-                else if( args[i].StartsWith( ShortNamePrefix ) )
+                else if( args[i].StartsWith( _shortNamePrefix ) )
                 {
                     var optionName = args[i].Substring( 1 );
-                    var value = ParseMultiWordValue( args, ref i );
+                    var value = ParseMultiWordValue( args, ref i, _longNamePrefix, _shortNamePrefix );
                     parsedOptions[optionName] = value;
                 }
             }
@@ -222,8 +229,12 @@ namespace EasyParser.Parsing
             foreach( var optionStore in verbStore.Options )
             {
                 var optionAttr = optionStore.OptionsAttribute;
+                var aliases = optionAttr.Aliases;
+
+                // Check for LongName, ShortName, and Aliases
                 if( parsedOptions.TryGetValue( optionAttr.LongName, out var value ) ||
-                    parsedOptions.TryGetValue( optionAttr.ShortName.ToString(), out value ) )
+                    parsedOptions.TryGetValue( optionAttr.ShortName.ToString(), out value ) ||
+                    aliases.Any( alias => parsedOptions.TryGetValue( alias, out value ) ) )
                 {
                     try
                     {
@@ -240,7 +251,8 @@ namespace EasyParser.Parsing
                 else if( optionAttr.Required )
                 {
                     Logger.Critical( $"Option '{optionAttr.LongName}' is marked as required, but was not provided." +
-                        $" Please provide the corresponding value for {optionAttr.LongName} and try again." );
+                        $" Please provide the corresponding value for {optionAttr.LongName} and try again." +
+                        $" Defined aliases for '{optionAttr.LongName}' are: {string.Join( ", ", optionAttr.Aliases.Where( alias => !string.IsNullOrEmpty( alias ) ) )} " );
                     return false;
                 }
             }
@@ -253,14 +265,18 @@ namespace EasyParser.Parsing
         /// </summary>
         /// <param name="args"> the original args passed to <see cref="StandardLanguageParsing"/>.</param>
         /// <param name="index"> the first index after the option.</param>
+        /// <param name="longNamePrefix">the prefix symbols for longName.</param>
+        /// <param name="shortNamePrefix"> the prefix symbol for shortName.</param>
         private string ParseMultiWordValue(
             string[] args,
-            ref int index )
+            ref int index,
+            string longNamePrefix,
+            char shortNamePrefix )
         {
             var valueBuilder = new List<string>();
             index++;
 
-            while( index < args.Length && !args[index].StartsWith( LongNamePrefix ) && !args[index].StartsWith( ShortNamePrefix ) )
+            while( index < args.Length && !args[index].StartsWith( longNamePrefix ) && !args[index].StartsWith( shortNamePrefix ) )
             {
                 valueBuilder.Add( args[index] );
                 index++;
@@ -300,7 +316,6 @@ namespace EasyParser.Parsing
                 throw new InvalidValueException( errorMessage );
             }
 
-            // Handle integer conversion, including rounding decimals
             if( targetType == typeof( int ) )
             {
                 // Attempt to parse as decimal and round down

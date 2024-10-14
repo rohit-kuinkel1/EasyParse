@@ -44,12 +44,7 @@ namespace Program
             var parser = new EasyParse( LogLevel.BackTrace );
             var parsingResult = parser.Parse<ParseVerbs>( args );
             if( parsingResult.Success )
-            {
-                //Console.WriteLine( parsingResult.ParsedInstance.Stdin );
-                //Console.WriteLine( parsingResult.ParsedInstance.Verbose );
-                //Console.WriteLine( parsingResult.ParsedInstance.InputFile );
-                //Console.WriteLine( parsingResult.ParsedInstance.Count );
-
+            {             
                 Console.WriteLine( parsingResult.ToString() );
             }
             else

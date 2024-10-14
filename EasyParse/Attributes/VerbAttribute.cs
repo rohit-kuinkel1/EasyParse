@@ -53,7 +53,7 @@ namespace EasyParser.Core
         /// <returns>A string representing the verb attribute.</returns>
         public override string ToString()
         {
-            return 
+            return
                 $"VerbAttribute: " +
                 $"LongName:{LongName}, " +
                 $"Short Name:{ShortName}, " +

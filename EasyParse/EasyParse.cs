@@ -82,7 +82,7 @@ namespace EasyParser
         /// Parses the arguments provided to an instance of <see cref="EasyParse"/> and delegates the processing to the respective class.
         /// If the natural language syntax was used, 'where' keyword must be used at index 1 to denote that natural language has been used.
         /// If the conventional syntax was used, there is no need to use the 'where' keyword.
-        /// Save the value returned by <see cref="Parse{T}(string[])"/> locally to use it.
+        /// Save the value returned by <see cref="Parse{T}(string[],string,char)"/> locally to use it.
         /// <code>
         /// var result = easyParser.Parse{Type}(args);
         /// if (result.Success)
@@ -96,6 +96,8 @@ namespace EasyParser
         /// </code>
         /// </summary>
         /// <param name="args"></param>
+        /// <param name="longNameDenominator"> Optional longNameDenominator to differentiate the options</param>
+        /// <param name="shortNameDenominator"> Optional shortNameDenominator to differetiate the options</param>
         /// <returns>Instance of <see cref="ParsingResult{Type}"/> along with <see cref="bool"/> <see cref="ParsingResult{Type}.Success"/> to denote success.</returns>
         /// <exception cref="NullException"> When the provided <paramref name="args"/> was null.</exception>
         /// <exception cref="BadFormatException"> When the provided <paramref name="args"/> was badly formatted.</exception>
@@ -131,16 +133,17 @@ namespace EasyParser
             }
             catch( NullException ex )
             {
-                Console.WriteLine( $"{ex.GetType()} {ex.Message}" );
-                return new ParsingResult<T>( false, ex.Message, default );
+                Logger.Critical( $"{ex.GetType()} {ex.Message}" );
+                return new ParsingResult<T>( false, ex.Message, default! );
             }
             catch( Exception ex ) // Include StackTrace for general errors including BadFormatException
             {
-                Console.WriteLine( $"{ex.GetType()} {ex.Message}" );
-                Console.WriteLine( ex.StackTrace );
-                return new ParsingResult<T>( false, ex.Message, default );
+                Logger.Critical( $"{ex.GetType()} {ex.Message}" );
+                Logger.Critical( ex.StackTrace );
+                return new ParsingResult<T>( false, ex.Message, default! );
             }
         }
+
 
         /// <summary>
         /// Parses the arguments provided to an instance of <see cref="EasyParse"/> using a generic type parameter and delegates the processing to the respective class.

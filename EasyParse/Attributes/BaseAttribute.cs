@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace EasyParser.Core
 {
@@ -15,9 +15,24 @@ namespace EasyParser.Core
         public string HelpText { get; set; }
 
         /// <summary>
-        /// Gets or sets the aliases for the option or verb.
+        /// the reason we are not directly using <see cref="Aliases"/> and relying on a private value is that if we set Aliases to 
+        /// a certain value, and say the user passes Aliases = new[] {"reading", "studying", "s", ""}, then the aliases will be 
+        ///  reading, studying, s ;but we dont want s to be a long name alias since it is a char
         /// </summary>
-        public IEnumerable<string> Aliases { get; }
+        private string[]? _aliases;
+
+        /// <summary>
+        /// Gets the aliases for the option or verb.
+        /// </summary>
+        public string[] Aliases
+        {
+            get => _aliases ?? Array.Empty<string>();
+            set
+            {
+                _aliases = value.Where( alias => alias.Length >= 2 ).ToArray();
+                Logger.Debug( "Some aliases were discarded because they were either empty or their length was less than 2." );
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseAttribute"/> class.
@@ -27,7 +42,7 @@ namespace EasyParser.Core
         protected BaseAttribute(
             string helpText,
             params string[] aliases
-        )
+)
         {
             HelpText = helpText;
             Aliases = aliases;
