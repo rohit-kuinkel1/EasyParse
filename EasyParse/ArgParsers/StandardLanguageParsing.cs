@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using EasyParser.Core;
+using EasyParser.Enums;
 using EasyParser.Utility;
 
 namespace EasyParser.Parsing
@@ -40,7 +41,7 @@ namespace EasyParser.Parsing
         /// </summary>
         /// <param name="longNamePrefix"></param>
         /// <param name="shortNamePrefix"></param>
-        public StandardLanguageParsing(string longNamePrefix = "--", char shortNamePrefix = '-') 
+        public StandardLanguageParsing( string longNamePrefix = "--", char shortNamePrefix = '-' )
         {
             _longNamePrefix = longNamePrefix;
             _shortNamePrefix = shortNamePrefix;
@@ -75,12 +76,15 @@ namespace EasyParser.Parsing
             LogPotentialNonPublicPropertyMarkedWithOptionsAttribute();
             var publicPropertiesWithOptionsAttribute = GetPropertyBy( BindingFlags.Public | BindingFlags.Instance );
 
-            // Store properties marked with OptionsAttribute
+            // Store properties marked with OptionsAttribute in the generic class T
             foreach( var property in publicPropertiesWithOptionsAttribute )
             {
+                //get the property that is marked with an OptionsAttribute. will result to null if the property is not decorated with [Options]
                 var optionsAttribute = Attribute.GetCustomAttribute( property, typeof( OptionsAttribute ) ) as OptionsAttribute;
                 if( EasyParser.Utility.Utility.NotNullValidation( optionsAttribute, throwIfNull: false ) )
                 {
+                    //if we found a property that was decorated with this attribute, then we 'open' up a store with this property and the decorator
+                    //essentially dumping them along with their properties into the store
                     var optionStore = new OptionStore( property, optionsAttribute );
                     _verbStore.Options.Add( optionStore );
                 }
@@ -89,48 +93,12 @@ namespace EasyParser.Parsing
             // Parse the provided args
             if( !ParseOptions( args, _verbStore, instance ) )
             {
-                return new ParsingResult<T>( false, "Parsing failed.", default! );
+                return new ParsingResult<T>( false, "Parsing Status: ERROR", default! );
             }
 
             // Return success with the populated instance
             Logger.BackTrace( _verbStore.ToString() );
-            return new ParsingResult<T>( true, "status: OK", instance );
-        }
-
-        /// <summary>
-        /// validates that the provided <paramref name="type"/> is not a static or an abstract class since they cannot be instantiated.
-        /// </summary>
-        /// <exception cref="EasyParser.Utility.IllegalOperation"></exception>
-        private bool TypeIsInstantiable(
-            Type type,
-            bool throwIfNotInstantiable = true )
-        {
-            Logger.BackTrace( $"Entering StandardLanguageParsing.TypeIsInstantiable( Type?, bool ) with " +
-                $"type {type.FullName} and throwIfNotInstantiable {throwIfNotInstantiable}" );
-            if( type.IsAbstract && type.IsSealed )
-            {
-                var message = $"The provided type {type.FullName} is a static class hence cannot be instantiated." +
-                        $" Please remove the static keyword and try again.";
-                Logger.Debug( message );
-
-                return throwIfNotInstantiable
-                    ? throw new EasyParser.Utility.IllegalOperation( message )
-                    : false;
-            }
-            else if( type.IsAbstract )
-            {
-                var message = $"The provided type {type.FullName} is an abstract class hence cannot be instantiated." +
-                        $" Please remove the abstract keyword and try again.";
-                Logger.Debug( message );
-
-                return throwIfNotInstantiable
-                    ? throw new EasyParser.Utility.IllegalOperation( message )
-                    : false;
-            }
-            else
-            {
-                return true;
-            }
+            return new ParsingResult<T>( true, "Parsing Status: OK", instance );
         }
 
         /// <summary>
@@ -163,9 +131,8 @@ namespace EasyParser.Parsing
         {
             Logger.BackTrace( $"Entering StandardLanguageParsing.GetPropertyBy(BindingFlags) with bindingFlags {bindingFlags}" );
 
-            if( Utility.Utility.NotNullValidation( _allPropertyInfosFromType ) )
-            {
-                return _allPropertyInfosFromType
+            return Utility.Utility.NotNullValidation( _allPropertyInfosFromType )
+                ? _allPropertyInfosFromType
                     .Where( property =>
                         // Check if the property has the OptionsAttribute
                         Attribute.IsDefined( property, typeof( OptionsAttribute ) )
@@ -174,9 +141,8 @@ namespace EasyParser.Parsing
                         && ( property.GetGetMethod( true )?.IsPublic == true && ( bindingFlags & BindingFlags.Public ) != 0
                             || property.GetGetMethod( true )?.IsFamily == true && ( bindingFlags & BindingFlags.NonPublic ) != 0 )
                         && ( bindingFlags & BindingFlags.Instance ) != 0 // Ensure the property is an instance property
-                    ).ToArray();
-            }
-            return [];
+                    ).ToArray()
+                : Array.Empty<PropertyInfo>();
         }
 
 
@@ -196,9 +162,9 @@ namespace EasyParser.Parsing
         /// <param name="instance"></param>
         /// <returns></returns>
         private bool ParseOptions(
-    string[] args,
-    VerbStore verbStore,
-    object? instance )
+            string[] args,
+            VerbStore verbStore,
+            object? instance )
         {
             Logger.BackTrace( $"Entering StandardLanguageParsing.ParseOptions(string[], VerbStore, object?) " +
                 $"with args Len:{args.Length}, verbStore:{verbStore}, instance {instance?.ToString()}" );
@@ -231,16 +197,30 @@ namespace EasyParser.Parsing
                 var optionAttr = optionStore.OptionsAttribute;
                 var aliases = optionAttr.Aliases;
 
-                // Check for LongName, ShortName, and Aliases
-                if( parsedOptions.TryGetValue( optionAttr.LongName, out var value ) ||
-                    parsedOptions.TryGetValue( optionAttr.ShortName.ToString(), out value ) ||
-                    aliases.Any( alias => parsedOptions.TryGetValue( alias, out value ) ) )
+                // Check for match of either LongName, ShortName, or at least one of the Aliases
+                if( (
+                    parsedOptions.TryGetValue( optionAttr.LongName, out var value )
+                    || parsedOptions.TryGetValue( optionAttr.ShortName.ToString(), out value )
+                    || aliases.Any( alias => parsedOptions.TryGetValue( alias, out value ) )
+                    )
+                    && Utility.Utility.NotNullValidation( value ) )
                 {
                     try
                     {
+                        // Validate mutual relationships after parsing
+                        if( !ValidateMutualRelationships( verbStore.Options, optionStore, parsedOptions ) )
+                        {
+                            return false; 
+                        }
+
                         // Convert and assign value to the appropriate type
                         var convertedValue = ConvertToOptionType( value, optionStore.Property.PropertyType, optionStore.OptionsAttribute.LongName );
                         optionStore.Property.SetValue( instance, convertedValue );
+                    }
+                    catch( Exception ex ) when( ex is NullException )
+                    {
+                        Logger.Critical( $"Unexpected NullException occured while trying to parse the optionsAttribute {optionAttr.LongName}" );
+                        return false;
                     }
                     catch( Exception ex )
                     {
@@ -248,6 +228,7 @@ namespace EasyParser.Parsing
                         return false;
                     }
                 }
+                //if you reached here after traversing the if block and the optionsAttr was marked required, then that means a required value was not found
                 else if( optionAttr.Required )
                 {
                     Logger.Critical( $"Option '{optionAttr.LongName}' is marked as required, but was not provided." +
@@ -258,6 +239,69 @@ namespace EasyParser.Parsing
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Validates the mutual agreement <see cref="MutualAttribute"/> between <see cref="OptionsAttribute"/>
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="currentOption"></param>
+        /// <param name="parsedOptions"></param>
+        /// <returns></returns>
+        private bool ValidateMutualRelationships(
+            List<OptionStore> options,
+            OptionStore currentOption,
+            Dictionary<string, object> parsedOptions )
+        {
+            foreach( var mutualAttr in currentOption.MutualAttributes )
+            {
+                // Find the related option based on the mutual attribute's RelatedEntity
+                var relatedOption = options.FirstOrDefault( o => o.Property.Name == mutualAttr.RelatedEntity );
+
+                if( relatedOption != null )
+                {
+                    // Check if the current option was provided (long name, short name, or any aliases)
+                    var isCurrentOptionProvided = IsOptionProvided( currentOption, parsedOptions );
+
+                    // Check if the related option was provided (long name, short name, or any aliases)
+                    var isRelatedOptionProvided = IsOptionProvided( relatedOption, parsedOptions );
+
+                    // Validate inclusive relationship (both options must be provided)
+                    if( mutualAttr.RelationshipType == MutualType.Inclusive && ( isCurrentOptionProvided ^ isRelatedOptionProvided ) )
+                    {
+                        Logger.Critical( $"Options '{currentOption.OptionsAttribute.LongName}' and '{relatedOption.OptionsAttribute.LongName}' " +
+                                         $"are mutually inclusive to each other. Both must be provided at the same time." );
+                        return false;
+                    }
+                    // Validate exclusive relationship (only one option can be provided)
+                    else if( mutualAttr.RelationshipType == MutualType.Exclusive && ( isCurrentOptionProvided && isRelatedOptionProvided ) )
+                    {
+                        Logger.Critical( $"Options '{currentOption.OptionsAttribute.LongName}' and '{relatedOption.OptionsAttribute.LongName}' " +
+                                         $"are mutually exclusive to each other. Only one can be provided at a given time." );
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Helper method for <see cref="ValidateMutualRelationships(List{OptionStore}, OptionStore, Dictionary{string, object})"/>
+        /// </summary>
+        /// <param name="option"></param>
+        /// <param name="parsedOptions"></param>
+        /// <returns></returns>
+        private bool IsOptionProvided( OptionStore option, Dictionary<string, object> parsedOptions )
+        {
+            var longName = option.OptionsAttribute.LongName;
+            var shortName = option.OptionsAttribute.ShortName.ToString();
+            var aliases = option.OptionsAttribute.Aliases;
+
+            // Check if the long name, short name, or any alias is present in the parsed options
+            return parsedOptions.ContainsKey( longName )
+                   || parsedOptions.ContainsKey( shortName )
+                   || aliases.Any( alias => parsedOptions.ContainsKey( alias ) );
         }
 
         /// <summary>
@@ -331,5 +375,43 @@ namespace EasyParser.Parsing
             // Default conversion for other types
             return Convert.ChangeType( valueStr, targetType );
         }
+
+        #region ToDiscard
+        ///// <summary>
+        ///// validates that the provided <paramref name="type"/> is not a static or an abstract class since they cannot be instantiated.
+        ///// </summary>
+        ///// <exception cref="EasyParser.Utility.IllegalOperation"></exception>
+        //private bool TypeIsInstantiable(
+        //    Type type,
+        //    bool throwIfNotInstantiable = true )
+        //{
+        //    Logger.BackTrace( $"Entering StandardLanguageParsing.TypeIsInstantiable( Type?, bool ) with " +
+        //        $"type {type.FullName} and throwIfNotInstantiable {throwIfNotInstantiable}" );
+        //    if( type.IsAbstract && type.IsSealed )
+        //    {
+        //        var message = $"The provided type {type.FullName} is a static class hence cannot be instantiated." +
+        //                $" Please remove the static keyword and try again.";
+        //        Logger.Debug( message );
+
+        //        return throwIfNotInstantiable
+        //            ? throw new EasyParser.Utility.IllegalOperation( message )
+        //            : false;
+        //    }
+        //    else if( type.IsAbstract )
+        //    {
+        //        var message = $"The provided type {type.FullName} is an abstract class hence cannot be instantiated." +
+        //                $" Please remove the abstract keyword and try again.";
+        //        Logger.Debug( message );
+
+        //        return throwIfNotInstantiable
+        //            ? throw new EasyParser.Utility.IllegalOperation( message )
+        //            : false;
+        //    }
+        //    else
+        //    {
+        //        return true;
+        //    }
+        // }
+        #endregion
     }
 }

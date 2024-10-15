@@ -82,9 +82,10 @@ namespace EasyParser
         /// Parses the arguments provided to an instance of <see cref="EasyParse"/> and delegates the processing to the respective class.
         /// If the natural language syntax was used, 'where' keyword must be used at index 1 to denote that natural language has been used.
         /// If the conventional syntax was used, there is no need to use the 'where' keyword.
-        /// Save the value returned by <see cref="Parse{T}(string[],string,char)"/> locally to use it.
+        /// Save the value returned by <see cref="Parse{T}(string[])"/> locally to use it.
         /// <code>
-        /// var result = easyParser.Parse{Type}(args);
+        /// //where <typeparamref name="T"/> is your class where you defined the verb and its related options.
+        /// var result = easyParser.Parse{<typeparamref name="T"/>}(args);
         /// if (result.Success)
         /// {
         ///     //do something
@@ -96,8 +97,6 @@ namespace EasyParser
         /// </code>
         /// </summary>
         /// <param name="args"></param>
-        /// <param name="longNameDenominator"> Optional longNameDenominator to differentiate the options</param>
-        /// <param name="shortNameDenominator"> Optional shortNameDenominator to differetiate the options</param>
         /// <returns>Instance of <see cref="ParsingResult{Type}"/> along with <see cref="bool"/> <see cref="ParsingResult{Type}.Success"/> to denote success.</returns>
         /// <exception cref="NullException"> When the provided <paramref name="args"/> was null.</exception>
         /// <exception cref="BadFormatException"> When the provided <paramref name="args"/> was badly formatted.</exception>

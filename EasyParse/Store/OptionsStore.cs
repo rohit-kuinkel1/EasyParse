@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace EasyParser.Core
 {
@@ -8,7 +10,7 @@ namespace EasyParser.Core
     public sealed class OptionStore
     {
         /// <summary>
-        /// Gets the PropertyInfo for the option.
+        /// Gets the property info of the property in the class T, which was decorated with [Options]
         /// </summary>
         public PropertyInfo Property { get; }
 
@@ -16,6 +18,13 @@ namespace EasyParser.Core
         /// Gets the OptionsAttribute associated with the option.
         /// </summary>
         public OptionsAttribute OptionsAttribute { get; }
+
+        /// <summary>
+        /// represents the mutual attributes associated with a specific option.
+        /// Note: storing a <see cref="List{MutualAttribute}"/> because a single property in the original class can have multiple mutual attributes
+        /// attached to it. <see cref="MutualAttribute"/> where AllowMultiple = true is set
+        /// </summary>
+        public List<MutualAttribute> MutualAttributes { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OptionStore"/> class.
@@ -26,6 +35,7 @@ namespace EasyParser.Core
         {
             Property = property;
             OptionsAttribute = optionsAttribute;
+            MutualAttributes = property.GetCustomAttributes<MutualAttribute>().ToList();
         }
 
         /// <summary>
@@ -34,7 +44,7 @@ namespace EasyParser.Core
         /// <returns>A string that represents the current OptionStore.</returns>
         public override string ToString()
         {
-            return 
+            return
                 $"OptionStore: Name:{Property.Name} " +
                 $"{OptionsAttribute.ToString()}";
         }

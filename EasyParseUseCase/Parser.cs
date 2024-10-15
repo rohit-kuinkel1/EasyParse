@@ -14,7 +14,8 @@ namespace Program
     [Verb( 'a', "add", Required = false, HelpText = "Add file contents to the index." )]
     public class ParseVerbs
     {
-        [Options( 'r', "read", Required = true, HelpText = "Input files to be processed.", Aliases = new[] {"reading", "studying", "s", ""} )]
+        [Options( 'r', "read", Required = true, HelpText = "Input files to be processed.", Aliases = new[] { "reading", "studying", "s", "" } )]
+        [Mutual( EasyParser.Enums.MutualType.Inclusive, nameof( Count ) )]
         public string? InputFile { get; set; }
 
         [Options( 'v', "verbose", Default = false, Required = true, HelpText = "Prints all messages to standard output." )]
@@ -23,7 +24,7 @@ namespace Program
         [Options( 's', "stdin", Default = false, Required = true, HelpText = "Read from stdin" )]
         public bool Stdin { get; set; }
 
-        [Options( 'c', "count", Default = false, Required = true, HelpText = "Count of verbs" )]
+        [Options( 'c', "count", Default = false, Required = false, HelpText = "Count of verbs" )]
         public int Count { get; set; }
     }
 }
