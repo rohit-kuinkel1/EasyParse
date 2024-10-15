@@ -73,9 +73,9 @@ namespace EasyParser
         /// Parameterized Constructor for <see cref="EasyParse"/>.
         /// <see cref="LogLevel.BackTrace"/> cannot be set by users.
         /// </summary>
-        public EasyParse( LogLevel logLevel = LogLevel.Info )
+        public EasyParse( LogLevel logLevel = LogLevel.Info, bool redirectLogsToFile = false )
         {
-            Logger.Initialize( logLevel );
+            Logger.Initialize( logLevel, redirectLogsToFile );
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace EasyParser
         /// }
         /// else
         /// {
-        ///     //do something
+        ///      Console.WriteLine( parsingResult.ErrorMessage );
         /// }
         /// </code>
         /// </summary>

@@ -41,15 +41,15 @@ namespace Program
         {
             //var args1 = new[] { "add", "--read", "Help.txt Ferrari Car", "--verbose", "True", "--stdin", "TRUE", "--count", "210" };
 
-            var parser = new EasyParse( LogLevel.BackTrace );
+            var parser = new EasyParse( LogLevel.BackTrace, true );
             var parsingResult = parser.Parse<ParseVerbs>( args );
             if( parsingResult.Success )
-            {             
+            {
                 Console.WriteLine( parsingResult.ToString() );
             }
             else
             {
-                Console.WriteLine( "Program: Parsing was not successful" );
+                Console.WriteLine( parsingResult.ErrorMessage );
             }
 
         }

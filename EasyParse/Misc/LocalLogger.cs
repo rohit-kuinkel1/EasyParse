@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using EasyParser.Utility;
 
 namespace EasyParser
@@ -74,6 +75,11 @@ namespace EasyParser
         internal static readonly string TimeNowString = DateTime.Now.ToString( "MM/dd/yyyy HH:mm:ss.fffff" );
 
         /// <summary>
+        /// Flag to indicate whether to redirect all the logs to a logFile.
+        /// </summary>
+        internal static bool RedirectLogsToFile { get; set; } = false;
+
+        /// <summary>
         /// default static constructor for <see cref="Logger"/>.
         /// Access specifiers arent allowed for static constructors, hence omitted.
         /// </summary>
@@ -86,8 +92,10 @@ namespace EasyParser
         /// Initializes the Logger with a specified minimum log level.
         /// </summary>
         /// <param name="minLogLevel">The minimum log level for messages to be logged. Defaults to Debug.</param>
-        internal static void Initialize( LogLevel minLogLevel = LogLevel.Debug )
+        /// <param name="redirectLogsToFile"> Flag to specify the redirection of all the logs to a file.</param>
+        internal static void Initialize( LogLevel minLogLevel = LogLevel.Debug, bool redirectLogsToFile = false)
         {
+            RedirectLogsToFile = redirectLogsToFile;
             //if( minLogLevel > LogLevel.BackTrace )
             //{
             _minLogLevel = minLogLevel;
@@ -106,7 +114,7 @@ namespace EasyParser
         /// <param name="message">The message to log.</param>
         internal static void Log( LogLevel level, string? message )
         {
-            // If the log level is lower than the minimum set log level, do not log the message.
+            //log if the loglevel criteria is fulfilled, ex: dont log Debug if minLogLevel is set to Info.
             if( level < _minLogLevel )
             {
                 return;
@@ -114,9 +122,19 @@ namespace EasyParser
 
             var safeMessage = string.IsNullOrEmpty( message ) ? "" : message;
             var logLevelString = level.ToString().ToUpper().PadRight( Padding );
-            var coloredMessage = GetColoredMessage( level, $"[{TimeNowString}] {EasyParseException.Prefix} {logLevelString}: {safeMessage}" );
-            Console.WriteLine( coloredMessage );
+            var formattedMessage = $"[{TimeNowString}] {EasyParseException.Prefix} {logLevelString}: {safeMessage}";
+            var coloredMessage = GetColoredMessage( level, formattedMessage );
+
+            if( RedirectLogsToFile )
+            {
+                WriteLogToFile( formattedMessage );
+            }
+            else
+            {
+                Console.WriteLine( coloredMessage );
+            }
         }
+
 
         /// <summary>
         /// Gets a colored message based on the log level.
@@ -137,6 +155,26 @@ namespace EasyParser
                 _ => message
             };
         }
+
+        /// <summary>
+        /// Writes a log message to the log file.
+        /// </summary>
+        /// <param name="message">The message to log in the file.</param>
+        private static void WriteLogToFile( string message )
+        {
+            try
+            {
+                var logDirectory = Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "EasyParserLogs" );
+                _ = Directory.CreateDirectory( logDirectory ); 
+                var logFilePath = Path.Combine( logDirectory, $"EasyParser_{DateTime.Now:yyyy_MM_dd_HH_mm}.log" );
+                File.AppendAllText( logFilePath, message + Environment.NewLine );
+            }
+            catch( Exception ex ) //in this case log all the exceptions
+            {
+                Logger.Critical( $"Failed to write to the specified log file: {ex.Message}" );
+            }
+        }
+
 
 
         /// <summary>
