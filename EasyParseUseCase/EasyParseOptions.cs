@@ -1,16 +1,6 @@
-﻿using EasyParser.Core;
-
-namespace Program
+using EasyParser.Core;
+namespace MyParser
 {
-    public class ParseOptions
-    {
-        [Options( 'v', "verbose", HelpText = "Enable verbose output." )]
-        public bool Verbose { get; set; }
-
-        [Options( 'c', "config", HelpText = "Path to the config file." )]
-        public string? ConfigPath { get; set; }
-    }
-
     /// <summary>
     /// <para>
     /// The demo <see cref="ParseVerbs"/> class encapsulates the command-line options for the EasyParse library. 
@@ -43,7 +33,7 @@ namespace Program
         [Options( 's', "stdin", Default = false, Required = false, HelpText = "Read from stdin", Aliases = new[] { "standardin", "stdinput" } )]
         public bool Stdin { get; set; }
 
-        [Options( 'c', "count", Default = 0, Required = false, HelpText = "Count of verbs", Aliases = new[] { "length", "total" } )] //Aliases have to be at least 2 stringed words
+        [Options( 'c', "count", Default = 0, Required = false, HelpText = "Count of verbs", Aliases = new[] { "length", "total" } )] //Len of Aliases >=2 , else they are ignored
         public int Count { get; set; }
     }
 }

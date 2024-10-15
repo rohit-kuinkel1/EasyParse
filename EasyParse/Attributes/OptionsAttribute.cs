@@ -11,12 +11,12 @@ namespace EasyParser.Core
         /// <summary>
         /// Gets the short name for the option (single-character).
         /// </summary>
-        public char ShortName { get; }
+        public char ShortName { get; set; }
 
         /// <summary>
         /// Gets the long name given to this option.
         /// </summary>
-        public string LongName { get; }
+        public string LongName { get; set; }
 
         /// <summary>
         /// Specifies the necessity of the attribute.

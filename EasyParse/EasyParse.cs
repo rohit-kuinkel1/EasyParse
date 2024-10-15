@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using EasyParser.Enums;
 using EasyParser.Parsing;
 using EasyParser.Utility;
@@ -146,25 +148,129 @@ namespace EasyParser
             }
         }
 
-
         /// <summary>
-        /// Parses the arguments provided to an instance of <see cref="EasyParse"/> using a generic type parameter and delegates the processing to the respective class.
-        /// If the natural language syntax was used, the 'where' keyword must be used at index 1 to denote that natural language has been used.
-        /// If the conventional syntax was used, there is no need to use the 'where' keyword.
-        /// <para>
-        /// Using a generic type <typeparamref name="T"/> allows for a more intuitive usage pattern, as the type is inferred from the calling context.
-        /// </para>
+        /// Exports the default EasyParser configuration to a file named EasyParse.cs.
+        /// Although the nested functions are not conventional, they get the job job so i'll just let them be.
         /// </summary>
-        /// <param name="args">The array of arguments to be parsed.</param>
-        /// <typeparam name="T">The type of the class that contains the options.</typeparam>
-        /// <returns>True if the parsing was successful, False if the parsing was not successful.</returns>
-        /// <exception cref="NullException">When the provided <paramref name="args"/> is null.</exception>
-        /// <exception cref="BadFormatException">When the provided <paramref name="args"/> is badly formatted.</exception>
-        /// <exception cref="IllegalOperation">When type mismatch occurs or when a static/abstract class is provided as type for instance.</exception>
-        /// <exception cref="Exception">For general unforeseen exceptions.</exception>
-        //public ParsingResult Parse<T>( string[] args )
-        //{
-        //    return Parse( args, typeof( T ) );
-        //}
+        /// <summary>
+        /// Exports the default EasyParser configuration to a file named EasyParse.cs.
+        /// Although the nested functions are not conventional, they get the job done so I'll just let them be.
+        /// </summary>
+        public static void PrintEasySetup()
+        {
+            var configCode = @"using EasyParser.Core;
+namespace MyParser
+{
+    /// <summary>
+    /// <para>
+    /// The demo <see cref=""ParseVerbs""/> class encapsulates the command-line options for the EasyParse library. 
+    /// The class name does not necessarily always have to be <see cref=""ParseVerbs""/>; it is up to you to decide the name.
+    /// Whatever the name, you need to provide it as a generic argument to <see cref=""EasyParser.EasyParse.Parse{T}(string[])""/>.
+    /// <see cref=""ParseVerbs""/> is used in conjunction with the <see cref=""VerbAttribute""/> to define verbs and their associated options.
+    /// </para>
+    /// <para>
+    /// <see cref=""MutualAttribute""/> denotes the mutual relationship between two <see cref=""OptionsAttribute""/>.
+    /// The enums <see cref=""EasyParser.Enums.MutualType""/> can be used to denote a 
+    /// <see cref=""EasyParser.Enums.MutualType.Exclusive""/> or 
+    /// <see cref=""EasyParser.Enums.MutualType.Inclusive""/> relationship between two <see cref=""OptionsAttribute""/>.
+    /// If an attribute is marked to be mutually inclusive to another attribute, then the mutual relationship takes precedence over the <see cref=""OptionsAttribute.Required""/>
+    /// property, meaning even if an attribute is set to <see cref=""OptionsAttribute.Required""/> = <see langword=""false""/> but is mentioned as a mutual attribute
+    /// to another attribute, the <see cref=""OptionsAttribute.Required""/> for that particular option will still be interpreted as being set to 
+    /// <see cref=""OptionsAttribute.Required""/> = <see langword=""true""/>.
+    /// This is particularly useful for instances where 2 entities aren't necessarily required, but if they are, they are required together.
+    /// </para>
+    /// </summary>
+    [Verb( 'a', ""add"", Required = false, HelpText = ""Add file contents to the index."" )]
+    public class ParseVerbs
+    {
+        [Options( 'r', ""read"", Default = null, Required = false, HelpText = ""Input files to be processed."", Aliases = new[] { ""reading"", ""studying"" } )]
+        [Mutual( EasyParser.Enums.MutualType.Inclusive, nameof( Count ), nameof( Stdin ) )]
+        public string? InputFile { get; set; }
+
+        [Options( 'v', ""verbose"", Default = false, Required = true, HelpText = ""Prints all messages to standard output."" )]
+        public bool Verbose { get; set; }
+
+        [Options( 's', ""stdin"", Default = false, Required = false, HelpText = ""Read from stdin"", Aliases = new[] { ""standardin"", ""stdinput"" } )]
+        public bool Stdin { get; set; }
+
+        [Options( 'c', ""count"", Default = 0, Required = false, HelpText = ""Count of verbs"", Aliases = new[] { ""length"", ""total"" } )] //Len of Aliases >=2 , else they are ignored
+        public int Count { get; set; }
+    }
+}";
+
+            string SaveConfigFile( string directory, string fileName, string content )
+            {
+                try
+                {
+                    var filePath = Path.Combine( directory, fileName );
+                    File.WriteAllText( filePath, content );
+                    return filePath;
+                }
+                catch( Exception ex )
+                {
+                    Console.WriteLine( $"Unable to save file in {directory}. Error: {ex.Message}" );
+                    return null;
+                }
+            }
+
+            string GetWritableDirectory()
+            {
+                var entryAssembly = Assembly.GetEntryAssembly();
+                if( entryAssembly == null )
+                {
+                    Console.WriteLine( "Unable to determine the entry assembly." );
+                    return Directory.GetCurrentDirectory();
+                }
+
+                var currentDirectory = Path.GetDirectoryName( entryAssembly.Location );
+                if( currentDirectory == null )
+                {
+                    Console.WriteLine( "Unable to determine the current directory." );
+                    return Directory.GetCurrentDirectory();
+                }
+
+                for( int i = 0; i < 3; i++ )
+                {
+                    try
+                    {
+                        var parentDirectory = Directory.GetParent( currentDirectory )?.FullName;
+                        if( parentDirectory == null )
+                        {
+                            Console.WriteLine( $"Reached the root directory. Using current directory: {currentDirectory}" );
+                            break;
+                        }
+
+                        // Test if we can write to this directory
+                        var testFile = Path.Combine( parentDirectory, "test_write_permission.tmp" );
+                        File.WriteAllText( testFile, "test" );
+                        File.Delete( testFile );
+
+                        currentDirectory = parentDirectory;
+                    }
+                    catch( Exception ex )
+                    {
+                        Console.WriteLine( $"Cannot access or write to parent directory. Using current directory: {currentDirectory}. Error: {ex.Message}" );
+                        break;
+                    }
+                }
+
+                return currentDirectory;
+            }
+
+            var projectDirectory = GetWritableDirectory();
+            Console.WriteLine( $"Using directory: {projectDirectory}" );
+
+            var savedFilePath = SaveConfigFile( projectDirectory, "EasyParseOptions.cs", configCode );
+
+            if( savedFilePath != null )
+            {
+                Console.WriteLine( $"Configuration code has been saved to: {savedFilePath}" );
+            }
+            else
+            {
+                Console.WriteLine( "Failed to save the configuration file." );
+            }
+        }
+
     }
 }
