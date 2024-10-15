@@ -156,7 +156,7 @@ namespace EasyParser
         /// Exports the default EasyParser configuration to a file named EasyParse.cs.
         /// Although the nested functions are not conventional, they get the job done so I'll just let them be.
         /// </summary>
-        public static void PrintEasySetup()
+        public static void ExportDefaultConfig()
         {
             var configCode = @"using EasyParser.Core;
 namespace MyParser
@@ -173,8 +173,8 @@ namespace MyParser
     /// The enums <see cref=""EasyParser.Enums.MutualType""/> can be used to denote a 
     /// <see cref=""EasyParser.Enums.MutualType.Exclusive""/> or 
     /// <see cref=""EasyParser.Enums.MutualType.Inclusive""/> relationship between two <see cref=""OptionsAttribute""/>.
-    /// If an attribute is marked to be mutually inclusive to another attribute, then the mutual relationship takes precedence over the <see cref=""OptionsAttribute.Required""/>
-    /// property, meaning even if an attribute is set to <see cref=""OptionsAttribute.Required""/> = <see langword=""false""/> but is mentioned as a mutual attribute
+    /// If a property is marked to be mutually inclusive to another property, then the mutual relationship takes precedence over the <see cref=""OptionsAttribute.Required""/>
+    /// property, meaning even if an attribute is set to <see cref=""OptionsAttribute.Required""/> = <see langword=""false""/> but is mentioned as a mutually inclusive attribute
     /// to another attribute, the <see cref=""OptionsAttribute.Required""/> for that particular option will still be interpreted as being set to 
     /// <see cref=""OptionsAttribute.Required""/> = <see langword=""true""/>.
     /// This is particularly useful for instances where 2 entities aren't necessarily required, but if they are, they are required together.
@@ -196,6 +196,26 @@ namespace MyParser
         [Options( 'c', ""count"", Default = 0, Required = false, HelpText = ""Count of verbs"", Aliases = new[] { ""length"", ""total"" } )] //Len of Aliases >=2 , else they are ignored
         public int Count { get; set; }
     }
+    
+    /// <summary>
+    /// Entry Point of an application.
+    /// </summary>
+    /// <param name=""args""></param>
+    //public static void Main( string[] args )
+    //{
+        //LogLevel.BackTrace cannot be set by the users; levels => Debug, Info, Warning, Error, Critical, None
+        //var parser = new EasyParse( LogLevel.Debug, false );
+        //var parsingResult = parser.Parse<ParseVerbs>( args );
+        //if( parsingResult.Success )
+        //{
+            // do something
+        //}
+        //else
+        //{
+            // do something
+            // Console.WriteLine( parsingResult.ErrorMessage );
+        //}
+    //}
 }";
 
             string SaveConfigFile( string directory, string fileName, string content )

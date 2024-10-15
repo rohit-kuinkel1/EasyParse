@@ -37,21 +37,25 @@ namespace Program
      */
     public static class Program
     {
+        /// <summary>
+        /// Entry Point of an application.
+        /// </summary>
+        /// <param name="args"></param>
         public static void Main( string[] args )
         {
             //var args1 = new[] { "add", "--read", "Help.txt Ferrari Car", "--verbose", "True", "--stdin", "TRUE", "--count", "210" };
 
-            EasyParse.PrintEasySetup();
-            //var parser = new EasyParse( LogLevel.BackTrace );
-            //var parsingResult = parser.Parse<ParseVerbs>( args );
-            //if( parsingResult.Success )
-            //{
-            //    Console.WriteLine( parsingResult.ToString() );
-            //}
-            //else
-            //{
-            //    Console.WriteLine( parsingResult.ErrorMessage );
-            //}
+            EasyParse.ExportDefaultConfig();
+            var parser = new EasyParse( LogLevel.BackTrace );
+            var parsingResult = parser.Parse<ParseVerbs>( args );
+            if( parsingResult.Success )
+            {
+                Console.WriteLine( parsingResult.ToString() );
+            }
+            else
+            {
+                Console.WriteLine( parsingResult.ErrorMessage );
+            }
 
         }
     }
