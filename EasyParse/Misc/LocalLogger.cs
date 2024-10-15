@@ -3,6 +3,7 @@ using EasyParser.Utility;
 
 namespace EasyParser
 {
+    #region enum LogLevel
     /// <summary>
     /// LogLevels for our internal logger.
     /// </summary>
@@ -49,6 +50,7 @@ namespace EasyParser
         /// </summary>
         None,
     }
+    #endregion
 
     /// <summary>
     /// Internal logger for <see cref="EasyParse"/>
@@ -61,9 +63,22 @@ namespace EasyParser
         /// </summary>
         private static LogLevel _minLogLevel;
 
+        /// <summary>
+        /// Represents the padding for the log messages.
+        /// </summary>
+        private static readonly int Padding = 10;
+
+        /// <summary>
+        /// Represents the current Time in string format.
+        /// </summary>
+        internal static readonly string TimeNowString = DateTime.Now.ToString( "MM/dd/yyyy HH:mm:ss.fffff" );
+
+        /// <summary>
+        /// default static constructor for <see cref="Logger"/>.
+        /// Access specifiers arent allowed for static constructors, hence omitted.
+        /// </summary>
         static Logger()
         {
-            // Set the default minimum log level to Debug.
             _minLogLevel = LogLevel.Debug;
         }
 
@@ -75,12 +90,12 @@ namespace EasyParser
         {
             //if( minLogLevel > LogLevel.BackTrace )
             //{
-                _minLogLevel = minLogLevel;
+            _minLogLevel = minLogLevel;
             //}
             //else 
             //{
             //     Logger.Debug( "Cannot set LogLevel.BackTrace for external usage" );
-                //_minLogLevel = LogLevel.Debug;
+            //_minLogLevel = LogLevel.Debug;
             //}
         }
 
@@ -89,7 +104,7 @@ namespace EasyParser
         /// </summary>
         /// <param name="level">The log level of the message.</param>
         /// <param name="message">The message to log.</param>
-        internal static void Log( LogLevel level, string message )
+        internal static void Log( LogLevel level, string? message )
         {
             // If the log level is lower than the minimum set log level, do not log the message.
             if( level < _minLogLevel )
@@ -97,9 +112,9 @@ namespace EasyParser
                 return;
             }
 
-            var timestamp = DateTime.Now.ToString( "MM/dd/yyyy HH:mm:ss.fffff" );
-            var logLevelString = level.ToString().ToUpper().PadRight( 10 );
-            var coloredMessage = GetColoredMessage( level, $"[{timestamp}] {EasyParseException.Prefix} {logLevelString}: {message}" );
+            var safeMessage = string.IsNullOrEmpty( message ) ? "" : message;
+            var logLevelString = level.ToString().ToUpper().PadRight( Padding );
+            var coloredMessage = GetColoredMessage( level, $"[{TimeNowString}] {EasyParseException.Prefix} {logLevelString}: {safeMessage}" );
             Console.WriteLine( coloredMessage );
         }
 
@@ -109,18 +124,17 @@ namespace EasyParser
         /// <param name="level">The log level associated with the message.</param>
         /// <param name="message">The message to color.</param>
         /// <returns>A colored string representation of the message.</returns>
-        private static string GetColoredMessage( LogLevel level, string? message )
+        private static string GetColoredMessage( LogLevel level, string message )
         {
-            var safeMessage = message ?? "";
             return level switch
             {
-                LogLevel.BackTrace => $"\u001b[38;2;54;69;79m{safeMessage}\u001b[0m", // Gray
-                LogLevel.Debug => $"\u001b[37m{safeMessage}\u001b[0m", // White
-                LogLevel.Info => $"\u001b[32m{safeMessage}\u001b[0m", // Green
-                LogLevel.Warning => $"\u001b[33m{safeMessage}\u001b[0m", // Yellow
-                LogLevel.Error => $"\u001b[35m{safeMessage}\u001b[0m", // Magenta
-                LogLevel.Critical => $"\u001b[1;37;41m{safeMessage}\u001b[0m", // Bold white text on red background for Critical
-                _ => safeMessage
+                LogLevel.BackTrace => $"\u001b[38;2;54;69;79m{message}\u001b[0m", // Gray
+                LogLevel.Debug => $"\u001b[37m{message}\u001b[0m", // White
+                LogLevel.Info => $"\u001b[32m{message}\u001b[0m", // Green
+                LogLevel.Warning => $"\u001b[33m{message}\u001b[0m", // Yellow
+                LogLevel.Error => $"\u001b[35m{message}\u001b[0m", // Magenta
+                LogLevel.Critical => $"\u001b[1;37;41m{message}\u001b[0m", // Bold white text on red background for Critical
+                _ => message
             };
         }
 
@@ -136,7 +150,7 @@ namespace EasyParser
         /// </summary>
         /// <param name="message">The message to log.</param>
         internal static void Debug( string? message ) => Log( LogLevel.Debug, message );
-        
+
         /// <summary>
         /// Logs an Info level message.
         /// </summary>

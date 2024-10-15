@@ -12,7 +12,6 @@
         /// <inheritdoc/>
         /// </summary>
         /// <param name="args"></param>
-        /// <param name="type"></param>
         public ParsingResult<T> Parse<T>( string[] args ) where T : new()
         {
             return null;
