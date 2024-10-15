@@ -2,7 +2,7 @@
   "profiles": {
     "EasyParseUseCase": {
       "commandName": "Project",
-      "commandLineArgs": "add --reading Help.txt Ferrari Car --verbose True --stdin TRUE --count 20"
+      "commandLineArgs": "add --reading Help.txt Ferrari Car --verbose True --count 20 --stdin TRUE"
     }
   }
 }

@@ -210,7 +210,7 @@ namespace EasyParser.Parsing
                         // Validate mutual relationships after parsing
                         if( !ValidateMutualRelationships( verbStore.Options, optionStore, parsedOptions ) )
                         {
-                            return false; 
+                            return false;
                         }
 
                         // Convert and assign value to the appropriate type
@@ -255,30 +255,29 @@ namespace EasyParser.Parsing
         {
             foreach( var mutualAttr in currentOption.MutualAttributes )
             {
-                // Find the related option based on the mutual attribute's RelatedEntity
-                var relatedOption = options.FirstOrDefault( o => o.Property.Name == mutualAttr.RelatedEntity );
-
-                if( relatedOption != null )
+                foreach( var relatedEntity in mutualAttr.RelatedEntities )
                 {
-                    // Check if the current option was provided (long name, short name, or any aliases)
-                    var isCurrentOptionProvided = IsOptionProvided( currentOption, parsedOptions );
+                    var relatedOption = options.FirstOrDefault( o => o.Property.Name == relatedEntity );
 
-                    // Check if the related option was provided (long name, short name, or any aliases)
-                    var isRelatedOptionProvided = IsOptionProvided( relatedOption, parsedOptions );
+                    if( relatedOption != null )
+                    {
+                        var isCurrentOptionProvided = IsOptionProvided( currentOption, parsedOptions );
+                        var isRelatedOptionProvided = IsOptionProvided( relatedOption, parsedOptions );
 
-                    // Validate inclusive relationship (both options must be provided)
-                    if( mutualAttr.RelationshipType == MutualType.Inclusive && ( isCurrentOptionProvided ^ isRelatedOptionProvided ) )
-                    {
-                        Logger.Critical( $"Options '{currentOption.OptionsAttribute.LongName}' and '{relatedOption.OptionsAttribute.LongName}' " +
-                                         $"are mutually inclusive to each other. Both must be provided at the same time." );
-                        return false;
-                    }
-                    // Validate exclusive relationship (only one option can be provided)
-                    else if( mutualAttr.RelationshipType == MutualType.Exclusive && ( isCurrentOptionProvided && isRelatedOptionProvided ) )
-                    {
-                        Logger.Critical( $"Options '{currentOption.OptionsAttribute.LongName}' and '{relatedOption.OptionsAttribute.LongName}' " +
-                                         $"are mutually exclusive to each other. Only one can be provided at a given time." );
-                        return false;
+                        // Validate inclusive relationship
+                        if( mutualAttr.RelationshipType == MutualType.Inclusive && ( isCurrentOptionProvided ^ isRelatedOptionProvided ) )
+                        {
+                            Logger.Critical( $"Options '{currentOption.OptionsAttribute.LongName}' and '{relatedOption.OptionsAttribute.LongName}' " +
+                                             $"are mutually inclusive to each other. Both must be provided at the same time." );
+                            return false;
+                        }
+                        // Validate exclusive relationship
+                        else if( mutualAttr.RelationshipType == MutualType.Exclusive && ( isCurrentOptionProvided && isRelatedOptionProvided ) )
+                        {
+                            Logger.Critical( $"Options '{currentOption.OptionsAttribute.LongName}' and '{relatedOption.OptionsAttribute.LongName}' " +
+                                             $"are mutually exclusive to each other. Only one can be provided at a given time." );
+                            return false;
+                        }
                     }
                 }
             }

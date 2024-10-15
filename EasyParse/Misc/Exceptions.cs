@@ -25,7 +25,7 @@ namespace EasyParser.Utility
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         public EasyParseException( string message )
-            : base( message )
+            : base( $"{nameof( EasyParseException )} {message}" )
         {
         }
 
@@ -36,8 +36,7 @@ namespace EasyParser.Utility
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
         public EasyParseException(
             string message,
-            Exception innerException
-            )
+            Exception innerException )
             : base( message, innerException )
         {
         }
@@ -53,7 +52,7 @@ namespace EasyParser.Utility
         /// </summary>
         /// <param name="message">The error message.</param>
         public NullException( string message )
-            : base( message )
+            : base( $"{nameof( EasyParseException )} {message}" )
         {
         }
 
@@ -72,9 +71,8 @@ namespace EasyParser.Utility
         /// <param name="type"></param>
         public NullException(
             string message,
-            Type type
-            )
-            : base( string.Concat( Prefix, message, $" Type: {type}" ) )
+            Type type )
+            : base( $"{Prefix} {nameof(NullException)}, Type:{type} {message} " )
         {
         }
 
@@ -87,7 +85,7 @@ namespace EasyParser.Utility
             string message,
             Exception innerException
             )
-            : base( $"{Prefix} {message}", innerException )
+            : base( $"{Prefix} {nameof(NullException)}, {message}", innerException )
         {
         }
     }
@@ -101,7 +99,7 @@ namespace EasyParser.Utility
         /// Initializes a new instance of the <see cref="InvalidValueException"/> class.
         /// </summary>
         public InvalidValueException()
-            : base( $"{Prefix} The provided value is invalid." )
+            : base( $"{Prefix} {nameof(InvalidValueException)}, The provided value is invalid." )
         {
         }
 
@@ -110,7 +108,7 @@ namespace EasyParser.Utility
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         public InvalidValueException( string message )
-            : base( $"{Prefix} {message}" )
+            : base( $"{Prefix} {nameof( InvalidValueException )} {message}" )
         {
         }
 
@@ -123,7 +121,7 @@ namespace EasyParser.Utility
             string message,
             Exception innerException
             )
-            : base( $"{Prefix} {message}", innerException )
+            : base( $"{Prefix} {nameof(InvalidValueException)}, {message}", innerException )
         {
         }
 
@@ -138,7 +136,7 @@ namespace EasyParser.Utility
             Exception innerException,
             object invalidValue
             )
-            : base( $"{Prefix} {message} Invalid value type: {invalidValue.GetType().Name}", innerException )
+            : base( $"{Prefix} {nameof(InvalidValueException)}, {message} Invalid value type: {invalidValue.GetType().Name}", innerException )
         {
         }
     }
@@ -153,7 +151,7 @@ namespace EasyParser.Utility
         /// Initializes a new instance of the <see cref="IllegalOperation"/> class.
         /// </summary>
         public IllegalOperation()
-            : base( $"{Prefix} Cannot continue because of a fatal operation." )
+            : base( $"{Prefix} {nameof(IllegalOperation)}, Cannot continue because of a fatal operation." )
         {
         }
 
@@ -162,7 +160,7 @@ namespace EasyParser.Utility
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         public IllegalOperation( string message )
-            : base( $"{Prefix} {message}" )
+            : base( $"{Prefix} {nameof( IllegalOperation )}, {message}" )
         {
         }
 
@@ -175,7 +173,7 @@ namespace EasyParser.Utility
             string message,
             Exception innerException
             )
-            : base( $"{Prefix} {message}", innerException )
+            : base( $"{Prefix} {nameof( IllegalOperation )}, {message}", innerException )
         {
         }
     }
@@ -190,7 +188,7 @@ namespace EasyParser.Utility
         /// Initializes a new instance of the <see cref="BadFormatException"/> class.
         /// </summary>
         public BadFormatException()
-            : base( $"{Prefix} Argument did not match the expected structure." )
+            : base( $"{Prefix} {nameof( BadFormatException )}, Argument did not match the expected structure." )
         {
         }
 
@@ -199,7 +197,7 @@ namespace EasyParser.Utility
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         public BadFormatException( string message )
-            : base( $"{Prefix} {message}" )
+            : base( $"{Prefix} {nameof( BadFormatException )}, {message}" )
         {
         }
 
@@ -212,7 +210,7 @@ namespace EasyParser.Utility
             string message,
             Exception innerException
             )
-            : base( $"{Prefix} {message}", innerException )
+            : base( $"{Prefix} {nameof( BadFormatException )}, {message}", innerException )
         {
         }
     }
@@ -226,7 +224,7 @@ namespace EasyParser.Utility
         /// Initializes a new instance of the <see cref="DeserializationException"/> class.
         /// </summary>
         public DeserializationException()
-            : base( $"{Prefix} Failed to deserialize an object." )
+            : base( $"{Prefix} {nameof( DeserializationException )}, Failed to deserialize an object." )
         {
         }
 
@@ -235,7 +233,7 @@ namespace EasyParser.Utility
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         public DeserializationException( string message )
-            : base( $"{Prefix} {message}" )
+            : base( $"{Prefix} {nameof( DeserializationException )}, {message}" )
         {
         }
 
@@ -248,7 +246,7 @@ namespace EasyParser.Utility
             string message,
             Exception innerException
             )
-            : base( $"{Prefix} {message}", innerException )
+            : base( $"{Prefix} {nameof(DeserializationException)}, {message}", innerException )
         {
         }
     }
@@ -262,7 +260,7 @@ namespace EasyParser.Utility
         /// Initializes a new instance of the <see cref="InvalidFileFormat"/> class.
         /// </summary>
         public InvalidFileFormat()
-            : base( $"{Prefix} Cannot continue because of an invalid file format." )
+            : base( $"{Prefix} {nameof(InvalidFileFormat)}, Cannot continue because of an invalid file format." )
         {
         }
 
@@ -271,7 +269,7 @@ namespace EasyParser.Utility
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         public InvalidFileFormat( string message )
-            : base( $"{Prefix} {message}" )
+            : base( $"{Prefix} {nameof( InvalidFileFormat )} {message}" )
         {
         }
 
@@ -284,7 +282,7 @@ namespace EasyParser.Utility
             string message,
             Exception innerException
             )
-            : base( $"{Prefix} {message}", innerException )
+            : base( $"{Prefix} {nameof(InvalidFileFormat)}, {message}", innerException )
         {
         }
     }

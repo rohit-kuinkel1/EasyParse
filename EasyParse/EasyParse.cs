@@ -71,11 +71,14 @@ namespace EasyParser
 
         /// <summary>
         /// Parameterized Constructor for <see cref="EasyParse"/>.
+        /// Set the <paramref name="minLogLevel"/> to the desired minimum logLevel.
+        /// Set the <paramref name="redirectLogsToFile"/> to <see langword="true"/> if you want to redirect all the logs
+        /// from <see cref="EasyParse"/> to a log file.
         /// <see cref="LogLevel.BackTrace"/> cannot be set by users.
         /// </summary>
-        public EasyParse( LogLevel logLevel = LogLevel.Info, bool redirectLogsToFile = false )
+        public EasyParse( LogLevel minLogLevel = LogLevel.Info, bool redirectLogsToFile = false )
         {
-            Logger.Initialize( logLevel, redirectLogsToFile );
+            Logger.Initialize( minLogLevel, redirectLogsToFile );
         }
 
         /// <summary>
@@ -123,8 +126,8 @@ namespace EasyParser
                 }
                 else
                 {
-                    throw new BadFormatException( "Invalid structure for input args. Reserved keywords were detected for standard parsing. " +
-                        "Please refrain from mixing natural language and standard language format and try again." );
+                    throw new BadFormatException( "Invalid structure for input args. Reserved keywords were detected to have been" +
+                        "used for standard parsing. Please refrain from mixing natural language and standard language format and try again." );
                 }
 
                 // Call the appropriate Parse method and return the result

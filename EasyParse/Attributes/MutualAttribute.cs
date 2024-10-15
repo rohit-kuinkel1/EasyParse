@@ -28,7 +28,7 @@ namespace EasyParser.Core
         /// <summary>
         /// The name of the entity that is part of the mutual relationship.
         /// </summary>
-        public string RelatedEntity { get; }
+        public string[] RelatedEntities { get; }
 
         /// <summary>
         /// The type of mutual relationship.
@@ -41,14 +41,11 @@ namespace EasyParser.Core
         /// Initializes a new instance of the <see cref="MutualAttribute"/> class.
         /// </summary>
         /// <param name="relationshipType">The type of mutual relationship.</param>
-        /// <param name="relatedEntity">The name of the related option or verb.</param>
-        public MutualAttribute(
-            MutualType relationshipType,
-            string relatedEntity
-        )
-            : base( string.Empty, Array.Empty<string>() ) //array.empty<T>() is slightly better than [] in terms of performance
+        /// <param name="relatedEntities">The names of the related options or verb.</param>
+        public MutualAttribute( MutualType relationshipType, params string[] relatedEntities )
+        : base( string.Empty, Array.Empty<string>() )
         {
-            RelatedEntity = relatedEntity;
+            RelatedEntities = relatedEntities;
             RelationshipType = relationshipType;
         }
     }

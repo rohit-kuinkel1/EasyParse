@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace EasyParser.Parsing
+﻿namespace EasyParser.Parsing
 {
     /// <summary>
     /// contract for all the parsers to follow
