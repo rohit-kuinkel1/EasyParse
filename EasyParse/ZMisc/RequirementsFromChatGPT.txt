@@ -1,0 +1,25 @@
+Default Configuration Export: Ability to export a default configuration file programmatically.
+Verb Attribute: Use of a [Verb] attribute to define main command actions.
+Options Attribute: Define options using [Options] for each verb, with support for default values, required fields, and aliases.
+Mutual Attribute: Support mutual inclusivity/exclusivity between options using [Mutual] for logical relationships.
+Help Text: Automatic generation of help text from attributes for each verb and option.
+Aliases for Options: Allow multiple aliases for options (minimum length for aliases to be configurable).
+Log Level Control: Granular logging levels (Debug, Info, Warning, Error, etc.) for detailed feedback and debugging.
+Error Handling: Return meaningful error messages for invalid input or missing options.
+Parsing Results Object: Structured parsing result that returns Success, ErrorMessage, and the parsed object.
+Custom Error Message Hooks: Ability to provide custom error messages for different types of failures.
+Case Insensitivity: Support for case-insensitive command-line argument parsing.
+Default Values for Options: Auto-populate options with default values if not provided by the user.
+Strict Mode: A mode where only defined options are allowed, rejecting any unknown arguments.
+Loose Mode: A mode where unknown arguments are ignored and only known arguments are parsed.
+Command Grouping: Allow the grouping of related commands under a specific group for better command management.
+Stdin Support: Support for reading input directly from stdin when specified by an option.
+Customizable Usage Instructions: Allow users to customize the help text and usage instructions output.
+Option Parsing by Index: Support for positional argument parsing, in addition to option-based parsing.
+Default Logging Options: Predefined logging levels with easy toggles for verbose or silent modes.
+Enum Option Parsing: Support for parsing command-line options as enums, making predefined lists easier to manage.
+Deserialization to Custom Objects: Parse directly into custom objects or data structures.
+Required Options Enforcement: Ensure required options are enforced strictly, with clear error messages if missing.
+Multi-level Verb Nesting: Support for nested verbs, allowing complex CLI applications to have multi-level commands.
+Type Inference for Options: Automatic type inference for options (e.g., integer, boolean, string).
+Multiple Verb Support: Allow the user to define and parse multiple verbs in one command-line input.
