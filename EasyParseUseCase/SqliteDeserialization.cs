@@ -2,7 +2,7 @@
 using System.IO.Compression;
 using System.Numerics;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace VR_Koni.ResultGraph
 {
@@ -52,6 +52,7 @@ namespace VR_Koni.ResultGraph
                     //this will implicitly always be Tuple<float,float> in our case, just because of the way its stored in the DB
                     object decompressedData = DecompressData( compressedBytes );
                     List<T> processedData = ProcessDecompressedData( decompressedData );
+
                     cuttingData.AddRange( processedData );
 
                     if( sanitizeData )
@@ -83,10 +84,15 @@ namespace VR_Koni.ResultGraph
         /// <param name="data">The data to serialize and write.</param>
         public void WriteDataToJsonFile( List<T>? data, string outputFilePath = "output.json" )
         {
-            Container<T> container = new() { CuttingData = data };
-            JsonSerializerOptions jsonOptions = new() { WriteIndented = true };
+            //foreach( T t in data )
+            //{
+            //    Console.WriteLine( t?.ToString() );
+            //}
 
-            string jsonString = JsonSerializer.Serialize( container, jsonOptions );
+            Container<T> container = new() { CuttingData = data };
+
+            string jsonString = JsonConvert.SerializeObject( container, Formatting.Indented );
+            //Console.WriteLine( jsonString );
             File.WriteAllText( outputFilePath, jsonString );
 
             Console.WriteLine( $"Wrote to JSON File: {outputFilePath}..." );
@@ -123,32 +129,24 @@ namespace VR_Koni.ResultGraph
         {
             Type targetType = typeof( T );
 
-            if( data is List<Tuple<float, float>> tupleList )
+            return data switch
             {
-                if( targetType == typeof( Vector2 ) )
-                {
-                    return tupleList.Select( t => (T)(object)new Vector2( t.Item1, t.Item2 ) ).ToList();
-                }
-                else if( targetType == typeof( Tuple<float, float> ) )
-                {
-                    return tupleList.Select( t => (T)(object)t ).ToList();
-                }
-            }
-            else if( data is List<Vector2> vectorList )
-            {
-                if( targetType == typeof( Tuple<float, float> ) )
-                {
-                    return vectorList.Select( v => (T)(object)Tuple.Create( v.X, v.Y ) ).ToList();
-                }
-                else if( targetType == typeof( Vector2 ) )
-                {
-                    return vectorList.Select( v => (T)(object)v ).ToList();
-                }
-            }
+                List<Tuple<float, float>> tupleList when targetType == typeof( Vector2 ) =>
+                    tupleList.Select( t => (T)(object)new Vector2( t.Item1, t.Item2 ) ).ToList(),
 
-            throw new InvalidCastException(
-                $"Cannot convert from {data.GetType()} to List<{typeof( T )}>. " +
-                "Supported types are Vector2 and Tuple<float, float>." );
+                List<Tuple<float, float>> tupleList when targetType == typeof( Tuple<float, float> ) =>
+                    tupleList.Select( t => (T)(object)t ).ToList(),
+
+
+                List<Vector2> vectorList when targetType == typeof( Tuple<float, float> ) =>
+                    vectorList.Select( v => (T)(object)Tuple.Create( v.X, v.Y ) ).ToList(),
+
+                List<Vector2> vectorList when targetType == typeof( Vector2 ) =>
+                    vectorList.Select( v => (T)(object)v ).ToList(),
+
+                _ => throw new InvalidCastException( $"Cannot convert from {data.GetType()} to List<{typeof( T )}>. " +
+                        "Supported types as of now are Vector2 and Tuple<float, float>." )
+            };
         }
 
         /// <summary>
@@ -172,14 +170,14 @@ namespace VR_Koni.ResultGraph
         public static void Main()
         {
 
-            Decompressor<Vector2> d = new();
+            //Decompressor<Vector2> d = new();
 
-            //Decompressor<Tuple<float, float>> d = new();
+            Decompressor<Tuple<float, float>> d = new();
 
             string sqliteFilePath = @"C:\Users\kuike\Downloads\wetransfer_surgery-data_2024-10-25_1601\Surgery_Data\koni.sqlite";
 
-            List<Vector2>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
-           // List<Tuple<float, float>>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
+            //List<Vector2>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
+             List<Tuple<float, float>>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
             d.WriteDataToJsonFile( cuttingData, "dump1.json" );
 
         }
