@@ -1,4 +1,5 @@
 ﻿using System.Data.SQLite;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Numerics;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -72,6 +73,11 @@ namespace VR_Koni.ResultGraph
             catch( SQLiteException ex )
             {
                 Console.WriteLine( $"SQLite Error: {ex.Message}" );
+                Console.WriteLine( ex.StackTrace );
+            }
+            catch( JsonException ex )
+            {
+                Console.WriteLine( $"JSON Parsing Error: {ex.Message}" );
                 Console.WriteLine( ex.StackTrace );
             }
             catch( Exception ex )
