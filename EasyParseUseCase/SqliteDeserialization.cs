@@ -1,51 +1,39 @@
 ﻿using System.Data.SQLite;
 using System.IO.Compression;
+using System.Numerics;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.Json;
 
 namespace VR_Koni.ResultGraph
 {
     /// <summary>
-    /// <see cref="Decompressor"/> is responsible for handling the extraction and conversion of 
-    /// the compressed data stored in the sqlite file into a structured dataset like a list of tuples.
+    /// <see cref="Decompressor{T}"/> is responsible for handling the extraction and conversion of 
+    /// the compressed data stored in the SQLite file into a structured dataset like a list of tuples.
     /// Ensure that <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization> is set in .csproj to use BinaryFormatter.
     /// </summary>
-    public static class Decompressor
+    public class Decompressor<T>
     {
         private const string DefaultQuery = @"SELECT depthData FROM surgery";
         private static readonly int DuplicateCountTolerance = 3;
 
         /// <summary>
-        /// dummy entry point
-        /// </summary>
-        public static void Main()
-        {
-            string sqliteFilePath = @"C:\Users\kuike\Downloads\wetransfer_surgery-data_2024-10-25_1601\Surgery_Data\koni.sqlite";
-
-            List<Tuple<float, float>>? cuttingData = DecompressDataFromSQLite<List<Tuple<float, float>>>( sqliteFilePath, sanitizeData: true );
-
-            WriteDataToJsonFile( "dump2.json", cuttingData );
-        }
-
-        /// <summary>
-        /// Decompresses the x64 string from the specified SQLite file and returns it as a 
-        /// specified type T. This method also provides an option to sanitize 
+        /// Decompresses the x64 string from the specified SQLite file and returns it as 
+        /// the specified type T. This method also provides an option to sanitize 
         /// the data by limiting duplicate consecutive values for which the threshold is 
         /// defined in <see cref="DuplicateCountTolerance"/>
         /// </summary>
-        /// <typeparam name="T">The type of the data to return.</typeparam>
         /// <param name="sqliteFileName">The path to the SQLite file.</param>
         /// <param name="query">The SQL query to execute for data retrieval.</param>
         /// <param name="sanitizeData">A flag indicating whether to sanitize the data, taking tolerance as <see cref="DuplicateCountTolerance"/>.</param>
-        /// <returns>An object of type T representing the decompressed data.</returns>
+        /// <returns>A list of type T representing the decompressed data.</returns>
         /// <exception cref="SQLiteException"></exception>
         /// <exception cref="Exception"></exception>
-        public static T? DecompressDataFromSQLite<T>(
+        public List<T>? DecompressDataFromSQLite(
             string sqliteFileName,
             string query = DefaultQuery,
             bool sanitizeData = true )
         {
-            T? cuttingData = default;
+            List<T>? cuttingData = new();
             try
             {
                 string connectionString = $"Data Source={sqliteFileName};Version=3;";
@@ -61,7 +49,8 @@ namespace VR_Koni.ResultGraph
                     string compressedBase64 = reader.GetString( 0 );
                     byte[] compressedBytes = Convert.FromBase64String( compressedBase64 );
 
-                    cuttingData = (T)DecompressData( compressedBytes );
+                    T dataItem = (T) DecompressData( compressedBytes );
+                    cuttingData.Add( dataItem );
 
                     if( sanitizeData )
                     {
@@ -84,17 +73,15 @@ namespace VR_Koni.ResultGraph
         }
 
         /// <summary>
-        /// Serializes the provided List of Tuple<float, float> data to JSON format 
+        /// Serializes the provided data to JSON format 
         /// and writes it to the specified output file path. This allows for easy 
         /// storage and sharing of the decompressed data.
         /// </summary>
         /// <param name="outputFilePath">The path to the output JSON file.</param>
-        /// <param name="data">The List of Tuple<float, float> to serialize and write.</param>
-        public static void WriteDataToJsonFile(
-            string outputFilePath,
-            List<Tuple<float, float>>? data )
+        /// <param name="data">The data to serialize and write.</param>
+        public void WriteDataToJsonFile( List<T>? data, string outputFilePath = "output.json" )
         {
-            Container container = new() { CuttingData = data };
+            Container<T> container = new() { CuttingData = data };
             JsonSerializerOptions jsonOptions = new() { WriteIndented = true };
 
             string jsonString = JsonSerializer.Serialize( container, jsonOptions );
@@ -110,7 +97,7 @@ namespace VR_Koni.ResultGraph
         /// </summary>
         /// <param name="compressedBytes">The byte array containing compressed data.</param>
         /// <returns>The deserialized object from the compressed data.</returns>
-        private static object DecompressData( byte[] compressedBytes )
+        private object DecompressData( byte[] compressedBytes )
         {
             using MemoryStream compressedStream = new MemoryStream( compressedBytes );
             using MemoryStream decompressedStream = new MemoryStream();
@@ -131,9 +118,33 @@ namespace VR_Koni.ResultGraph
         /// A simple container class for holding cutting data. This is used to 
         /// facilitate JSON serialization by encapsulating the list of tuples.
         /// </summary>
-        public class Container
+        public class Container<TT>
         {
-            public object? CuttingData { get; set; }
+            /// <summary>
+            /// Container.
+            /// </summary>
+            public List<TT>? CuttingData { get; set; }
+        }
+    }
+
+    public static class Program
+    {
+        /// <summary>
+        /// Dummy entry point
+        /// </summary>
+        public static void Main()
+        {
+
+            //Decompressor<Vector2> d = new();
+
+            Decompressor<Tuple<float,float>> d = new();
+
+            string sqliteFilePath = @"C:\Users\kuike\Downloads\wetransfer_surgery-data_2024-10-25_1601\Surgery_Data\koni.sqlite";
+
+            //List<Vector2>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
+            List<Tuple<float, float>>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
+            d.WriteDataToJsonFile( cuttingData, "dump1.json" );
+
         }
     }
 }
