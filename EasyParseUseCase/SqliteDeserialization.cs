@@ -177,15 +177,23 @@ namespace VR_Koni.ResultGraph
         /// </summary>
         public static void Main()
         {
+            string sqliteFilePath = @"C:\Users\kuike\Downloads\wetransfer_surgery-data_2024-10-25_1601\Surgery_Data\koni.sqlite";
 
             //Decompressor<Vector2> d = new();
-
             Decompressor<Tuple<float, float>> d = new();
-
-            string sqliteFilePath = @"C:\Users\kuike\Downloads\wetransfer_surgery-data_2024-10-25_1601\Surgery_Data\koni.sqlite";
 
             //List<Vector2>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
             List<Tuple<float, float>>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
+
+            // DataPoints<Vector2> dp = new DataPoints<Vector2>( dummyPoints );
+            // Console.WriteLine(dp.ToString());
+
+            // Vector2 mt = dp.GetMinMaxTime();
+            // Console.WriteLine($"{mt.x}, {mt.y}");
+
+            // Vector2 md = dp.GetMinMaxDepth();
+            // Console.WriteLine($"{mt.x}, {mt.y}");
+
             d.WriteDataToJsonFile( cuttingData, "dump1.json" );
 
         }
