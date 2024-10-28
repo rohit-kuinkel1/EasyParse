@@ -5,7 +5,14 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.119" />
+      <PackageReference Include="System.Runtime.Serialization.Formatters" Version="9.0.0-preview.6.24327.7" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EasyParse\EasyParse.csproj" />
