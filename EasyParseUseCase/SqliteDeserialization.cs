@@ -49,8 +49,10 @@ namespace VR_Koni.ResultGraph
                     string compressedBase64 = reader.GetString( 0 );
                     byte[] compressedBytes = Convert.FromBase64String( compressedBase64 );
 
-                    T dataItem = (T) DecompressData( compressedBytes );
-                    cuttingData.Add( dataItem );
+                    //this will implicitly always be Tuple<float,float> in our case, just because of the way its stored in the DB
+                    object decompressedData = DecompressData( compressedBytes );
+                    List<T> processedData = ProcessDecompressedData( decompressedData );
+                    cuttingData.AddRange( processedData );
 
                     if( sanitizeData )
                     {
@@ -115,6 +117,41 @@ namespace VR_Koni.ResultGraph
         }
 
         /// <summary>
+        /// Processes the decompressed data and converts it to the target type if necessary.
+        /// </summary>
+        private static List<T> ProcessDecompressedData( object data )
+        {
+            Type targetType = typeof( T );
+
+            if( data is List<Tuple<float, float>> tupleList )
+            {
+                if( targetType == typeof( Vector2 ) )
+                {
+                    return tupleList.Select( t => (T)(object)new Vector2( t.Item1, t.Item2 ) ).ToList();
+                }
+                else if( targetType == typeof( Tuple<float, float> ) )
+                {
+                    return tupleList.Select( t => (T)(object)t ).ToList();
+                }
+            }
+            else if( data is List<Vector2> vectorList )
+            {
+                if( targetType == typeof( Tuple<float, float> ) )
+                {
+                    return vectorList.Select( v => (T)(object)Tuple.Create( v.X, v.Y ) ).ToList();
+                }
+                else if( targetType == typeof( Vector2 ) )
+                {
+                    return vectorList.Select( v => (T)(object)v ).ToList();
+                }
+            }
+
+            throw new InvalidCastException(
+                $"Cannot convert from {data.GetType()} to List<{typeof( T )}>. " +
+                "Supported types are Vector2 and Tuple<float, float>." );
+        }
+
+        /// <summary>
         /// A simple container class for holding cutting data. This is used to 
         /// facilitate JSON serialization by encapsulating the list of tuples.
         /// </summary>
@@ -135,14 +172,14 @@ namespace VR_Koni.ResultGraph
         public static void Main()
         {
 
-            //Decompressor<Vector2> d = new();
+            Decompressor<Vector2> d = new();
 
-            Decompressor<Tuple<float,float>> d = new();
+            //Decompressor<Tuple<float, float>> d = new();
 
             string sqliteFilePath = @"C:\Users\kuike\Downloads\wetransfer_surgery-data_2024-10-25_1601\Surgery_Data\koni.sqlite";
 
-            //List<Vector2>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
-            List<Tuple<float, float>>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
+            List<Vector2>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
+           // List<Tuple<float, float>>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
             d.WriteDataToJsonFile( cuttingData, "dump1.json" );
 
         }
