@@ -14,17 +14,26 @@ namespace VR_Koni.ResultGraph
     public class Decompressor<T>
     {
         private const string DefaultQuery = @"SELECT depthData FROM surgery";
-        private static readonly int DuplicateCountTolerance = 3;
+        private readonly int _duplicateCountTolerance;
+
+        /// <summary>
+        /// Parameterized constructor for <see cref="Decompressor{T}"/>
+        /// </summary>
+        /// <param name="duplicateCountTolerance"></param>
+        public Decompressor( int duplicateCountTolerance = 3 )
+        {
+            _duplicateCountTolerance = duplicateCountTolerance;
+        }
 
         /// <summary>
         /// Decompresses the x64 string from the specified SQLite file and returns it as 
         /// the specified type T. This method also provides an option to sanitize 
         /// the data by limiting duplicate consecutive values for which the threshold is 
-        /// defined in <see cref="DuplicateCountTolerance"/>
+        /// defined in <see cref="_duplicateCountTolerance"/>
         /// </summary>
         /// <param name="sqliteFileName">The path to the SQLite file.</param>
         /// <param name="query">The SQL query to execute for data retrieval.</param>
-        /// <param name="sanitizeData">A flag indicating whether to sanitize the data, taking tolerance as <see cref="DuplicateCountTolerance"/>.</param>
+        /// <param name="sanitizeData">A flag indicating whether to sanitize the data, taking tolerance as <see cref="_duplicateCountTolerance"/>.</param>
         /// <returns>A list of type T representing the decompressed data.</returns>
         /// <exception cref="SQLiteException"></exception>
         /// <exception cref="Exception"></exception>
@@ -43,18 +52,17 @@ namespace VR_Koni.ResultGraph
                 using SQLiteCommand command = new( query, connection );
                 using SQLiteDataReader reader = command.ExecuteReader();
 
-                Sanitizer? sanitizer = sanitizeData ? new( DuplicateCountTolerance ) : null;
+                Sanitizer? sanitizer = sanitizeData ? new( _duplicateCountTolerance ) : null;
                 while( reader.Read() )
                 {
                     string compressedBase64 = reader.GetString( 0 );
                     byte[] compressedBytes = Convert.FromBase64String( compressedBase64 );
 
-                    //this will implicitly always be Tuple<float,float> in our case, just because of the way its stored in the DB
+                    //this will implicitly always be List<Tuple<float,float>> in our case, just because of the way its stored in the DB
                     object decompressedData = DecompressData( compressedBytes );
                     List<T> processedData = ProcessDecompressedData( decompressedData );
 
                     cuttingData.AddRange( processedData );
-
                     if( sanitizeData )
                     {
                         sanitizer?.SanitizeData( ref cuttingData );
@@ -177,7 +185,7 @@ namespace VR_Koni.ResultGraph
             string sqliteFilePath = @"C:\Users\kuike\Downloads\wetransfer_surgery-data_2024-10-25_1601\Surgery_Data\koni.sqlite";
 
             //List<Vector2>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
-             List<Tuple<float, float>>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
+            List<Tuple<float, float>>? cuttingData = d.DecompressDataFromSQLite( sqliteFilePath, sanitizeData: true );
             d.WriteDataToJsonFile( cuttingData, "dump1.json" );
 
         }
