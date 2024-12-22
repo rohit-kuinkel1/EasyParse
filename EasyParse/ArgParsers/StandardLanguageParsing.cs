@@ -268,15 +268,19 @@ namespace EasyParser.Parsing
                         //validate inclusive relationship
                         if( mutualAttr.RelationshipType == MutualType.Inclusive && ( isCurrentOptionProvided ^ isRelatedOptionProvided ) )
                         {
-                            Logger.Critical( $"Options '{currentOption.OptionsAttribute.LongName}' and '{relatedOption.OptionsAttribute.LongName}' " +
-                                             $"are mutually inclusive to each other. Both must be provided at the same time." );
+                            Logger.Critical( $"Options {nameof( currentOption.OptionsAttribute.LongName )}:'{currentOption.OptionsAttribute.LongName}' " +
+                                $"and {nameof( relatedOption.OptionsAttribute.LongName )}:'{relatedOption.OptionsAttribute.LongName}' " +
+                                $"were defined to be mutually inclusive to each other. Both must be provided at the same time."
+                            );
                             return false;
                         }
                         //validate exclusive relationship
                         else if( mutualAttr.RelationshipType == MutualType.Exclusive && ( isCurrentOptionProvided && isRelatedOptionProvided ) )
                         {
-                            Logger.Critical( $"Options '{currentOption.OptionsAttribute.LongName}' and '{relatedOption.OptionsAttribute.LongName}' " +
-                                             $"are mutually exclusive to each other. Only one can be provided at a given time." );
+                            Logger.Critical( $"Options {nameof( currentOption.OptionsAttribute.LongName )}:'{currentOption.OptionsAttribute.LongName}' " +
+                                $"and {nameof( relatedOption.OptionsAttribute.LongName )}:'{relatedOption.OptionsAttribute.LongName}' " +
+                                $"are mutually exclusive to each other. Only one can be provided at a given time."
+                            );
                             return false;
                         }
                     }
@@ -287,7 +291,7 @@ namespace EasyParser.Parsing
         }
 
         /// <summary>
-        /// Helper method for <see cref="ValidateMutualRelationships(List{OptionStore}, OptionStore, Dictionary{string, object})"/>
+        /// Helper method for <see cref="ValidateMutualRelationships(ICollection{OptionStore}, OptionStore, Dictionary{string, object})"/>
         /// </summary>
         /// <param name="option"></param>
         /// <param name="parsedOptions"></param>
@@ -298,14 +302,14 @@ namespace EasyParser.Parsing
             var shortName = option.OptionsAttribute.ShortName.ToString();
             var aliases = option.OptionsAttribute.Aliases;
 
-            // Check if the long name, short name, or any alias is present in the parsed options
+            //check if the long name, short name, or any alias is present in the parsed options
             return parsedOptions.ContainsKey( longName )
                    || parsedOptions.ContainsKey( shortName )
                    || aliases.Any( alias => parsedOptions.ContainsKey( alias ) );
         }
 
         /// <summary>
-        /// Parses multi-word values until another option or the end of args is found.
+        /// <see cref="ParseMultiWordValue(string[], ref int, string, char)"/> parses multi-word values until another option or the end of args is found.
         /// </summary>
         /// <param name="args"> the original args passed to <see cref="StandardLanguageParsing"/>.</param>
         /// <param name="index"> the first index after the option.</param>
@@ -326,14 +330,15 @@ namespace EasyParser.Parsing
                 index++;
             }
 
-            // Move back by one since we advanced too far
+            //move back by one since we advanced too far
             index--;
 
             return string.Join( " ", valueBuilder );
         }
 
         /// <summary>
-        /// Converts a value to the expected property type, handling special cases like bool and numeric conversions.
+        /// <see cref="ConvertToOptionType(object, Type, string)"/> converts a value to the expected property type, handling special cases like <see langword="bool"/>
+        /// as well as numeric conversions.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
         /// <param name="targetType">The type to convert the value to.</param>
@@ -341,14 +346,14 @@ namespace EasyParser.Parsing
         /// <returns>The converted value.</returns>
         private object ConvertToOptionType( object value, Type targetType, string optionName )
         {
-            var valueStr = value.ToString()?.Trim( '"' ) ?? string.Empty; // Trim quotes if present
+            var valueStr = value.ToString()?.Trim( '"' ) ?? string.Empty; //trim quotes if present
             if( valueStr.Length == 0 )
             {
                 throw new InvalidValueException( $"Missing value for the required parameter '{optionName}', please " +
                     "check that you have values for all the required parameters and try again." );
             }
 
-            // Handle boolean conversion
+            //handle boolean conversion
             if( targetType == typeof( bool ) )
             {
                 if( bool.TryParse( valueStr, out bool boolResult ) )
@@ -362,7 +367,7 @@ namespace EasyParser.Parsing
 
             if( targetType == typeof( int ) )
             {
-                // Attempt to parse as decimal and round down
+                //attempt to parse as decimal and round down
                 if( decimal.TryParse( valueStr, out var decimalResult ) )
                 {
                     return (int)Math.Floor( decimalResult );
@@ -372,7 +377,7 @@ namespace EasyParser.Parsing
                 throw new InvalidValueException( errorMessage );
             }
 
-            // Default conversion for other types
+            //default conversion for other types
             return Convert.ChangeType( valueStr, targetType );
         }
 
