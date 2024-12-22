@@ -21,7 +21,7 @@ namespace EasyParser.Core
         /// <summary>
         /// Gets the list of options associated with the verb.
         /// </summary>
-        public List<OptionStore> Options { get; set; }
+        public ICollection<OptionStore> Options { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VerbStore"/> class.
@@ -29,7 +29,7 @@ namespace EasyParser.Core
         /// <param name="verbType">The type of the verb.</param>
         /// <param name="verbAttribute">The attribute that defines the verb.</param>
         /// <param name="options">The list of options associated with the verb.</param>
-        public VerbStore( Type? verbType, VerbAttribute? verbAttribute, List<OptionStore> options )
+        public VerbStore( Type? verbType, VerbAttribute? verbAttribute, ICollection<OptionStore> options )
         {
             VerbType = verbType;
             VerbAttribute = verbAttribute;

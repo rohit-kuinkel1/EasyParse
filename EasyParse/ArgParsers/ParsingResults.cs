@@ -4,52 +4,63 @@ using System.Text;
 using EasyParser;
 
 /// <summary>
-/// Represents the result of a parsing operation, including success status, error message, and the parsed instance.
+/// <see cref="ParsingResult{T}"/> represents the result of a parsing operation, 
+/// including success status with <see cref="Success"/>, error message with <see cref="ErrorMessage"/>,
+/// and the parsed instance which is stored in <see cref="ParsedInstance"/>.
 /// </summary>
-public class ParsingResult<T>
+public class ParsingResult<T> where T : class, new()
 {
     /// <summary>
-    /// Gets a value indicating whether the parsing was successful.
+    /// Get auto property for a value that indicates whether the parsing was successful or not
     /// </summary>
     public bool Success { get; }
 
     /// <summary>
-    /// Gets the error message if the parsing was not successful; otherwise, null.
+    ///  Get auto property for the error message. 
+    ///  Has a value if the parsing was not successful; otherwise, null/string.Empty.
     /// </summary>
     public string? ErrorMessage { get; }
 
     /// <summary>
-    /// Gets the instance of the class that was parsed. This will be populated if parsing is successful.
+    /// Get auto property for the instance of the class that was parsed. 
+    /// This will be populated if parsing is successful i.e <see cref="Success"/> was set to <see langword="true"/>.
     /// </summary>
-    public T ParsedInstance { get; }
+    public T? ParsedInstance { get; }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ParsingResult{T}"/> class.
+    /// Default Parameterized constructor for <see cref="ParsingResult{T}"/>.
+    /// Initializes a new instance of the <see cref="ParsingResult{T}"/> class with the provided params.
     /// </summary>
     /// <param name="success">Indicates whether the parsing was successful.</param>
     /// <param name="errorMessage">The error message associated with the parsing result, if any.</param>
     /// <param name="parsedInstance">The instance of the class that was parsed, if applicable.</param>
-    internal ParsingResult( bool success, string? errorMessage, T parsedInstance )
+    public ParsingResult( bool success, string? errorMessage, T? parsedInstance )
     {
         Success = success;
         ErrorMessage = errorMessage;
-        ParsedInstance = parsedInstance; 
+        //if the where T : class is omitted in class definition, then the compiler complains when null/default is set, but i think that it makes sense to include the where clause in the class definition 
+        //since T will be user defined type anyways (for now atleast)
+        ParsedInstance = parsedInstance ?? default;
     }
 
     /// <summary>
-    /// Returns a string representation of the parsed instance, including all the property names and their values.
+    /// Returns a string representation of the parsed instance <see cref="ParsedInstance"/>,
+    /// including all the property names and their values for this particular instance <see cref="ParsedInstance"/>.
+    /// of type <typeparamref name="T"/>.
     /// </summary>
-    /// <returns>A string listing all the properties and their values for the parsed instance.</returns>
+    /// <returns>A string that lists all the properties and their values for the parsed instance.</returns>
     public override string ToString()
     {
         try
         {
-            if( ParsedInstance == null )
-            {
-                return "No instance was parsed.";
-            }
+            _ = EasyParser.Utility.Utility.NotNullValidation(
+                obj:ParsedInstance, 
+                throwIfNull:true,
+                $"The property {nameof(ParsedInstance)} was null or empty when it was not e");
+            
+            var instanceType = ParsedInstance!.GetType();
 
-            var instanceType = ParsedInstance.GetType();
+            //dont think its a good idea to get private attributes so sticking to public ones
             var properties = instanceType.GetProperties( BindingFlags.Public | BindingFlags.Instance );
 
             var stringBuilder = new StringBuilder();
@@ -65,7 +76,7 @@ public class ParsingResult<T>
         }
         catch( Exception ex )
         {
-            Logger.Error( $"An unexpected error occured whilst trying to use ParsingResult.ToString()...\n{ex.Message}" );
+            Logger.Error( $"An unexpected error occured whilst trying to use ParsingResult.ToString()\n{ex.Message}" );
             return $"ERROR: ParsingResult.ToString(): {ex.Message}";
         }
     }

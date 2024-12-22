@@ -28,7 +28,7 @@ namespace EasyParser.Utility
         /// <returns>True if the object is not null or empty, false otherwise (in soft fail mode).</returns>
         /// <exception cref="NullException">Thrown when the object is null or empty in hard fail mode.</exception>
         public static bool NotNullValidation<T>(
-            [NotNullWhen( true )] T obj,
+            [NotNullWhen( true )] T? obj,
             bool throwIfNull = true,
             string? customErrorMessage = null,
             [CallerArgumentExpression( "obj" )] string? parameterName = null,

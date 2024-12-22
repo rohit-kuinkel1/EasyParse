@@ -9,7 +9,8 @@ using EasyParser.Utility;
 namespace EasyParser.Parsing
 {
     /// <summary>
-    /// This class in contrary to <see cref="NaturalLanguageParsing"/>, aims to parse the args provided to EasyParser where the args are passed in the standard flow
+    /// <see cref="StandardLanguageParsing"/>is contrary to <see cref="NaturalLanguageParsing"/>
+    /// and aims to parse the args provided to EasyParser where the args are passed in the standard flow
     /// for instance: 
     /// addFile --name Text123.txt --filePath D:/git/Tools/ --smallerThan 5KB ......
     /// a -n Text123.txt -f D:/git/Tools/ -s 5KB ......
@@ -51,12 +52,13 @@ namespace EasyParser.Parsing
         /// <inheritdoc/>
         /// </summary>
         /// <param name="args"></param>
-        public ParsingResult<T> Parse<T>( string[] args ) where T : new()
+        public ParsingResult<T> Parse<T>( string[] args ) where T : class, new()
         {
-            Logger.BackTrace( $"Entering StandardLanguageParsing.Parse<string[]>(args) with args " +
-                $"with Len:{args.Length} and type {typeof( T ).FullName}" );
+            Logger.BackTrace( $"Entering {nameof( StandardLanguageParsing )}.{nameof( Parse )} with args " +
+                $"with Len:{args.Length} and type T as {typeof( T ).FullName}" );
 
             _ = EasyParser.Utility.Utility.NotNullValidation( args );
+
             _verbStore = new VerbStore( typeof( T ), null, new List<OptionStore>() );
 
             // Check if T is defined with VerbAttribute
@@ -191,23 +193,23 @@ namespace EasyParser.Parsing
                 }
             }
 
-            // Populate the instance from parsed options using verbStore
+            //populate the instance from parsed options using verbStore
             foreach( var optionStore in verbStore.Options )
             {
-                var optionAttr = optionStore.OptionsAttribute;
-                var aliases = optionAttr.Aliases;
-
-                // Check for match of either LongName, ShortName, or at least one of the Aliases
-                if( (
-                    parsedOptions.TryGetValue( optionAttr.LongName, out var value )
-                    || parsedOptions.TryGetValue( optionAttr.ShortName.ToString(), out value )
-                    || aliases.Any( alias => parsedOptions.TryGetValue( alias, out value ) )
-                    )
-                    && Utility.Utility.NotNullValidation( value ) )
+                OptionsAttribute? optionAttr = default;
+                string[]? aliases = default;
+                try
                 {
-                    try
+                    optionAttr = optionStore.OptionsAttribute;
+                    aliases = optionAttr.Aliases;
+
+                    //check for match of either LongName, ShortName, or at least one of the Aliases
+                    if( ( parsedOptions.TryGetValue( optionAttr.LongName, out var value )
+                            || parsedOptions.TryGetValue( optionAttr.ShortName.ToString(), out value )
+                            || aliases.Any( alias => parsedOptions.TryGetValue( alias, out value ) ) )
+                        && Utility.Utility.NotNullValidation( value )
+                    )
                     {
-                        // Validate mutual relationships after parsing
                         if( !ValidateMutualRelationships( verbStore.Options, optionStore, parsedOptions ) )
                         {
                             return false;
@@ -217,27 +219,26 @@ namespace EasyParser.Parsing
                         var convertedValue = ConvertToOptionType( value, optionStore.Property.PropertyType, optionStore.OptionsAttribute.LongName );
                         optionStore.Property.SetValue( instance, convertedValue );
                     }
-                    catch( Exception ex ) when( ex is NullException )
+                    //if you reached here after traversing the if block and the optionsAttr was marked required, then that means a required value was not found
+                    else if( optionAttr.Required )
                     {
-                        Logger.Critical( $"Unexpected NullException occured while trying to parse the optionsAttribute {optionAttr.LongName}" );
-                        return false;
-                    }
-                    catch( Exception ex )
-                    {
-                        Logger.Critical( $"{ex.Message}" );
+                        Logger.Critical( $"Option '{optionAttr.LongName}' is marked as required, but was not provided." +
+                            $" Please provide the corresponding value for {optionAttr.LongName} and try again." +
+                            $" Defined aliases for '{optionAttr.LongName}' are: {string.Join( ", ", optionAttr.Aliases.Where( alias => !string.IsNullOrEmpty( alias ) ) )} " );
                         return false;
                     }
                 }
-                //if you reached here after traversing the if block and the optionsAttr was marked required, then that means a required value was not found
-                else if( optionAttr.Required )
+                catch( Exception ex ) when( ex is NullException )
                 {
-                    Logger.Critical( $"Option '{optionAttr.LongName}' is marked as required, but was not provided." +
-                        $" Please provide the corresponding value for {optionAttr.LongName} and try again." +
-                        $" Defined aliases for '{optionAttr.LongName}' are: {string.Join( ", ", optionAttr.Aliases.Where( alias => !string.IsNullOrEmpty( alias ) ) )} " );
+                    Logger.Critical( $"Unexpected NullException occured while trying to parse the optionsAttribute {optionAttr?.LongName}" );
+                    return false;
+                }
+                catch( Exception ex )
+                {
+                    Logger.Critical( $"{ex.Message}" );
                     return false;
                 }
             }
-
             return true;
         }
 
@@ -249,7 +250,7 @@ namespace EasyParser.Parsing
         /// <param name="parsedOptions"></param>
         /// <returns></returns>
         private bool ValidateMutualRelationships(
-            List<OptionStore> options,
+            ICollection<OptionStore> options,
             OptionStore currentOption,
             Dictionary<string, object> parsedOptions )
         {
@@ -264,14 +265,14 @@ namespace EasyParser.Parsing
                         var isCurrentOptionProvided = IsOptionProvided( currentOption, parsedOptions );
                         var isRelatedOptionProvided = IsOptionProvided( relatedOption, parsedOptions );
 
-                        // Validate inclusive relationship
+                        //validate inclusive relationship
                         if( mutualAttr.RelationshipType == MutualType.Inclusive && ( isCurrentOptionProvided ^ isRelatedOptionProvided ) )
                         {
                             Logger.Critical( $"Options '{currentOption.OptionsAttribute.LongName}' and '{relatedOption.OptionsAttribute.LongName}' " +
                                              $"are mutually inclusive to each other. Both must be provided at the same time." );
                             return false;
                         }
-                        // Validate exclusive relationship
+                        //validate exclusive relationship
                         else if( mutualAttr.RelationshipType == MutualType.Exclusive && ( isCurrentOptionProvided && isRelatedOptionProvided ) )
                         {
                             Logger.Critical( $"Options '{currentOption.OptionsAttribute.LongName}' and '{relatedOption.OptionsAttribute.LongName}' " +
