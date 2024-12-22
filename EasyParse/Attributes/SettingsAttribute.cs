@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace EasyParser.Core
 {
+    #region UnderConstruction
     /// <summary>
     /// Attribute for defining settings for options.
     /// Includes properties for color, validation ranges, and regex pattern matching.
@@ -63,4 +64,5 @@ namespace EasyParser.Core
             }
         }
     }
+    #endregion
 }

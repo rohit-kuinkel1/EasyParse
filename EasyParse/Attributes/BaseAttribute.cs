@@ -30,7 +30,7 @@ namespace EasyParser.Core
             set
             {
                 _aliases = value.Where( alias => alias.Length >= 2 ).ToArray();
-                Logger.Debug( "Some aliases were discarded because they were either empty or their length was less than 2." );
+                Logger.Debug( "Some aliases were discarded because they were either empty or their length was less than the defined threshold 2." );
             }
         }
 

@@ -6,6 +6,7 @@ using EasyParser.Utility;
 
 namespace EasyParser.Core
 {
+    #region UnderConstruction
     /// <summary>
     /// 
     /// </summary>
@@ -22,7 +23,7 @@ namespace EasyParser.Core
             {
                 _ = Utility.Utility.NotNullValidation( optionsType, true );
 
-                // Get all public properties in the specified type
+                //get all public properties in the specified type
                 var properties = optionsType.GetProperties( BindingFlags.Public | BindingFlags.Instance );
 
                 //throw if properties was null
@@ -31,7 +32,7 @@ namespace EasyParser.Core
                 var optionDefinitions = new List<OptionStore>();
                 foreach( var property in properties )
                 {
-                    // Check if the property has the OptionsAttribute
+                    //check if the property has the OptionsAttribute
                     var optionsAttribute = property.GetCustomAttribute<OptionsAttribute>();
                     if( optionsAttribute != null )
                     {
@@ -49,4 +50,5 @@ namespace EasyParser.Core
             }
         }
     }
+    #endregion
 }

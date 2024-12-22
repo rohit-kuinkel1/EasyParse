@@ -10,17 +10,18 @@ namespace EasyParser.Core
     public sealed class VerbAttribute : BaseAttribute
     {
         /// <summary>
-        /// Gets the short name for the option (single-character).
+        /// Auto property for the short name for the option (single-character).
         /// </summary>
         public char ShortName { get; set; }
 
         /// <summary>
-        /// Gets the long name given to this verb.
+        /// Auto property for the long name given to this verb.
         /// </summary>
         public string LongName { get; set; }
 
         /// <summary>
-        /// Specifies the necessity of the attribute.
+        /// Auto property that specifies the necessity of the attribute.
+        /// When set to <see langword="true"/> and not provided, will throw an <see cref="Exception"/>
         /// </summary>
         public bool Required { get; set; }
 

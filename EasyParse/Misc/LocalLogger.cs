@@ -56,7 +56,7 @@ namespace EasyParser
     /// <summary>
     /// Internal logger for <see cref="EasyParse"/>
     /// </summary>
-    internal static class Logger
+    public static class Logger
     {
         /// <summary>
         /// minimum LogLevel for <see cref="EasyParse"/>.
@@ -78,6 +78,21 @@ namespace EasyParser
         /// Flag to indicate whether to redirect all the logs to a logFile.
         /// </summary>
         internal static bool RedirectLogsToFile { get; set; } = false;
+
+        /// <summary>
+        /// Flag to enable or disable logging. When set to <see langword="false"/>, no logs will be written.
+        /// </summary>
+        private static bool _isLoggerEnabled = true;
+
+        /// <summary>
+        /// Gets or sets whether logging is enabled.
+        /// </summary>
+        public static bool IsLoggerEnabled
+        {
+            get => _isLoggerEnabled;
+            set => _isLoggerEnabled = value;
+        }
+
 
         /// <summary>
         /// default static constructor for <see cref="Logger"/>.
@@ -114,8 +129,7 @@ namespace EasyParser
         /// <param name="message">The message to log.</param>
         internal static void Log( LogLevel level, string? message )
         {
-            //log if the loglevel criteria is fulfilled, ex: dont log Debug if minLogLevel is set to Info.
-            if( level < _minLogLevel )
+            if( !_isLoggerEnabled || level < _minLogLevel )
             {
                 return;
             }
@@ -146,12 +160,12 @@ namespace EasyParser
         {
             return level switch
             {
-                LogLevel.BackTrace => $"\u001b[38;2;54;69;79m{message}\u001b[0m", // Gray
-                LogLevel.Debug => $"\u001b[37m{message}\u001b[0m", // White
-                LogLevel.Info => $"\u001b[32m{message}\u001b[0m", // Green
-                LogLevel.Warning => $"\u001b[33m{message}\u001b[0m", // Yellow
-                LogLevel.Error => $"\u001b[35m{message}\u001b[0m", // Magenta
-                LogLevel.Critical => $"\u001b[1;37;41m{message}\u001b[0m", // Bold white text on red background for Critical
+                LogLevel.BackTrace => $"\u001b[38;2;54;69;79m{message}\u001b[0m", //gray
+                LogLevel.Debug => $"\u001b[37m{message}\u001b[0m", //white
+                LogLevel.Info => $"\u001b[32m{message}\u001b[0m", //green
+                LogLevel.Warning => $"\u001b[33m{message}\u001b[0m", //yellow
+                LogLevel.Error => $"\u001b[35m{message}\u001b[0m", //magenta
+                LogLevel.Critical => $"\u001b[1;37;41m{message}\u001b[0m", //bold white text on red background for Critical
                 _ => message
             };
         }

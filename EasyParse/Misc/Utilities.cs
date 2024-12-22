@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Runtime.CompilerServices;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace EasyParser.Utility
 {

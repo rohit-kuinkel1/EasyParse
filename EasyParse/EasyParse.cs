@@ -33,7 +33,8 @@ namespace EasyParser
         ........
 
     }
-     
+    
+    //still relevant?
     A simple "did you mean" feature will help a lot during parsing.
     One way to achieve this is to use a source generator to already gather the verbs and options during compile time 
     in a ~collection like Dictionary<string,List<string>> where key will be the verb since one verb can have n number of options
@@ -107,14 +108,13 @@ namespace EasyParser
         /// <exception cref="BadFormatException"> When the provided <paramref name="args"/> was badly formatted.</exception>
         /// <exception cref="IllegalOperation"> When type mismatch occurs or when static/abstract class is provided as type for instance.</exception>
         /// <exception cref="Exception"> For general unforseen exceptions.</exception>
-        [Pure]
-        public ParsingResult<T> Parse<T>( string[] args ) where T : new()
+        public ParsingResult<T> Parse<T>( string[] args ) where T : class, new()
         {
             try
             {
                 _ = Utility.Utility.NotNullValidation( args, true );
 
-                // Determine if we are using Natural Language or Standard Language parsing
+                //determine if we are using Natural Language or Standard Language parsing
                 var isStringAtIndex1EqualToWhereKeyword = args.Length > 1 && string.Equals( args[1], ParsingKeyword.Where.ToString(), StringComparison.OrdinalIgnoreCase );
                 var containsKeywords = args.Any( arg => Keywords.Contains( arg.ToLowerInvariant() ) );
 
@@ -132,7 +132,7 @@ namespace EasyParser
                         "used for standard parsing. Please refrain from mixing natural language and standard language format and try again." );
                 }
 
-                // Call the appropriate Parse method and return the result
+                //call the appropriate Parse method and return the result
                 return _parsing.Parse<T>( args );
             }
             catch( NullException ex )
@@ -140,7 +140,7 @@ namespace EasyParser
                 Logger.Critical( $"{ex.GetType()} {ex.Message}" );
                 return new ParsingResult<T>( false, ex.Message, default! );
             }
-            catch( Exception ex ) // Include StackTrace for general errors including BadFormatException
+            catch( Exception ex ) //include the StackTrace for general errors including BadFormatException
             {
                 Logger.Critical( $"{ex.GetType()} {ex.Message}" );
                 Logger.Critical( ex.StackTrace );
@@ -150,11 +150,7 @@ namespace EasyParser
 
         /// <summary>
         /// Exports the default EasyParser configuration to a file named EasyParse.cs.
-        /// Although the nested functions are not conventional, they get the job job so i'll just let them be.
-        /// </summary>
-        /// <summary>
-        /// Exports the default EasyParser configuration to a file named EasyParse.cs.
-        /// Although the nested functions are not conventional, they get the job done so I'll just let them be.
+        /// Although the nested functions in <see cref="ExportDefaultConfig"/> are not conventional, they get the job done for now so i'll just let them be.
         /// </summary>
         public static void ExportDefaultConfig()
         {
@@ -204,6 +200,7 @@ namespace MyParser
     //public static void Main( string[] args )
     //{
         //LogLevel.BackTrace cannot be set by the users; levels => Debug, Info, Warning, Error, Critical, None
+        //you can disable the EasyParser logger by: EasyParser.Logger.IsLoggerEnabled = false;
         //var parser = new EasyParse( LogLevel.Debug, false );
         //var parsingResult = parser.Parse<ParseVerbs>( args );
         //if( parsingResult.Success )
@@ -217,7 +214,7 @@ namespace MyParser
         //}
     //}
 }";
-
+            //nested
             string SaveConfigFile( string directory, string fileName, string content )
             {
                 try
@@ -229,10 +226,11 @@ namespace MyParser
                 catch( Exception ex )
                 {
                     Console.WriteLine( $"Unable to save file in {directory}. Error: {ex.Message}" );
-                    return null;
+                    return default;
                 }
             }
 
+            //nested
             string GetWritableDirectory()
             {
                 var entryAssembly = Assembly.GetEntryAssembly();
@@ -260,7 +258,7 @@ namespace MyParser
                             break;
                         }
 
-                        // Test if we can write to this directory
+                        //test if we can write to this directory
                         var testFile = Path.Combine( parentDirectory, "test_write_permission.tmp" );
                         File.WriteAllText( testFile, "test" );
                         File.Delete( testFile );

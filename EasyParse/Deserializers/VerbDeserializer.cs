@@ -6,6 +6,7 @@ using EasyParser.Utility;
 
 namespace EasyParser.Core
 {
+    #region UnderConstruction
     /// <summary>
     /// 
     /// </summary>
@@ -78,6 +79,9 @@ namespace EasyParser.Core
     }
 
     // Example verb definition to hold the class type, verb attribute, and options
+    /// <summary>
+    /// 
+    /// </summary>
     public class VerbDefinition
     {
         public Type VerbType { get; }
@@ -91,4 +95,5 @@ namespace EasyParser.Core
             Options = options;
         }
     }
+    #endregion
 }
