@@ -69,7 +69,7 @@ public class ParsingResult<T> where T : class, new()
             foreach( var property in properties )
             {
                 var value = property.GetValue( ParsedInstance ) ?? "null";
-                _ = stringBuilder.AppendLine( $"{property.Name}: {value}" );
+                _ = stringBuilder.AppendLine( $"{property.Name}({property.PropertyType.Name}): {value}" );
             }
 
             return stringBuilder.ToString();
