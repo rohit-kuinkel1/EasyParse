@@ -120,10 +120,12 @@ namespace EasyParser
 
                 if( isStringAtIndex1EqualToWhereKeyword && containsKeywords )
                 {
+                    Logger.BackTrace( "Using NaturalLanguageParsing" );
                     _parsing = new NaturalLanguageParsing();
                 }
                 else if( !containsKeywords )
                 {
+                    Logger.BackTrace( "Using StandardLanguageParsing" );
                     _parsing = new StandardLanguageParsing();
                 }
                 else

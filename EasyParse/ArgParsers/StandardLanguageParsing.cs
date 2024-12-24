@@ -78,7 +78,7 @@ namespace EasyParser.Parsing
             LogPotentialNonPublicPropertyMarkedWithOptionsAttribute();
             var publicPropertiesWithOptionsAttribute = GetPropertyBy( BindingFlags.Public | BindingFlags.Instance );
 
-            // Store properties marked with OptionsAttribute in the generic class T
+            //store properties marked with OptionsAttribute in the generic class T
             foreach( var property in publicPropertiesWithOptionsAttribute )
             {
                 //get the property that is marked with an OptionsAttribute. will result to null if the property is not decorated with [Options]
@@ -92,13 +92,11 @@ namespace EasyParser.Parsing
                 }
             }
 
-            // Parse the provided args
             if( !ParseOptions( args, _verbStore, instance ) )
             {
                 return new ParsingResult<T>( false, "Parsing Status: ERROR", default! );
             }
 
-            // Return success with the populated instance
             Logger.BackTrace( _verbStore.ToString() );
             return new ParsingResult<T>( true, "Parsing Status: OK", instance );
         }
@@ -215,7 +213,6 @@ namespace EasyParser.Parsing
                             return false;
                         }
 
-                        // Convert and assign value to the appropriate type
                         var convertedValue = ConvertToOptionType( value, optionStore.Property.PropertyType, optionStore.OptionsAttribute.LongName );
                         optionStore.Property.SetValue( instance, convertedValue );
                     }
