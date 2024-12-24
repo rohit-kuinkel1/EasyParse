@@ -69,13 +69,13 @@ namespace EasyParser.Core
         public override string ToString()
         {
             return 
-                $"OptionsAttribute: " +
-                $"LongName:{LongName}, " +
-                $"ShortName:{ShortName}, " +
-                $"Required:{Required}, " +
-                $"DefaultValue:{Default}, " +
-                $"HelpText:{HelpText}, " +
-                $"ErrorMessage:{ErrorMessage}) ";
+                $"\n\t\tOptionsAttribute: \n" +
+                $"\t\t\tLongName:{LongName}, \n" +
+                $"\t\t\tShortName:{ShortName}, \n" +
+                $"\t\t\tRequired:{Required}, \n" +
+                $"\t\t\tDefaultValue:{Default}, \n" +
+                $"\t\t\tHelpText:{HelpText}, \n" +
+                $"\t\t\tErrorMessage:{ErrorMessage} \n";
         }
     }
 }

@@ -45,8 +45,9 @@ namespace EasyParser.Core
         public override string ToString()
         {
             return
-                $"OptionStore: Name:{Property.Name} " +
-                $"{OptionsAttribute.ToString()}";
+                $"\n\tOptionStore: \n" +
+                $"\t\tName:{Property.Name}" +
+                $"\t\t{OptionsAttribute.ToString()}\n";
         }
     }
 }

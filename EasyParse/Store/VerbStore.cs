@@ -45,10 +45,10 @@ namespace EasyParser.Core
         {
             var optionsSummary = string.Join( ", ", Options );
             return 
-                $"VerbStore: " +
-                $"LongName:{VerbAttribute?.LongName}, " +
-                $"ShortName:{VerbAttribute?.ShortName}, " +
-                $"Required:{VerbAttribute?.Required} " +
+                $"\nVerbStore: \n" +
+                $"LongName:{VerbAttribute?.LongName}, \n" +
+                $"ShortName:{VerbAttribute?.ShortName}, \n" +
+                $"Required:{VerbAttribute?.Required} \n" +
                 $"Options:[{optionsSummary}]\n";
         }
     }

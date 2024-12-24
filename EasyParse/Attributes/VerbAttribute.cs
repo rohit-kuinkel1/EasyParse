@@ -55,10 +55,10 @@ namespace EasyParser.Core
         public override string ToString()
         {
             return
-                $"VerbAttribute: " +
-                $"LongName:{LongName}, " +
-                $"Short Name:{ShortName}, " +
-                $"Required: {Required})\n";
+                $"\nVerbAttribute: \n" +
+                $"LongName:{LongName}, \n" +
+                $"Short Name:{ShortName}, \n" +
+                $"Required: {Required}\n";
         }
     }
 }
