@@ -9,7 +9,7 @@ using EasyParser.Utility;
 namespace EasyParser.Parsing
 {
     /// <summary>
-    /// This class in contrary to <see cref="StandardLanguageParsing"/>.
+    /// This class is contrary to <see cref="StandardLanguageParsing"/>.
     /// <see cref="NaturalLanguageParsing"/> aims to parse the args provided to <see cref="EasyParse"/> 
     /// where the args are passed in a natural flow of language
     /// for instance: 
@@ -37,6 +37,14 @@ namespace EasyParser.Parsing
         /// Keyword that indicates the assignment of a value to an option in natural language parsing.
         /// </summary>
         private const string OPTION_VALUE_DELIMITER = "is";
+
+        internal NaturalLanguageParsing()
+        {
+            _allPropertyInfosFromType = null;
+            _verbStore = null;
+            _ = string.Equals( VERB_OPTION_DELIMITER, "where" );
+            _ = string.Equals( OPTION_VALUE_DELIMITER, "is" );
+        }
 
         /// <summary>
         /// <inheritdoc/>
@@ -280,8 +288,8 @@ namespace EasyParser.Parsing
             return true;
         }
 
-        private bool IsOptionProvided( 
-            OptionStore option, 
+        private bool IsOptionProvided(
+            OptionStore option,
             Dictionary<string, object> parsedOptions )
         {
             var longName = option.OptionsAttribute.LongName;
@@ -308,9 +316,9 @@ namespace EasyParser.Parsing
         /// <param name="index">The current index in the args array.</param>
         /// <param name="skipDelimiter">Flag to denote how many tokens to skip/move ahead to</param>
         /// <returns>The parsed value as a string.</returns>
-        private string ParseMultiWordValue( 
-            string[] args, 
-            ref int index, 
+        private string ParseMultiWordValue(
+            string[] args,
+            ref int index,
             bool skipDelimiter = true )
         {
             var valueBuilder = new List<string>();
