@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -7,7 +8,7 @@ namespace EasyParser.Core
     /// <summary>
     /// Denotes the store to house the deserialized options present in this assembly
     /// </summary>
-    public sealed class OptionStore
+    public sealed class Option
     {
         /// <summary>
         /// Gets the property info of the property in the class T, which was decorated with [Options]
@@ -27,15 +28,16 @@ namespace EasyParser.Core
         public List<MutualAttribute> MutualAttributes { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="OptionStore"/> class.
+        /// Initializes a new instance of the <see cref="Option"/> class.
         /// </summary>
         /// <param name="property">The PropertyInfo of the option.</param>
         /// <param name="optionsAttribute">The OptionsAttribute associated with the option.</param>
-        public OptionStore( PropertyInfo property, OptionsAttribute optionsAttribute )
+        public Option( PropertyInfo property, OptionsAttribute optionsAttribute )
         {
             Property = property;
             OptionsAttribute = optionsAttribute;
             MutualAttributes = property.GetCustomAttributes<MutualAttribute>().ToList();
+            Console.WriteLine( string.Join( ",", MutualAttributes ) );
         }
 
         /// <summary>
@@ -46,8 +48,9 @@ namespace EasyParser.Core
         {
             return
                 $"\n\tOptionStore: \n" +
-                $"\t\tName:{Property.Name}" +
-                $"\t\t{OptionsAttribute.ToString()}\n";
+                $"\t\tName: {Property.Name}\n" +
+                $"\t\t{OptionsAttribute}\n" +
+                $"\t\tMutual Attributes: {string.Join( "\t\t\t", MutualAttributes )}\n";
         }
     }
 }

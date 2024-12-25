@@ -37,6 +37,7 @@ namespace Program
         [Mutual( EasyParser.Enums.MutualType.Inclusive, nameof( Count ), nameof( Stdin ) )]
         public string? InputFile { get; set; }
 
+        [Mutual( EasyParser.Enums.MutualType.Exclusive, nameof( Count ))]
         [Options( 'v', "verbose", Default = false, Required = true, HelpText = "Prints all messages to standard output." )]
         public bool Verbose { get; set; }
 

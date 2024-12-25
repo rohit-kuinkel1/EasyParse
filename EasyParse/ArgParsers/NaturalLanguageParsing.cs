@@ -26,7 +26,7 @@ namespace EasyParser.Parsing
         /// <summary>
         /// Container to store the <see cref="VerbAttribute"/> and its related <see cref="OptionsAttribute"/>.
         /// </summary>
-        private VerbStore? _verbStore;
+        private Verb? _verbStore;
 
         internal NaturalLanguageParsing()
         {
@@ -45,7 +45,7 @@ namespace EasyParser.Parsing
 
             _ = EasyParser.Utility.Utility.NotNullValidation( args );
 
-            _verbStore = new VerbStore( typeof( T ), null, new List<OptionStore>() );
+            _verbStore = new Verb( typeof( T ), null );
 
             //check if T is defined with VerbAttribute
             if( typeof( T ).IsDefined( typeof( VerbAttribute ), inherit: false ) )
@@ -54,7 +54,7 @@ namespace EasyParser.Parsing
             }
             else
             {
-                Logger.Debug( $"Type {typeof( T ).FullName} is not marked with VerbAttribute." );
+                Logger.Debug( $"Type {typeof( T ).FullName} is not marked with VerbAttribute hence cannot be parsed." );
             }
 
             var instance = new T();
@@ -68,7 +68,7 @@ namespace EasyParser.Parsing
                 var optionsAttribute = Attribute.GetCustomAttribute( property, typeof( OptionsAttribute ) ) as OptionsAttribute;
                 if( EasyParser.Utility.Utility.NotNullValidation( optionsAttribute, throwIfNull: false ) )
                 {
-                    var optionStore = new OptionStore( property, optionsAttribute );
+                    var optionStore = new Option( property, optionsAttribute );
                     _verbStore.Options.Add( optionStore );
                 }
             }
@@ -136,7 +136,7 @@ namespace EasyParser.Parsing
         /// <returns></returns>
         private bool ParseOptions(
             string[] args,
-            VerbStore verbStore,
+            Verb verbStore,
             object? instance )
         {
             Logger.BackTrace( $"Entering NaturalLanguageParsing.ParseOptions(string[], VerbStore, object?) " +
@@ -221,53 +221,47 @@ namespace EasyParser.Parsing
         /// Validates the mutual agreement <see cref="MutualAttribute"/> between <see cref="OptionsAttribute"/>
         /// </summary>
         /// <param name="options"></param>
-        /// <param name="currentOption"></param>
+        /// <param name="optionStore"></param>
         /// <param name="parsedOptions"></param>
         /// <returns></returns>
         private bool ValidateMutualRelationships(
-            ICollection<OptionStore> options,
-            OptionStore currentOption,
+            ICollection<Option> options,
+            Option optionStore,
             Dictionary<string, object> parsedOptions )
         {
-            Logger.Debug( "Current parsed options:" );
-            foreach( var kvp in parsedOptions )
+            foreach( var mutualAttribute in optionStore.MutualAttributes )
             {
-                Logger.Debug( $"Key: {kvp.Key}, Value: {kvp.Value}" );
-            }
-
-            foreach( var mutualAttr in currentOption.MutualAttributes )
-            {
-                foreach( var relatedEntity in mutualAttr.RelatedEntities )
+                foreach( var relatedEntity in mutualAttribute.RelatedEntities )
                 {
+                    Console.WriteLine( relatedEntity );
                     var relatedOption = options.FirstOrDefault( o => o.Property.Name == relatedEntity );
 
                     if( relatedOption != null )
                     {
-                        var isCurrentOptionProvided = IsOptionProvided( currentOption, parsedOptions );
+                        var isCurrentOptionProvided = IsOptionProvided( optionStore, parsedOptions );
                         var isRelatedOptionProvided = IsOptionProvided( relatedOption, parsedOptions );
 
-                        //Logger.Debug( $"Checking mutual relationship:" );
-                        //Logger.Debug( $"Current option: {currentOption.Property.Name} ({currentOption.OptionsAttribute.LongName}), Provided: {isCurrentOptionProvided}" );
-                        //Logger.Debug( $"Related option: {relatedOption.Property.Name} ({relatedOption.OptionsAttribute.LongName}), Provided: {isRelatedOptionProvided}" );
-                        //Logger.Debug( $"Relationship type: {mutualAttr.RelationshipType}" );
 
-                        if( mutualAttr.RelationshipType == MutualType.Inclusive )
+                        if( mutualAttribute.RelationshipType == MutualType.Inclusive )
                         {
                             //for inclusive relationship, either both should be present or both should be absent
                             if( isCurrentOptionProvided != isRelatedOptionProvided )
                             {
-                                Logger.Critical( $"Options {nameof( currentOption.OptionsAttribute.LongName )}:'{currentOption.OptionsAttribute.LongName}' " +
+                                Logger.Critical( $"Options {nameof( optionStore.OptionsAttribute.LongName )}:'{optionStore.OptionsAttribute.LongName}' " +
                                     $"and {nameof( relatedOption.OptionsAttribute.LongName )}:'{relatedOption.OptionsAttribute.LongName}' " +
                                     $"were defined to be mutually inclusive to each other. Both must be provided at the same time." );
                                 return false;
                             }
                         }
-                        else if( mutualAttr.RelationshipType == MutualType.Exclusive && ( isCurrentOptionProvided && isRelatedOptionProvided ) )
+                        else if( mutualAttribute.RelationshipType == MutualType.Exclusive )
                         {
-                            Logger.Critical( $"Options {nameof( currentOption.OptionsAttribute.LongName )}:'{currentOption.OptionsAttribute.LongName}' " +
-                                $"and {nameof( relatedOption.OptionsAttribute.LongName )}:'{relatedOption.OptionsAttribute.LongName}' " +
-                                $"are mutually exclusive to each other. Only one can be provided at a given time." );
-                            return false;
+                            if( isCurrentOptionProvided && isRelatedOptionProvided )
+                            {
+                                Logger.Critical( $"Options '{optionStore.OptionsAttribute.LongName}' " +
+                                    $"and '{relatedOption.OptionsAttribute.LongName}' " +
+                                    $"cannot be used together because they were marked to be mutually exclusive." );
+                                return false;
+                            }
                         }
                     }
                 }
@@ -277,20 +271,12 @@ namespace EasyParser.Parsing
         }
 
         private bool IsOptionProvided(
-            OptionStore option,
+            Option option,
             Dictionary<string, object> parsedOptions )
         {
             var longName = option.OptionsAttribute.LongName;
             var shortName = option.OptionsAttribute.ShortName.ToString();
             var aliases = option.OptionsAttribute.Aliases;
-
-            //Logger.Debug( $"Checking if option is provided:" );
-            //Logger.Debug( $"Long name: {longName}, present: {parsedOptions.ContainsKey( longName )}" );
-            //Logger.Debug( $"Short name: {shortName}, present: {parsedOptions.ContainsKey( shortName )}" );
-            foreach( var alias in aliases )
-            {
-                Logger.Debug( $"Alias: {alias}, present: {parsedOptions.ContainsKey( alias )}" );
-            }
 
             return parsedOptions.ContainsKey( longName )
                    || parsedOptions.ContainsKey( shortName )

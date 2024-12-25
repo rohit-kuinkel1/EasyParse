@@ -48,5 +48,15 @@ namespace EasyParser.Core
             RelatedEntities = relatedEntities;
             RelationshipType = relationshipType;
         }
+        
+        /// <summary>
+        /// Returns a string representation of the instance.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            var entities = string.Join( ", ", RelatedEntities );
+            return $"[Mutual: {RelationshipType} with {entities}]";
+        }
     }
 }

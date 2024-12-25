@@ -25,7 +25,7 @@ namespace EasyParser.Parsing
         /// <summary>
         /// Container to store the <see cref="VerbAttribute"/> and its related <see cref="OptionsAttribute"/>.
         /// </summary>
-        private VerbStore? _verbStore;
+        private Verb? _verbStore;
 
         /// <summary>
         /// Denotes the prefix for longNames.
@@ -59,7 +59,7 @@ namespace EasyParser.Parsing
 
             _ = EasyParser.Utility.Utility.NotNullValidation( args );
 
-            _verbStore = new VerbStore( typeof( T ), null, new List<OptionStore>() );
+            _verbStore = new Verb( typeof( T ), null, new List<Option>() );
 
             // Check if T is defined with VerbAttribute
             if( typeof( T ).IsDefined( typeof( VerbAttribute ), inherit: false ) )
@@ -87,7 +87,7 @@ namespace EasyParser.Parsing
                 {
                     //if we found a property that was decorated with this attribute, then we 'open' up a store with this property and the decorator
                     //essentially dumping them along with their properties into the store
-                    var optionStore = new OptionStore( property, optionsAttribute );
+                    var optionStore = new Option( property, optionsAttribute );
                     _verbStore.Options.Add( optionStore );
                 }
             }
@@ -163,7 +163,7 @@ namespace EasyParser.Parsing
         /// <returns></returns>
         private bool ParseOptions(
             string[] args,
-            VerbStore verbStore,
+            Verb verbStore,
             object? instance )
         {
             Logger.BackTrace( $"Entering StandardLanguageParsing.ParseOptions(string[], VerbStore, object?) " +
@@ -247,8 +247,8 @@ namespace EasyParser.Parsing
         /// <param name="parsedOptions"></param>
         /// <returns></returns>
         private bool ValidateMutualRelationships(
-            ICollection<OptionStore> options,
-            OptionStore currentOption,
+            ICollection<Option> options,
+            Option currentOption,
             Dictionary<string, object> parsedOptions )
         {
             foreach( var mutualAttr in currentOption.MutualAttributes )
@@ -288,12 +288,12 @@ namespace EasyParser.Parsing
         }
 
         /// <summary>
-        /// Helper method for <see cref="ValidateMutualRelationships(ICollection{OptionStore}, OptionStore, Dictionary{string, object})"/>
+        /// Helper method for <see cref="ValidateMutualRelationships(ICollection{Option}, Option, Dictionary{string, object})"/>
         /// </summary>
         /// <param name="option"></param>
         /// <param name="parsedOptions"></param>
         /// <returns></returns>
-        private bool IsOptionProvided( OptionStore option, Dictionary<string, object> parsedOptions )
+        private bool IsOptionProvided( Option option, Dictionary<string, object> parsedOptions )
         {
             var longName = option.OptionsAttribute.LongName;
             var shortName = option.OptionsAttribute.ShortName.ToString();

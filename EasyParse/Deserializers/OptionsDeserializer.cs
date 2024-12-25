@@ -17,7 +17,7 @@ namespace EasyParser.Core
         /// </summary>
         /// <param name="optionsType"></param>
         /// <returns></returns>
-        public static IEnumerable<OptionStore> DeserializeOptions( Type optionsType )
+        public static IEnumerable<Option> DeserializeOptions( Type optionsType )
         {
             try
             {
@@ -29,14 +29,14 @@ namespace EasyParser.Core
                 //throw if properties was null
                 _ = Utility.Utility.NotNullValidation( properties, true );
 
-                var optionDefinitions = new List<OptionStore>();
+                var optionDefinitions = new List<Option>();
                 foreach( var property in properties )
                 {
                     //check if the property has the OptionsAttribute
                     var optionsAttribute = property.GetCustomAttribute<OptionsAttribute>();
                     if( optionsAttribute != null )
                     {
-                        var optionDef = new OptionStore( property, optionsAttribute );
+                        var optionDef = new Option( property, optionsAttribute );
                         optionDefinitions.Add( optionDef );
                     }
                 }
@@ -46,7 +46,7 @@ namespace EasyParser.Core
             catch( Exception ex ) when( ex is NullException )
             {
                 Console.WriteLine( ex.Message );
-                return Enumerable.Empty<OptionStore>();
+                return Enumerable.Empty<Option>();
             }
         }
     }

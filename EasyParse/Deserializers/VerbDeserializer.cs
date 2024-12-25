@@ -56,9 +56,9 @@ namespace EasyParser.Core
             }
         }
 
-        private static List<OptionStore> GetOptions( Type verbType )
+        private static List<Option> GetOptions( Type verbType )
         {
-            var options = new List<OptionStore>();
+            var options = new List<Option>();
 
             // Get properties of the verb type that have OptionAttribute
             var properties = verbType.GetProperties( BindingFlags.Public | BindingFlags.Instance );
@@ -70,7 +70,7 @@ namespace EasyParser.Core
 
                 if( optionAttr != null )
                 {
-                    options.Add( new OptionStore( prop, optionAttr ) );
+                    options.Add( new Option( prop, optionAttr ) );
                 }
             }
 
@@ -86,9 +86,9 @@ namespace EasyParser.Core
     {
         public Type VerbType { get; }
         public VerbAttribute VerbAttribute { get; }
-        public List<OptionStore> Options { get; }
+        public List<Option> Options { get; }
 
-        public VerbDefinition( Type verbType, VerbAttribute verbAttribute, List<OptionStore> options )
+        public VerbDefinition( Type verbType, VerbAttribute verbAttribute, List<Option> options )
         {
             VerbType = verbType;
             VerbAttribute = verbAttribute;

@@ -6,7 +6,7 @@ namespace EasyParser.Core
     /// <summary>
     /// Represents a command-line verb, including its associated options.
     /// </summary>
-    public sealed class VerbStore
+    public sealed class Verb
     {
         /// <summary>
         /// Gets the type of the verb.
@@ -21,23 +21,23 @@ namespace EasyParser.Core
         /// <summary>
         /// Gets the list of options associated with the verb.
         /// </summary>
-        public ICollection<OptionStore> Options { get; set; }
+        public ICollection<Option> Options { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VerbStore"/> class.
+        /// Initializes a new instance of the <see cref="Verb"/> class.
         /// </summary>
         /// <param name="verbType">The type of the verb.</param>
         /// <param name="verbAttribute">The attribute that defines the verb.</param>
         /// <param name="options">The list of options associated with the verb.</param>
-        public VerbStore( Type? verbType, VerbAttribute? verbAttribute, ICollection<OptionStore> options )
+        public Verb( Type? verbType, VerbAttribute? verbAttribute, ICollection<Option>? options = null )
         {
             VerbType = verbType;
             VerbAttribute = verbAttribute;
-            Options = options;
+            Options = options ?? new List<Option>();
         }
 
         /// <summary>
-        /// Returns a string representation of the <see cref="VerbStore"/> instance, including
+        /// Returns a string representation of the <see cref="Verb"/> instance, including
         /// the verb type, verb attribute details, and associated options.
         /// </summary>
         /// <returns>A string representing the verb store.</returns>
