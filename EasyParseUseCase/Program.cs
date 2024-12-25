@@ -44,11 +44,12 @@ namespace Program
         public static void Main( string[] args )
         {
             //var args1 = new[] { "add", "--read", "Help.txt Ferrari Car", "--verbose", "True", "--stdin", "TRUE", "--count", "210" };
+            var args1 = new[] { "add", "where", "read", "is", "Help.txt Ferrari Car", "verbose","is", "True", "stdin", "is", "TRUE", "count", "is", "210" };
 
             //EasyParse.ExportDefaultConfig();
             EasyParser.Logger.IsLoggerEnabled = true;
             var parser = new EasyParse( LogLevel.BackTrace );
-            var parsingResult = parser.Parse<ParseVerbs>( args );
+            var parsingResult = parser.Parse<ParseVerbs>( args1 );
             if( parsingResult.Success )
             {
                 Console.WriteLine( parsingResult.ToString() );
