@@ -50,11 +50,17 @@ namespace EasyParser
 
         /// <summary>
         /// Parses the arguments provided to an instance of <see cref="EasyParse"/> and delegates the processing to the respective class.
-        /// If the natural language syntax was used, 'where' keyword must be used at index 1 to denote that natural language has been used.
+        /// <para>
+        /// If the natural language syntax was used, the keyword 'where' must be used at index 1 to denote that natural language has been used.
+        /// Example: add where FilePath is ABCDEFG/HIJKLMNOP Contains is "photos, text, data" IsPasswordLocked is false
+        /// </para>
+        /// <para>
         /// If the conventional syntax was used, there is no need to use the 'where' keyword.
+        /// Example: add --FilePath ABCDEFG/HIJKLMNOP --Contains "photos, text, data" --IsPasswordLocked false
+        /// </para>
         /// Save the value returned by <see cref="Parse{T}(string[])"/> locally to use it.
         /// <code>
-        /// //where <typeparamref name="T"/> is your class where you defined the verb and its related options.
+        /// //where <typeparamref name="T"/> is the class where the verbs and its related options are defined.
         /// var result = easyParser.Parse{<typeparamref name="T"/>}(args);
         /// if (result.Success)
         /// {
@@ -67,7 +73,7 @@ namespace EasyParser
         /// </code>
         /// </summary>
         /// <param name="args"></param>
-        /// <returns>Instance of <see cref="ParsingResult{Type}"/> along with <see cref="bool"/> <see cref="ParsingResult{Type}.Success"/> to denote success.</returns>
+        /// <returns>Instance of <see cref="ParsingResult{Type}"/> containing flag <see cref="bool"/> <see cref="ParsingResult{Type}.Success"/> which denotes if the parsing was successful or not.</returns>
         /// <exception cref="NullException"> When the provided <paramref name="args"/> was null.</exception>
         /// <exception cref="BadFormatException"> When the provided <paramref name="args"/> was badly formatted.</exception>
         /// <exception cref="IllegalOperation"> When type mismatch occurs or when static/abstract class is provided as type for instance.</exception>
@@ -78,8 +84,9 @@ namespace EasyParser
             {
                 _ = Utility.Utility.NotNullValidation( args, true );
 
-                var isNaturalLanguage = args.Length > 1 &&
-                    string.Equals( args[1], ParsingKeyword.Where.ToString(), StringComparison.OrdinalIgnoreCase );
+                var isNaturalLanguage = args.Length > 1
+                                        && string.Equals( args[1], ParsingKeyword.Where.ToString(), StringComparison.OrdinalIgnoreCase );
+
                 var containsKeywords = args.Any( arg => Keywords.Contains( arg.ToLowerInvariant() ) );
 
                 if( isNaturalLanguage && containsKeywords )
@@ -190,7 +197,7 @@ namespace EasyParser
         {
             try
             {
-                var finalPath = Directory.Exists(directory) 
+                var finalPath = Directory.Exists( directory )
                     ? directory
                     : Directory.GetCurrentDirectory();
 

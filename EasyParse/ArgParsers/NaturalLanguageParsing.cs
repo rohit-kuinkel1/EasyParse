@@ -28,22 +28,10 @@ namespace EasyParser.Parsing
         /// </summary>
         private VerbStore? _verbStore;
 
-        /// <summary>
-        /// Keyword that indicates the start of options in natural language parsing.
-        /// </summary>
-        private const string VERB_OPTION_DELIMITER = "where";
-
-        /// <summary>
-        /// Keyword that indicates the assignment of a value to an option in natural language parsing.
-        /// </summary>
-        private const string OPTION_VALUE_DELIMITER = "is";
-
         internal NaturalLanguageParsing()
         {
             _allPropertyInfosFromType = null;
             _verbStore = null;
-            _ = string.Equals( VERB_OPTION_DELIMITER, "where" );
-            _ = string.Equals( OPTION_VALUE_DELIMITER, "is" );
         }
 
         /// <summary>
@@ -160,18 +148,18 @@ namespace EasyParser.Parsing
 
             var parsedOptions = new Dictionary<string, object>();
             var whereIndex = args.Select( ( arg, index ) => new { arg, index } )
-                     .FirstOrDefault( x => string.Equals( x.arg, VERB_OPTION_DELIMITER, StringComparison.OrdinalIgnoreCase ) )?.index ?? -1;
+             .FirstOrDefault( x => string.Equals( x.arg.ToLowerInvariant(), ParsingKeyword.Where.ToString().ToLowerInvariant(), StringComparison.OrdinalIgnoreCase ) )?.index ?? -1;
 
             if( whereIndex == -1 )
             {
-                Logger.Critical( $"Parsing in a natural flow requires the '{VERB_OPTION_DELIMITER}' keyword" );
+                Logger.Critical( $"Parsing in a natural flow requires the '{ParsingKeyword.Where}' keyword" );
                 return false;
             }
 
             //first pass: collect all options and their values
             for( var i = whereIndex + 1; i < args.Length; )
             {
-                if( i + 2 < args.Length && args[i + 1].ToLowerInvariant() == OPTION_VALUE_DELIMITER )
+                if( i + 2 < args.Length && args[i + 1].ToLowerInvariant() == ParsingKeyword.Is.ToString().ToLowerInvariant() )
                 {
                     var optionName = args[i];
                     var value = args[i + 2]; //get the value directly after "is"
@@ -328,7 +316,7 @@ namespace EasyParser.Parsing
             while( index < args.Length )
             {
                 //stop if we find the next option's 'is' delimiter
-                if( index + 1 < args.Length && args[index + 1].ToLowerInvariant() == OPTION_VALUE_DELIMITER )
+                if( index + 1 < args.Length && args[index + 1].ToLowerInvariant() == ParsingKeyword.Is.ToString().ToLowerInvariant() )
                 {
                     break;
                 }
