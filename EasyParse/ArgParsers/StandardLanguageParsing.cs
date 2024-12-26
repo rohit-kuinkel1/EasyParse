@@ -177,7 +177,7 @@ namespace EasyParser.Parsing
                             || aliases.Any( alias => parsedOptions.TryGetValue( alias, out value ) ) )
                         && Utility.Utility.NotNullValidation( value ) )
                     {
-                        if( !ValidateMutualRelationships( verbStore.Options, optionStore, parsedOptions ) )
+                        if( !ValidateCommonAttributes( verbStore.Options, optionStore, parsedOptions ) )
                         {
                             return false;
                         }

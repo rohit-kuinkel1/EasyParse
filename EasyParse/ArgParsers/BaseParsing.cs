@@ -51,8 +51,12 @@ namespace EasyParser.Parsing
         }
 
         /// <summary>
-        /// retrieves the properties marked with the <see cref="OptionsAttribute"/> in the type provided to Parse.
+        /// retrieves the properties marked with the <see cref="OptionsAttribute"/> in the type provided to <see cref="Parse(string[])"/>.
+        /// Param <paramref name="bindingFlags"/> is used to retrieve the properties with specific access specifiers.
         /// </summary>
+        /// <param name="bindingFlags"></param>
+        /// <returns> Array of <see cref="PropertyInfo"/></returns>
+        /// <exception cref="Utility.NullException">Thrown when the <see cref="_allPropertyInfosFromType"/> has no properties in it.</exception>
         protected PropertyInfo[] GetPropertyBy( BindingFlags bindingFlags )
         {
             Logger.BackTrace( $"Entering {GetType().Name}.GetPropertyBy(BindingFlags) with bindingFlags {bindingFlags}" );
@@ -69,8 +73,29 @@ namespace EasyParser.Parsing
         }
 
         /// <summary>
-        /// Validates the mutual agreement between options
+        /// One size fits all
         /// </summary>
+        /// <param name="options"></param>
+        /// <param name="currentOption"></param>
+        /// <param name="parsedOptions"></param>
+        /// <returns></returns>
+        protected bool ValidateCommonAttributes(
+            ICollection<Option> options,
+            Option currentOption,
+            Dictionary<string, object> parsedOptions )
+        {
+            return
+                ValidateMutualRelationships( options, currentOption, parsedOptions )
+                && ValidateSettings( options, currentOption, parsedOptions );
+        }
+
+        /// <summary>
+        /// Validates the mutual agreement <see cref="MutualAttribute"/> between <see cref="OptionsAttribute"/>
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="currentOption"></param>
+        /// <param name="parsedOptions"></param>
+        /// <returns></returns>
         protected bool ValidateMutualRelationships(
             ICollection<Option> options,
             Option currentOption,
@@ -122,8 +147,18 @@ namespace EasyParser.Parsing
         }
 
         /// <summary>
-        /// Converts a value to the expected property type
+        /// <see cref="ConvertToOptionType(object, Type, string)"/> converts a <paramref name="value"/> to the expected property type <paramref name="targetType"/>.
         /// </summary>
+        /// <remarks>
+        /// Used mostly when the user provides values for options in unconventional ways. 
+        /// For example: 
+        /// <para>
+        /// --isTrue "tRuE" or --isTrue TRUE or --isTrue TrUe
+        /// </para>
+        /// <para>
+        /// --Count "20"
+        /// </para>
+        /// </remarks>
         protected object ConvertToOptionType( object value, Type targetType, string optionName )
         {
             var valueStr = value.ToString()?.Trim( '"' ) ?? string.Empty;
@@ -152,6 +187,78 @@ namespace EasyParser.Parsing
             }
 
             return Convert.ChangeType( valueStr, targetType );
+        }
+
+        /// <summary>
+        /// Validates a value against the settings defined in <see cref="SettingsAttribute"/>.
+        /// This includes color settings, numeric range validation, and regex pattern matching...
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="currentOption"></param>
+        /// <param name="parsedOptions"></param>
+        /// <returns></returns>
+        protected bool ValidateSettings(
+            ICollection<Option> options,
+            Option currentOption,
+            Dictionary<string, object> parsedOptions )
+        {
+            var settings = currentOption.SettingsAttribute;
+            if( settings == null )
+            {
+                return true;
+            }
+
+            //get the actual value from parsed options
+            var value = parsedOptions.FirstOrDefault( p =>
+                p.Key == currentOption.OptionsAttribute.LongName ||
+                p.Key == currentOption.OptionsAttribute.ShortName.ToString() ||
+                currentOption.OptionsAttribute.Aliases.Contains( p.Key ) ).Value;
+
+            if( value == null )
+            {
+                return true;
+            }
+
+            var stringValue = value.ToString()?.Trim( '"' ) ?? string.Empty;
+            var propertyType = currentOption.Property.PropertyType;
+            var optionName = currentOption.OptionsAttribute.LongName;
+
+            //validate numeric range if applicable / possible
+            if( propertyType == typeof( int ) && ( settings.MinValue.HasValue || settings.MaxValue.HasValue ) )
+            {
+                if( !int.TryParse( stringValue, out int numericValue ) )
+                {
+                    Logger.Critical( $"Value '{stringValue}' for option '{optionName}' must be a valid integer." );
+                    return false;
+                }
+
+                if( settings.MinValue.HasValue && numericValue < settings.MinValue.Value )
+                {
+                    Logger.Critical(
+                        $"Value {numericValue} for option '{optionName}' is below the minimum allowed value of {settings.MinValue.Value}." );
+                    return false;
+                }
+
+                if( settings.MaxValue.HasValue && numericValue > settings.MaxValue.Value )
+                {
+                    Logger.Critical(
+                        $"Value {numericValue} for option '{optionName}' exceeds the maximum allowed value of {settings.MaxValue.Value}." );
+                    return false;
+                }
+            }
+
+            //validate regex pattern if a regex pattern was specified for this property
+            if( settings.CompiledRegex != null && !settings.CompiledRegex.IsMatch( stringValue ) )
+            {
+                var errorMessage = string.IsNullOrEmpty( settings.RegexOnFailureMessage )
+                    ? $"Value '{stringValue}' for option '{optionName}' does not match the required pattern."
+                    : settings.RegexOnFailureMessage;
+
+                Logger.Critical( errorMessage );
+                return false;
+            }
+
+            return true;
         }
     }
 }

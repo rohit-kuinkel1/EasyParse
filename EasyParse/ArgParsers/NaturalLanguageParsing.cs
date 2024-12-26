@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using EasyParser.Core;
 using EasyParser.Enums;
-using EasyParser.Utility;
 
 namespace EasyParser.Parsing
 {
@@ -103,7 +102,7 @@ namespace EasyParser.Parsing
                     parsedOptions[optionName] = value;
                 }
 
-                i++;            
+                i++;
             }
 
             var isProcessingSuccessful = ProcessParsedOptions( verbStore, instance, parsedOptions );
@@ -140,26 +139,26 @@ namespace EasyParser.Parsing
 
         private bool ProcessParsedOptions( Verb verbStore, object instance, Dictionary<string, object> parsedOptions )
         {
-            foreach( var optionStore in verbStore.Options )
+            foreach( var option in verbStore.Options )
             {
                 try
                 {
-                    var optionAttr = optionStore.OptionsAttribute;
+                    var optionAttr = option.OptionsAttribute;
                     var aliases = optionAttr.Aliases;
 
-                    Logger.BackTrace( $"Try get value for {optionAttr}" );
                     if( ( parsedOptions.TryGetValue( optionAttr.LongName, out var value )
                             || parsedOptions.TryGetValue( optionAttr.ShortName.ToString(), out value )
                             || aliases.Any( alias => parsedOptions.TryGetValue( alias, out value ) ) )
                         && Utility.Utility.NotNullValidation( value ) )
                     {
-                        if( !ValidateMutualRelationships( verbStore.Options, optionStore, parsedOptions ) )
+                        //validate all relations 
+                        if( !ValidateCommonAttributes( verbStore.Options, option, parsedOptions ) )
                         {
                             return false;
                         }
 
-                        var convertedValue = ConvertToOptionType( value, optionStore.Property.PropertyType, optionStore.OptionsAttribute.LongName );
-                        optionStore.Property.SetValue( instance, convertedValue );
+                        var convertedValue = ConvertToOptionType( value, option.Property.PropertyType, option.OptionsAttribute.LongName );
+                        option.Property.SetValue( instance, convertedValue );
                     }
                     else if( optionAttr.Required )
                     {

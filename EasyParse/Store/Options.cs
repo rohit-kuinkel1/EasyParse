@@ -21,6 +21,11 @@ namespace EasyParser.Core
         public OptionsAttribute OptionsAttribute { get; }
 
         /// <summary>
+        /// Gets the SettingsAttribute associated with the option.
+        /// </summary>
+        public SettingsAttribute? SettingsAttribute { get; }
+
+        /// <summary>
         /// represents the mutual attributes associated with a specific option.
         /// Note: storing a <see cref="List{MutualAttribute}"/> because a single property in the original class can have multiple mutual attributes
         /// attached to it. <see cref="MutualAttribute"/> where AllowMultiple = true is set
@@ -34,10 +39,11 @@ namespace EasyParser.Core
         /// <param name="optionsAttribute">The OptionsAttribute associated with the option.</param>
         public Option( PropertyInfo property, OptionsAttribute optionsAttribute )
         {
-            Property = property;
             OptionsAttribute = optionsAttribute;
-            MutualAttributes = property.GetCustomAttributes<MutualAttribute>().ToList();
-            Console.WriteLine( string.Join( ",", MutualAttributes ) );
+
+            Property = property;
+            MutualAttributes = property.GetCustomAttributes<MutualAttribute>().ToList() ;
+            SettingsAttribute = property.GetCustomAttribute<SettingsAttribute>();
         }
 
         /// <summary>
@@ -50,6 +56,7 @@ namespace EasyParser.Core
                 $"\n\tOptionStore: \n" +
                 $"\t\tName: {Property.Name}\n" +
                 $"\t\t{OptionsAttribute}\n" +
+                $"\t\tSettings: {SettingsAttribute}\n" +
                 $"\t\tMutual Attributes: {string.Join( "\t\t\t", MutualAttributes )}\n";
         }
     }

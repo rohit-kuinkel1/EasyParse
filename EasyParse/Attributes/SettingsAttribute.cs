@@ -16,7 +16,7 @@ namespace EasyParser.Core
         /// When used in conjuction with <see cref="OptionsAttribute"/> it helps 
         /// set a console color to the class property.
         /// </summary>
-        public ConsoleColor? Color { get; }
+        public ConsoleColor? Color { get; internal set; }
 
         /// <summary>
         /// Minimum value for validation (used for numeric types).
@@ -35,17 +35,22 @@ namespace EasyParser.Core
         public int? MaxValue { get; set; }
 
         /// <summary>
+        /// Defines the regex pattern to be used to be set for <see cref="CompiledRegex"/>
+        /// </summary>
+        public string RegexPattern { get; set; }
+
+        /// <summary>
         /// Compiled Regex pattern to validate the option's value.
         /// When set on a class property (class needs to have <see cref="VerbAttribute"/> as its decorator) as a
         /// helping attribute to the <see cref="OptionsAttribute"/> it can 
         /// be used to leverage runtime regex pattern matching checks automatically.
         /// </summary>
-        public Regex? CompiledRegex { get; }
+        internal Regex? CompiledRegex { get; }
 
         /// <summary>
         /// Error message for regex validation.
         /// </summary>
-        public string? RegexErrorMessage { get; }
+        public string? RegexOnFailureMessage { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsAttribute"/> class.
@@ -56,18 +61,18 @@ namespace EasyParser.Core
         /// <param name="regexPattern">Regex pattern for value validation.</param>
         /// <param name="regexErrorMessage">Error message for regex validation.</param>
         public SettingsAttribute(
-            ConsoleColor? color = null,
-            int? minValue = null,
-            int? maxValue = null,
+            //ConsoleColor? color = null,
+            //int? minValue = null,
+            //int? maxValue = null,
             string regexPattern = "",
             string regexErrorMessage = ""
         )
             : base( string.Empty, Array.Empty<string>() ) //array.empty<T>() is slightly better than [] in terms of performance
         {
-            Color = color;
-            MinValue = minValue;
-            MaxValue = maxValue;
-            RegexErrorMessage = regexErrorMessage;
+            //Color = color;
+            //MinValue = minValue;
+            //MaxValue = maxValue;
+            RegexOnFailureMessage = regexErrorMessage;
 
             if( !string.IsNullOrWhiteSpace( regexPattern ) )
             {
