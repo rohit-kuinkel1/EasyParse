@@ -9,6 +9,6 @@
         /// parses the provided <paramref name="args"/> to be used and stored internally for later use.
         /// </summary>
         /// <param name="args"></param>
-        ParsingResult<T> Parse<T>( string[] args ) where T : class, new();
+        public ParsingResult<T> Parse<T>( string[] args ) where T : class, new();
     }
 }

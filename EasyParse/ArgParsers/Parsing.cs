@@ -11,7 +11,8 @@ namespace EasyParser.Parsing
     /// <summary>
     /// Base class containing common functionality for parsing implementations
     /// </summary>
-    internal abstract class ParsingBase : IParsing
+    //if the base class implements the interface, then all the children will/should implement it automatically, which follows LSP
+    internal abstract class Parsing : IParsing
     {
         /// <summary>
         /// Stores all the propertyInfos for the classes marked with <see cref="VerbAttribute"/> regardless of the binding flags.
