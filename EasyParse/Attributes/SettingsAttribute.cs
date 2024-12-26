@@ -13,21 +13,32 @@ namespace EasyParser.Core
     {
         /// <summary>
         /// The color associated with the option (e.g., for console output).
+        /// When used in conjuction with <see cref="OptionsAttribute"/> it helps 
+        /// set a console color to the class property.
         /// </summary>
         public ConsoleColor? Color { get; }
 
         /// <summary>
         /// Minimum value for validation (used for numeric types).
+        /// When used in conjuction with <see cref="OptionsAttribute"/> it helps 
+        /// set a lower limit to the class property. 
+        /// (Class needs to have <see cref="VerbAttribute"/> as its decorator)
         /// </summary>
         public int? MinValue { get; set; }
 
         /// <summary>
         /// Maximum value for validation (used for numeric types).
+        /// When used in conjuction with <see cref="OptionsAttribute"/> it helps 
+        /// set an upper limit to the class property.
+        /// (class needs to have <see cref="VerbAttribute"/> as its decorator)
         /// </summary>
         public int? MaxValue { get; set; }
 
         /// <summary>
         /// Compiled Regex pattern to validate the option's value.
+        /// When set on a class property (class needs to have <see cref="VerbAttribute"/> as its decorator) as a
+        /// helping attribute to the <see cref="OptionsAttribute"/> it can 
+        /// be used to leverage runtime regex pattern matching checks automatically.
         /// </summary>
         public Regex? CompiledRegex { get; }
 

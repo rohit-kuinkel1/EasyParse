@@ -99,7 +99,6 @@ namespace EasyParser.Parsing
                 if( i + 2 < args.Length && args[i + 1].ToLowerInvariant() == ParsingKeyword.Is.ToString().ToLowerInvariant() )
                 {
                     var optionName = args[i];
-                    //var value = args[i + 2]; //ParseMultiWordValue( args, ref i );
                     var value = ParseMultiWordValue( args, ref i );
                     parsedOptions[optionName] = value;
                 }

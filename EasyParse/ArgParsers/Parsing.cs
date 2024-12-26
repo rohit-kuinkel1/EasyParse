@@ -24,6 +24,12 @@ namespace EasyParser.Parsing
         /// </summary>
         protected Verb? _verbStore;
 
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public abstract ParsingResult<T> Parse<T>( string[] args ) where T : class, new();
 
         /// <summary>

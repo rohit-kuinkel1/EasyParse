@@ -2,7 +2,7 @@
   "profiles": {
     "EasyParseUseCase": {
       "commandName": "Project",
-      "commandLineArgs": "add where read is \"Help.txt Ferrari Fast Car\" stdin is true verbose is \"trUe\" count is \"20\" "
+      "commandLineArgs": "add where read is Help.txt Ferrari Fast Car stdin is true verbose is \"trUe\" count is \"20\" "
     }
   }
 }
