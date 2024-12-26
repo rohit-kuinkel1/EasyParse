@@ -99,14 +99,12 @@ namespace EasyParser.Parsing
                 if( i + 2 < args.Length && args[i + 1].ToLowerInvariant() == ParsingKeyword.Is.ToString().ToLowerInvariant() )
                 {
                     var optionName = args[i];
+                    //var value = args[i + 2]; //ParseMultiWordValue( args, ref i );
                     var value = ParseMultiWordValue( args, ref i );
                     parsedOptions[optionName] = value;
-                    i += 3;
                 }
-                else
-                {
-                    i++;
-                }
+
+                i++;            
             }
 
             var isProcessingSuccessful = ProcessParsedOptions( verbStore, instance, parsedOptions );
@@ -132,7 +130,7 @@ namespace EasyParser.Parsing
                     index--;
                     break;
                 }
-                
+
                 valueBuilder.Add( args[index] );
                 index++;
             }
@@ -150,6 +148,7 @@ namespace EasyParser.Parsing
                     var optionAttr = optionStore.OptionsAttribute;
                     var aliases = optionAttr.Aliases;
 
+                    Logger.BackTrace( $"Try get value for {optionAttr}" );
                     if( ( parsedOptions.TryGetValue( optionAttr.LongName, out var value )
                             || parsedOptions.TryGetValue( optionAttr.ShortName.ToString(), out value )
                             || aliases.Any( alias => parsedOptions.TryGetValue( alias, out value ) ) )

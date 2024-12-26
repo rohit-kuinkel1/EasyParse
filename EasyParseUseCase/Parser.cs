@@ -2,15 +2,6 @@
 
 namespace Program
 {
-    public class ParseOptions
-    {
-        [Options( 'v', "verbose", HelpText = "Enable verbose output." )]
-        public bool Verbose { get; set; }
-
-        [Options( 'c', "config", HelpText = "Path to the config file." )]
-        public string? ConfigPath { get; set; }
-    }
-
     /// <summary>
     /// <para>
     /// The demo <see cref="ParseVerbs"/> class encapsulates the command-line options for the EasyParse library. 
@@ -37,7 +28,7 @@ namespace Program
         [Mutual( EasyParser.Enums.MutualType.Inclusive, nameof( Count ), nameof( Stdin ) )]
         public string? InputFile { get; set; }
 
-        [Mutual( EasyParser.Enums.MutualType.Exclusive, nameof( Count ))]
+        [Mutual( EasyParser.Enums.MutualType.Exclusive, "TEST")]
         [Options( 'v', "verbose", Default = false, Required = true, HelpText = "Prints all messages to standard output." )]
         public bool Verbose { get; set; }
 
