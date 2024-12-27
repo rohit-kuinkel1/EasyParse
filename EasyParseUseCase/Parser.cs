@@ -25,7 +25,7 @@ namespace Program
     public class ParseVerbs
     {
         [Options( 'r', "read", Default = null, Required = false, HelpText = "Input files to be processed.", Aliases = new[] { "reading", "studying" } )]
-        [Settings(  RegexPattern = @"^[a-zA-Z0-9\s]+\.(txt|doc|pdf)$", RegexOnFailureMessage = "File must have a valid extension (txt, doc, or pdf)" )]
+        [Settings( MinValue = 10, RegexPattern = @"^[a-zA-Z0-9\s]+\.(txt|doc|pdf)$", RegexOnFailureMessage = "File must have a valid extension (txt, doc, or pdf)" )]
         [Mutual( EasyParser.Enums.MutualType.Inclusive, nameof( Count ), nameof( Stdin ) )]
         public string? InputFile { get; set; }
 
