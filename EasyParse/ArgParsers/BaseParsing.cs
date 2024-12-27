@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using EasyParser.Core;
 using EasyParser.Enums;
 using EasyParser.Utility;
@@ -247,14 +248,18 @@ namespace EasyParser.Parsing
             }
 
             //validate regex pattern if a regex pattern was specified for this property
-            if( settings.CompiledRegex != null && !settings.CompiledRegex.IsMatch( stringValue ) )
+            if( settings.CompiledRegex == null && !string.IsNullOrEmpty( settings.RegexPattern ) )          
             {
-                var errorMessage = string.IsNullOrEmpty( settings.RegexOnFailureMessage )
-                    ? $"Value '{stringValue}' for option '{optionName}' does not match the required pattern."
-                    : settings.RegexOnFailureMessage;
+                settings.CompiledRegex = new Regex( settings.RegexPattern, RegexOptions.Compiled );
+                if( !settings.CompiledRegex.IsMatch( stringValue ) )
+                {
+                    var errorMessage = string.IsNullOrEmpty( settings.RegexOnFailureMessage )
+                        ? $"Value '{stringValue}' for option '{optionName}' does not match the required pattern."
+                        : settings.RegexOnFailureMessage;
 
-                Logger.Critical( errorMessage );
-                return false;
+                    Logger.Critical( errorMessage );
+                    return false;
+                }
             }
 
             return true;

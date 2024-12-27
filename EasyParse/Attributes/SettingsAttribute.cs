@@ -43,7 +43,7 @@ namespace EasyParser.Core
         /// helping attribute to the <see cref="OptionsAttribute"/> it can 
         /// be used to leverage runtime regex pattern matching checks automatically.
         /// </summary>
-        internal Regex? CompiledRegex { get; }
+        internal Regex? CompiledRegex { get; set; }
 
         /// <summary>
         /// Error message for regex validation.
