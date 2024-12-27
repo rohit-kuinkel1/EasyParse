@@ -224,25 +224,24 @@ namespace EasyParser.Parsing
             var optionName = currentOption.OptionsAttribute.LongName;
 
             //validate numeric range if applicable / possible
-            if( propertyType == typeof( int ) && ( settings.MinValue.HasValue || settings.MaxValue.HasValue ) )
+            if( propertyType == typeof( int ) && ( settings.MinValue != SettingsAttribute.DefaultNotProvidedMinMax && settings.MaxValue != SettingsAttribute.DefaultNotProvidedMinMax ) )
             {
                 if( !int.TryParse( stringValue, out int numericValue ) )
                 {
                     Logger.Critical( $"Value '{stringValue}' for option '{optionName}' must be a valid integer." );
                     return false;
                 }
-
-                if( settings.MinValue.HasValue && numericValue < settings.MinValue.Value )
+                if( numericValue < settings.MinValue )
                 {
                     Logger.Critical(
-                        $"Value {numericValue} for option '{optionName}' is below the minimum allowed value of {settings.MinValue.Value}." );
+                        $"Value {numericValue} for option '{optionName}' is below the minimum allowed value of {settings.MinValue}." );
                     return false;
                 }
 
-                if( settings.MaxValue.HasValue && numericValue > settings.MaxValue.Value )
+                if(  numericValue > settings.MaxValue )
                 {
                     Logger.Critical(
-                        $"Value {numericValue} for option '{optionName}' exceeds the maximum allowed value of {settings.MaxValue.Value}." );
+                        $"Value {numericValue} for option '{optionName}' exceeds the maximum allowed value of {settings.MaxValue}." );
                     return false;
                 }
             }
