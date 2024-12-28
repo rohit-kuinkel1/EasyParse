@@ -29,14 +29,15 @@ namespace Program
         [Mutual( EasyParser.Enums.MutualType.Inclusive, nameof( Count ), nameof( Stdin ) )]
         public string? InputFile { get; set; }
 
-        [Mutual( EasyParser.Enums.MutualType.Exclusive, "TEST")]
+        [Mutual( EasyParser.Enums.MutualType.Exclusive, "TEST" )]
         [Options( 'v', "verbose", Default = false, Required = true, HelpText = "Prints all messages to standard output." )]
         public bool Verbose { get; set; }
 
         [Options( 's', "stdin", Default = false, Required = false, HelpText = "Read from stdin", Aliases = new[] { "standardin", "stdinput" } )]
         public bool Stdin { get; set; }
 
-        [Options( 'c', "count", Default = 0, Required = false, HelpText = "Count of verbs", Aliases = new[] { "length", "total" } )] //Aliases have to be at least 2 stringed words
+        [Options( 'c', "count", Default = 0, Required = false, HelpText = "Count of verbs", Aliases = new[] { "length", "total" } )] 
+        [Settings( MaxValue = 20, MinValue = 0 )]
         public int Count { get; set; }
     }
 }
