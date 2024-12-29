@@ -34,7 +34,6 @@ namespace EasyParser
         {
         }
 
-
         /// <summary>
         /// Parameterized Constructor for <see cref="EasyParse"/>.
         /// Set the <paramref name="minLogLevel"/> to the desired minimum logLevel.
@@ -120,8 +119,6 @@ namespace EasyParser
                 return new ParsingResult<T>( false, ex.Message, default! );
             }
         }
-
-
 
         /// <summary>
         /// Exports the default EasyParser configuration to a file named EasyParse.cs.
