@@ -31,7 +31,8 @@ namespace Program.Parsing
     /// </para>
     /// </summary>
     //add --read "File Name.txt" --verbose True --stdin false --Count 10
-    //a -r "File Name.txt" -v True --s false --c 10
+    //add where read is "File Name.txt" verbose is True stdin is false count is 10
+    //a -r "File Name.txt" -v True -s false -c 10
     [Verb('a', "add", Required = false, HelpText = "Add file contents to the index.")]
     public class ParseVerbs
     {
