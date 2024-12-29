@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace EasyParser.Suggestions.Metrics
+namespace EasyParser.Core
 {
-    internal class JaroWinkler : IDidYouMean
+    internal class JaroWinklerSimilarity : ISimilarityCheck
     {
         private const double PREFIX_SCALE = 0.1;
 

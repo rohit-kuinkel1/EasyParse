@@ -1,9 +1,9 @@
-﻿namespace EasyParser.Suggestions.Metrics
-{
+﻿namespace EasyParser.Core
+{ 
     /// <summary>
     /// Default contract to implement for all the DYM algorithms.
     /// </summary>
-    public interface IDidYouMean
+    public interface ISimilarityCheck
     {
         /// <summary>
         /// Calculates the similarities between the <paramref name="source"/> and <paramref name="target"/>

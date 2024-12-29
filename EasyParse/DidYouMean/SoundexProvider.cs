@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
-namespace EasyParser.Suggestions.Phonetic
+namespace EasyParser.Core
 {
     /// <summary>
     /// Provides functionality for generating Soundex codes for given input strings.

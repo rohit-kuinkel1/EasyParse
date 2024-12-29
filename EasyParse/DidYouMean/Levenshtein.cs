@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace EasyParser.Suggestions.Metrics
-{
-    internal class LevenshteinMetric : IDidYouMean
+namespace EasyParser.Core
+{ 
+    internal class LevenshteinSimilarity : ISimilarityCheck
     {
         /// <summary>
         /// Calculates the Levenshtein similarity score between two strings.
