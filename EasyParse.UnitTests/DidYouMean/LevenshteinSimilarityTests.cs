@@ -3,20 +3,16 @@
 namespace EasyParser.Tests
 {
     [TestFixture]
-    public class JaroWinklerSimilarityTests
+    public class LevenshteinSimilarityTests
     {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         private ISimilarityCheck _similarity;
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-        /// <summary>
-        /// <see cref="_similarity"/> can be instantiated only once since there are no properties in the class itself,
-        /// this will make the test a tad bit more efficient as opposed to using <see cref="SetUpAttribute"/>
-        /// </summary>
         [OneTimeSetUp]
         public void Setup()
         {
-            _similarity = new JaroWinklerSimilarity();
+            _similarity = new LevenshteinSimilarity();
         }
 
         [Test]
@@ -46,56 +42,56 @@ namespace EasyParser.Tests
         [Test]
         public void Calculate_IdenticalStrings_Returns1()
         {
-            string source = "MARTHA";
-            string target = "MARTHA";
+            string source = "hello";
+            string target = "hello";
 
             double result = _similarity.Calculate( source, target );
 
             Assert.That( result, Is.EqualTo( 1.0 ) );
         }
 
-        [TestCase( "MARTHA", "MARHTA", 0.961 )]
-        [TestCase( "DIXON", "DICKSONX", 0.813 )]
-        [TestCase( "JELLYFISH", "SMELLYFISH", 0.896 )]
+        [TestCase( "kitten", "sitting", 0.571, Description = "Classic Levenshtein example" )]
+        [TestCase( "saturday", "sunday", 0.625, Description = "Day of week comparison" )]
+        [TestCase( "book", "back", 0.5, Description = "Single character substitution" )]
         public void Calculate_SimilarStrings_ReturnsExpectedScore( string source, string target, double expected )
         {
             double result = _similarity.Calculate( source, target );
-            //Assert.That(result, Is.EqualTo( expected ) );
+
             Assert.That( result, Is.InRange( expected - 0.001, expected + 0.001 ) );
+        }
+
+        [Test]
+        public void Calculate_SingleCharacterDifference_ReturnsExpectedScore()
+        {
+            string source = "test";
+            string target = "tent";
+
+            double result = _similarity.Calculate( source, target );
+
+            Assert.That( result, Is.EqualTo( 0.75 ), "One character difference in 4 letter word should return 0.75" ); //all 4 match = 100, 3 letters match = 75
         }
 
         [Test]
         public void Calculate_CompletelyDifferentStrings_ReturnsLowScore()
         {
-            string source = "ABC";
-            string target = "XYZ";
+            string source = "abc";
+            string target = "xyz";
 
             double result = _similarity.Calculate( source, target );
 
-            Assert.That( result, Is.EqualTo( 0.0 ) );
-        }
-
-        [Test]
-        public void Calculate_StringsWithCommonPrefix_ReturnsHigherScore()
-        {
-            string source = "TRANSPORT";
-            string target = "TRANSFER";
-
-            double result = _similarity.Calculate( source, target );
-            double resultReversed = _similarity.Calculate( "SPORT", "SFER" );
-
-            Assert.That( result, Is.GreaterThan( resultReversed ), "Strings with common prefix should have had higher similarity" );
+            Assert.That( result, Is.LessThan( 0.4 ) );
         }
 
         [Test]
         public void Calculate_CaseSensitiveComparison()
         {
-            string source = "Martha";
-            string target = "MARTHA";
+            string source = "Test";
+            string target = "test";
 
             double result = _similarity.Calculate( source, target );
 
-            Assert.That( result, Is.LessThan( 0.99 ), "Case sensitive comparison should not consider different cased strings as identical" );
+            //0.75
+            Assert.That( result, Is.LessThan( 0.8 ), "Case sensitive comparison should not consider different cased strings as identical" );
         }
 
         [Test]
@@ -112,34 +108,34 @@ namespace EasyParser.Tests
         [Test]
         public void Calculate_StringsWithSpecialCharacters()
         {
-            string source = "Hello!@#$%";
-            string target = "Hello@#$%!";
+            string source = "test!@#";
+            string target = "test#@!";
 
             double result = _similarity.Calculate( source, target );
 
-            Assert.That( result, Is.GreaterThan( 0.8 ), "Positioning of special characters should have been handled properly" );
+            Assert.That( result, Is.GreaterThan( 0.5 ), "Positioning of special characters should have been handled properly" );
         }
 
         [Test]
         public void Calculate_StringsWithNumbers()
         {
-            string source = "Test123";
-            string target = "Test321";
+            string source = "test123";
+            string target = "test321";
 
             double result = _similarity.Calculate( source, target );
 
-            Assert.That( result, Is.GreaterThan( 0.8 ), "Positioning of numbers should have been handled properly" );
+            Assert.That( result, Is.GreaterThan( 0.5 ), "Positioning of numbers should have been handled properly" );
         }
 
         [Test]
         public void Calculate_StringsWithSpaces()
         {
-            string source = "Hello World";
-            string target = "Hello  World";
+            string source = "Hello world";
+            string target = "Hello  world";
 
             double result = _similarity.Calculate( source, target );
 
-            Assert.That( result, Is.GreaterThan( 0.9 ), "Difference in spaces should have been handled properly" );
+            Assert.That( result, Is.GreaterThan( 0.8 ), "Number of spaces should have been handled properly" );
         }
 
         [Test]
@@ -161,17 +157,37 @@ namespace EasyParser.Tests
             Assert.That( 0.0, Is.EqualTo( result3 ) );
         }
 
-
-
-        [TestCase( "MARTHA", "MARHTA" )]
-        [TestCase( "DIXON", "DICKSONX" )]
-        [TestCase( "JELLYFISH", "SMELLYFISH" )]
+        [TestCase( "kitten", "sitting" )]
+        [TestCase( "book", "back" )]
+        [TestCase( "hello", "hallo" )]
         public void Calculate_Symmetry_ReturnsConsistentResults( string str1, string str2 )
         {
             double result1 = _similarity.Calculate( str1, str2 );
             double result2 = _similarity.Calculate( str2, str1 );
 
             Assert.That( result1, Is.EqualTo( result2 ) );
+        }
+
+        [Test]
+        public void Calculate_SubstringRelationship()
+        {
+            string source = "test";
+            string target = "testing";
+
+            double result = _similarity.Calculate( source, target );
+
+            Assert.That( result, Is.GreaterThan( 0.5 ), "Substring should have had relatively high similarity" );
+        }
+
+        [Test]
+        public void Calculate_SingleCharacterStrings()
+        {
+            string source = "a";
+            string target = "b";
+
+            double result = _similarity.Calculate( source, target );
+
+            Assert.That( result, Is.EqualTo( 0.0 ), "Different single characters should have had zero similarity" );
         }
     }
 }

@@ -15,14 +15,9 @@ namespace EasyParser.Core
         /// <returns>A similarity score between 0 and 1, where 1 indicates identical strings</returns>
         public double Calculate( string source, string target )
         {
-            //var check1 = EasyParser.Utility.Utility.NotNullValidation( source, throwIfNull: false );
-            //var check2 = EasyParser.Utility.Utility.NotNullValidation( target, throwIfNull: false );
-            //if( !check1 || !check2 )
-            //{
-            //    return 0.0;
-            //}
-
-            if( string.IsNullOrEmpty( source ) || string.IsNullOrEmpty( target ) )
+            var check1 = EasyParser.Utility.Utility.NotNullValidation( source, throwIfNull: false );
+            var check2 = EasyParser.Utility.Utility.NotNullValidation( target, throwIfNull: false );
+            if( !check1 || !check2 )
             {
                 return 0.0;
             }
