@@ -10,4 +10,8 @@
 		<Deterministic>true</Deterministic>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
 	</PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="EasyParse.UnitTests" />
+    </ItemGroup>
 </Project>

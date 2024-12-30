@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EasyParser.Suggestions
+namespace EasyParser.Core
 {
     internal class DidYouMean
     {
