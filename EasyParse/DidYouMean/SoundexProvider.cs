@@ -25,23 +25,25 @@ namespace EasyParser.Core
                 return string.Empty;
             }
 
-            var code = input.ToUpper()[0].ToString();
-            var previous = '0';
+            var code = GetDigit( input.ToUpper()[0] ).ToString();
+            var previousCode = GetDigit( input.ToUpper()[0] );
 
             foreach( var c in input.ToUpper().Skip( 1 ).Where( char.IsLetter ) )
             {
-                var current = GetDigit( c );
-                if( current != '0' && current != previous )
+                var currentCode = GetDigit( c );
+
+                //only add non zero digits that differ from the previous code
+                if( currentCode != '0' && currentCode != previousCode )
                 {
-                    code += current;
+                    code += currentCode;
+                    if( code.Length == 4 ) break;
                 }
-                previous = current;
-                if( code.Length == 4 ) break;
+
+                previousCode = currentCode;
             }
 
             //pad the code to 4 characters if necessary, ensures that the Soundex code always has a consistent length of 4 characters, which is the standard format for Soundex codes.
-            code = code.PadRight( 4, '0' );
-            return code;
+            return code.PadRight( 4, '0' );
         }
 
         /// <summary>
@@ -51,6 +53,7 @@ namespace EasyParser.Core
         /// <returns>
         /// A character representing the Soundex digit (0-6), based on the input character.
         /// </returns>
+        //( "Smith", "Smythe" )
         private static char GetDigit( char c ) => c switch
         {
             'B' or 'F' or 'P' or 'V' => '1',
