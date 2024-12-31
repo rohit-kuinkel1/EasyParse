@@ -1,0 +1,47 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Extract .NET version
+      id: extract-version
+      shell: pwsh
+      run: |
+        if (Test-Path "EasyParse/global.json") {
+          $version = (Get-Content "EasyParse/global.json" | ConvertFrom-Json).sdk.version
+          "dotnet_version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+        } 
+        else {
+          Write-Host "global.json not found, using latest LTS version"
+          "dotnet_version=8.0.x" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+        }
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ steps.extract-version.outputs.dotnet_version }}
+
+    - name: Restore dependencies
+      shell: pwsh
+      run: dotnet restore EasyParse/EasyParse.csproj
+      
+    - name: Build
+      shell: pwsh
+      run: dotnet build EasyParse/EasyParse.csproj --configuration Release --no-restore
+      
+    - name: Test
+      shell: pwsh
+      run: dotnet test EasyParse/EasyParse.csproj --configuration Release --no-build
