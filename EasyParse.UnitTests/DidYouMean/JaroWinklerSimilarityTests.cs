@@ -156,9 +156,9 @@ namespace EasyParser.Tests
                 result3 = _similarity.Calculate( null!, null! );
             } );
 
-            Assert.That( 0.0, Is.EqualTo( result1 ) );
-            Assert.That( 0.0, Is.EqualTo( result2 ) );
-            Assert.That( 0.0, Is.EqualTo( result3 ) );
+            Assert.That( result1 , Is.EqualTo( 0.0 ) );
+            Assert.That( result2, Is.EqualTo( 0.0 ) );
+            Assert.That( result3, Is.EqualTo( 0.0 ) );
         }
 
 
