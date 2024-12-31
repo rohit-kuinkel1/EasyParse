@@ -1,17 +1,13 @@
 ﻿using System.Reflection;
+using EasyParse.Tests;
 using EasyParser.Core;
 
 namespace EasyParser.Tests
 {
-    internal class MockClass
-    {
-        public string TestProperty { get; set; } = string.Empty;
-    }
 
     [TestFixture]
     public class DidYouMeanTests
     {
-
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         private DidYouMean _didYouMean;
         private Type _dummyType;
