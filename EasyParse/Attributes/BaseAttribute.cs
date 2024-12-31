@@ -29,8 +29,15 @@ namespace EasyParser.Core
             get => _aliases ?? Array.Empty<string>();
             set
             {
-                _aliases = value.Where( alias => alias.Length >= 2 ).ToArray();
-                Logger.Debug( "Some aliases were discarded because they were either empty or their length was less than the defined threshold 2." );
+                var validAliases = value.Where( alias => alias.Length >= 2 ).ToArray();
+                var discardedAliases = value.Where( alias => alias.Length < 2 ).ToArray();
+
+                _aliases = validAliases;
+
+                if( discardedAliases.Length > 0 )
+                {
+                    Logger.Debug( $"Some aliases were discarded because they were either empty or their length was less than the defined threshold (2): {string.Join( ", ", discardedAliases )}" );
+                }
             }
         }
 
