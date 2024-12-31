@@ -28,6 +28,8 @@ jobs:
           Write-Host "global.json not found, using latest LTS version"
           "dotnet_version=8.0.x" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
         }
+        
+        Write-Host "Dotnet Version was $version"
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -40,8 +42,8 @@ jobs:
       
     - name: Build
       shell: pwsh
-      run: dotnet build EasyParse/EasyParse.csproj --configuration Release --no-restore
+      run: dotnet build --configuration Release --no-restore
       
     - name: Test
       shell: pwsh
-      run: dotnet test EasyParse/EasyParse.csproj --configuration Release --no-build
+      run: dotnet test --configuration Release
