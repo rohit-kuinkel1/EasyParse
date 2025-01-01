@@ -29,7 +29,7 @@ namespace EasyParser.Core
             get => _aliases ?? Array.Empty<string>();
             set
             {
-                var validAliases = value.Where( alias => alias.Length >= 2 ).ToArray();
+                var validAliases = value.Where( alias => !string.IsNullOrWhiteSpace(alias) && alias.Length >= 2 ).ToArray();
                 var discardedAliases = value.Where( alias => alias.Length < 2 ).ToArray();
 
                 _aliases = validAliases;
