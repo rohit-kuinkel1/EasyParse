@@ -11,7 +11,7 @@ namespace EasyParser
     /// <summary>
     /// public entry point for the Parser.
     /// </summary>
-    public class EasyParse
+    public sealed class EasyParse
     {
         /// <summary>
         /// abstraction of the parsing type to parse the args
@@ -127,8 +127,8 @@ namespace EasyParser
         public static void ExportDefaultConfig( string? targetDirectory = null, bool exportWithMain = false )
         {
             var configCode = exportWithMain
-                ? GetConfigTemplateWithMain()
-                : GetConfigTemplateWithoutMain();
+                ? Template.GetConfigTemplateWithMain()
+                : Template.GetConfigTemplateWithoutMain();
 
             var initialDirectory = FileHandler.GetInitialDirectory();
 
@@ -136,16 +136,6 @@ namespace EasyParser
             Console.WriteLine( $"Using directory: {writableDirectory}" );
 
             FileHandler.SaveConfigFile( writableDirectory, configCode );
-        }
-
-        private static string GetConfigTemplateWithMain()
-        {
-            return Template.GetConfigTemplateBase() + "\n" + Template.GetMainMethodTemplate() + "\n}";
-        }
-
-        private static string GetConfigTemplateWithoutMain()
-        {
-            return Template.GetConfigTemplateBase() + "\n}";
         }
     }
 }

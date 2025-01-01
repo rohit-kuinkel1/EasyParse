@@ -52,21 +52,22 @@ namespace Program.Parsing
         [Settings( MaxValue = 20, MinValue = 0 )]
         public int Count { get; set; }
     }
-  
-//public static void Main(string[] args)
+
+    //public static void Main( string[] args )
     //{
-        //LogLevel.BackTrace cannot be set by the users; levels => Debug, Info, Warning, Error, Critical, None
-        //you can disable the EasyParser logger by: EasyParser.Logger.IsLoggerEnabled = false;
-        //var parser = new EasyParse(LogLevel.Debug, false);
-        //var parsingResult = parser.Parse<ParseVerbs>(args);
-        //if(parsingResult.Success)
-        //{
-            // do something
-        //}
-        //else
-        //{
-            // do something
-            // Console.WriteLine(parsingResult.ErrorMessage);
-        //}
+    //    //LogLevel.BackTrace cannot be set by the users; levels => Debug, Info, Warning, Error, Critical, None
+    //    //you can disable the EasyParser logger by: EasyParser.Logger.IsLoggerEnabled = false;
+
+    //    var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.Debug, redirectLogsToFile: false );
+    //    var parsingResult = parser.Parse<ParseVerbs>( args );
+    //    if( parsingResult.Success )
+    //    {
+    //        // do something
+    //    }
+    //    else
+    //    {
+    //        // do something
+    //        Console.WriteLine( parsingResult.ErrorMessage );
+    //    }
     //}
 }

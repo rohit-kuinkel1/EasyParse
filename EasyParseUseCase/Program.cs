@@ -46,7 +46,7 @@
 
             EasyParser.EasyParse.ExportDefaultConfig( exportWithMain: true );
             EasyParser.Logger.IsLoggerEnabled = true;
-            var parser = new EasyParser.EasyParse( EasyParser.LogLevel.BackTrace );
+            var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.BackTrace, redirectLogsToFile: false );
             var parsingResult = parser.Parse<ParseVerbs>( args1 );
             if( parsingResult.Success )
             {

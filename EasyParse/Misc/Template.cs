@@ -2,6 +2,16 @@
 {
     internal static class Template
     {
+        internal static string GetConfigTemplateWithMain()
+        {
+            return Template.GetConfigTemplateBase() + "\n" + Template.GetMainMethodTemplate() + "\n}";
+        }
+
+        internal static string GetConfigTemplateWithoutMain()
+        {
+            return Template.GetConfigTemplateBase() + "\n}";
+        }
+
         /// <summary>
         ///  Gets the config template string including the public static void Main(string[] args)... part
         /// </summary>
@@ -69,19 +79,20 @@ namespace Program.Parsing
         {
             return
 @"  
-//public static void Main(string[] args)
+    //public static void Main(string[] args)
     //{
-        //LogLevel.BackTrace cannot be set by the users; levels => Debug, Info, Warning, Error, Critical, None
-        //you can disable the EasyParser logger by: EasyParser.Logger.IsLoggerEnabled = false;
-        //var parser = new EasyParse(LogLevel.Debug, false);
+        ////LogLevel.BackTrace cannot be set by the users; levels => Debug, Info, Warning, Error, Critical, None
+        ////you can disable the EasyParser logger by: EasyParser.Logger.IsLoggerEnabled = false;
+
+        //var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.Debug, redirectLogsToFile: false );
         //var parsingResult = parser.Parse<ParseVerbs>(args);
         //if(parsingResult.Success)
         //{
-            // do something
+            //// do something
         //}
         //else
         //{
-            // do something
+            //// do something
             // Console.WriteLine(parsingResult.ErrorMessage);
         //}
     //}";
