@@ -82,9 +82,10 @@ namespace Program.Parsing
     //public static void Main(string[] args)
     //{
         ////LogLevel.BackTrace cannot be set by the users; levels => Debug, Info, Warning, Error, Critical, None
-        ////you can disable the EasyParser logger by: EasyParser.Logger.IsLoggerEnabled = false;
 
         //var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.Debug, redirectLogsToFile: false );
+        // parser.SetLoggerStatusEnabled( true );
+
         //var parsingResult = parser.Parse<ParseVerbs>(args);
         //if(parsingResult.Success)
         //{

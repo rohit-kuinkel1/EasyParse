@@ -45,8 +45,9 @@
             var args1 = new[] { "add", "where", "read", "is", "Help File Test.txt", "verbose", "is", "True", "stdin", "is", "TRUE", "count", "is", "210" };
 
             EasyParser.EasyParse.ExportDefaultConfig( exportWithMain: true );
-            EasyParser.Logger.IsLoggerEnabled = true;
-            var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.BackTrace, redirectLogsToFile: false );
+            var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.Debug, redirectLogsToFile: true, logDirectory: @"C:\Users\kuike\Desktop\EasyParseLogs" );
+            parser.SetLoggerStatusEnabled( true );
+
             var parsingResult = parser.Parse<ParseVerbs>( args1 );
             if( parsingResult.Success )
             {

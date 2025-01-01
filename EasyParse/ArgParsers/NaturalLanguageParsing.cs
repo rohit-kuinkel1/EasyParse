@@ -15,7 +15,7 @@ namespace EasyParser.Parsing
     /// addFile where name is Text123.txt filePath is D:/git/Tools/ smallerThan is 5KB
     /// a where n is Text123.txt f is D:/git/Tools/ s is 5KB
     /// </summary>
-    internal class NaturalLanguageParsing : Parsing
+    internal sealed class NaturalLanguageParsing : Parsing
     {
         /// <summary>
         /// <inheritdoc/>

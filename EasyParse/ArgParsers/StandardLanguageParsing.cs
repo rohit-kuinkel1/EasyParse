@@ -13,7 +13,7 @@ namespace EasyParser.Parsing
     /// addFile --name Text123.txt --filePath D:/git/Tools/ --smallerThan 5KB ......
     /// a -n Text123.txt -f D:/git/Tools/ -s 5KB ......
     /// </summary>
-    internal class StandardLanguageParsing : Parsing
+    internal sealed class StandardLanguageParsing : Parsing
     {
         /// <summary>
         /// Denotes the prefix for longNames.

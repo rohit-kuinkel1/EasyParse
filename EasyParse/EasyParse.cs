@@ -36,14 +36,34 @@ namespace EasyParser
 
         /// <summary>
         /// Parameterized Constructor for <see cref="EasyParse"/>.
-        /// Set the <paramref name="minLogLevel"/> to the desired minimum logLevel.
-        /// Set the <paramref name="redirectLogsToFile"/> to <see langword="true"/> if you want to redirect all the logs
-        /// from <see cref="EasyParse"/> to a log file.
-        /// <see cref="LogLevel.BackTrace"/> cannot be set by users.
+        /// Set the <paramref name="minLogLevel"/> to the desired minimum logLevel from <see cref="LogLevel"/>.
+        /// Set the <paramref name="redirectLogsToFile"/> to <see langword="true"/> if you want to redirect all the logs to the desired directory.
+        /// Set the <paramref name="logDirectory"/> to the desired directory to redirect file logs to. When <paramref name="logDirectory"/> is set to <see langword="null"/>
+        /// or default is used, then the <see cref="Logger"/> class will internally set <paramref name="logDirectory"/> to <c>AppDomain.CurrentDomain.BaseDirectory</c>
         /// </summary>
-        public EasyParse( LogLevel minLogLevel = LogLevel.Info, bool redirectLogsToFile = false )
+        /// <remarks>
+        /// <see cref="LogLevel.BackTrace"/> cannot be set by users.
+        /// </remarks>
+
+        public EasyParse( LogLevel minLogLevel = LogLevel.Info, bool redirectLogsToFile = false, string? logDirectory = null )
         {
-            Logger.Initialize( minLogLevel, redirectLogsToFile );
+            Logger.Initialize( minLogLevel, redirectLogsToFile, logDirectory );
+        }
+
+        /// <summary>
+        /// <see cref="SetLoggerStatusEnabled(bool)"/> sets the logger on or off depending on whether <see langword="true"/> or <see langword="false"/>
+        /// was passed to it. 
+        /// </summary>
+        /// <remarks>
+        /// Keep in mind however, when <see cref="Logger"/> is disabled by passing <see langword="false"/> to <see cref="SetLoggerStatusEnabled(bool)"/>,
+        /// the internal logs from <see cref="EasyParse"/> cannot be viewed or exported.
+        /// Alternatively since <see cref="Logger"/> is not public, you can pass <see cref="LogLevel.None"/> to <see cref="EasyParse"/> constructor 
+        /// which will do the same as passing <see langword="false"/> to <see cref="SetLoggerStatusEnabled(bool)"/>
+        /// </remarks>
+        /// <param name="isLoggerEnabled"></param>
+        public void SetLoggerStatusEnabled( bool isLoggerEnabled )
+        {
+            Logger.IsLoggerEnabled = isLoggerEnabled;
         }
 
         /// <summary>
