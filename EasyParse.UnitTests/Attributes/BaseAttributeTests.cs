@@ -51,7 +51,7 @@
 
             attribute.Aliases = mixedAliases;
 
-            //because 2 aliases didnt fulfill the criteria of Length >=2
+            //because 2 aliases didnt fulfill the criteria of Length >=2, see BaseAttribute.Aliases
             var expectedAliases = new[] { "reading", "studying" };
 
             Assert.That( mixedAliases.Length, Is.Not.EqualTo( attribute.Aliases.Length ) );
@@ -63,10 +63,12 @@
         public void Aliases_WithAllInvalidAliases_ReturnsEmptyArray()
         {
             var attribute = new MockAttribClassAttribute( "Help message" );
+
             var invalidAliases = new[] { "s", "r", "" };
 
             attribute.Aliases = invalidAliases;
 
+            //because all current aliases didnt fulfill the criteria of Length >=2, see BaseAttribute.Aliases
             Assert.That( attribute.Aliases, Is.Empty );
         }
 
@@ -79,6 +81,7 @@
 
             attribute.Aliases = invalidAliases;
 
+            //because all current aliases didnt fulfill the criteria of Length >=2, see BaseAttribute.Aliases
             Assert.That( attribute.Aliases, Is.Empty );
             Assert.Multiple( () => {
                 Assert.That( attribute.Aliases, Does.Not.Contain( invalidAliases[1] ) );
