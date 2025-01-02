@@ -5,6 +5,7 @@ using EasyParse.Misc;
 using EasyParser.Enums;
 using EasyParser.Parsing;
 using EasyParser.Utility;
+using EasyParser.Core;
 
 namespace EasyParser
 {

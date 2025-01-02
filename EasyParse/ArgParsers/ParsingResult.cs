@@ -1,70 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
+using EasyParser;
 
 namespace EasyParser.Core
 {
-    /// <summary>
-    /// <see cref="ParsingResultStore"/> represents a store or collection of all the <see cref="ParsingResult{T}"/>.
-    /// It contains properties like <see cref="_parsedInstances"/> which holds all the <see cref="ParsingResult{T}"/>
-    /// </summary>
-    public class ParsingResultStore
-    {
-        /// <summary>
-        /// Store for all the <see cref="ParsingResult{T}"/> instances
-        /// </summary>
-        private readonly ICollection<object> _parsedInstances;
-
-        /// <summary>
-        /// Default constructor for <see cref="ParsingResultStore"/>.
-        /// Instantiates <see cref="_parsedInstances"/> with a new <see cref="List{T}"/> where 
-        /// <typeparamref name="T"/> is of type <see langword="object"/>.
-        /// </summary>
-        internal ParsingResultStore()
-        {
-            _parsedInstances = new List<object>();
-        }
-
-        /// <summary>
-        /// <see cref="AddResult{T}(ParsingResult{T})"/> adds a <see cref="ParsingResult{T}"/> passed as param
-        /// to the <see cref="_parsedInstances"/> using the <see cref="List{T}.Add(T)"/> method.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="result"></param>
-        internal void AddResult<T>( ParsingResult<T> result ) where T : class, new()
-        {
-            _parsedInstances.Add( result );
-        }
-
-        /// <summary>
-        /// <see cref="GetResults{T}"/> gets a specific <see cref="ParsingResult{T}"/>
-        /// of type <typeparamref name="T"/>.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public IEnumerable<ParsingResult<T>> GetResults<T>() where T : class, new()
-        {
-            return _parsedInstances.OfType<ParsingResult<T>>();
-        }
-
-        /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            var stringBuilder = new StringBuilder();
-            foreach( var parsedInstance in _parsedInstances )
-            {
-                stringBuilder.AppendLine( parsedInstance.ToString() );
-            }
-            return stringBuilder.ToString();
-        }
-    }
-
-
     /// <summary>
     /// <see cref="ParsingResult{T}"/> represents the result of a parsing operation, 
     /// including success status with <see cref="Success"/>, error message with <see cref="ErrorMessage"/>,
