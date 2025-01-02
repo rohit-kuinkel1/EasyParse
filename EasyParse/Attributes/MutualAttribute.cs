@@ -9,7 +9,7 @@ namespace EasyParser.Core
     /// Use case example:
     /// <code>
     ///     using EasyParse.Enums;
-    ///     // Neither logFileName nor ShouldLog can be null
+    ///     // Neither logFileName nor ShouldLog can/should be null
     ///     [Mutual(MutualType.Inclusive, nameof(ShouldLog))]
     ///     public string logFileName;
     /// </code>
