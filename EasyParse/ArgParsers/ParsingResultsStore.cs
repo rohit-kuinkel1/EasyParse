@@ -48,6 +48,32 @@ namespace EasyParser.Core
         }
 
         /// <summary>
+        /// <see cref="Successes"/> is an auto getter for all the <see cref="ParsingResult{T}.Success"/> property 
+        /// from each <see cref="ParsingResult{T}"/> stored in the store <see cref="_parsedInstances"/>
+        /// </summary>
+        public IEnumerable<object> Successes =>
+            _parsedInstances.OfType<dynamic>()
+                            .Where( result => result.Success );
+                            //.Select(); //select all
+
+        /// <summary>
+        /// <see cref="Errors"/> is an auto getter for all the <see cref="ParsingResult{T}.ErrorMessage"/> property 
+        /// from each <see cref="ParsingResult{T}"/> stored in the store <see cref="_parsedInstances"/>
+        /// </summary>
+        public IEnumerable<string?> Errors =>
+            (IEnumerable<string?>)_parsedInstances.OfType<dynamic>()
+                            .Where( result => !result.Success )
+                            .Select( result => result.ErrorMessage);
+
+        /// <summary>
+        /// <see cref="Successes"/> is an auto getter property indicating whether all parsing results were successful
+        /// or not. It uses the extension method <see cref="Enumerable.All{TSource}(IEnumerable{TSource}, System.Func{TSource, bool})"/> 
+        /// for <see cref="Successes"/> to see if all the values in <see cref="Successes"/>
+        /// were <see langword="true"/> or not.
+        /// </summary>
+        public bool Success => Successes.All( s => true );
+
+        /// <summary>
         /// <inheritdoc/>
         /// </summary>
         /// <returns></returns>
