@@ -51,7 +51,7 @@ namespace EasyParser.Core
         /// <see cref="Successes"/> is an auto getter for all the <see cref="ParsingResult{T}.Success"/> property 
         /// from each <see cref="ParsingResult{T}"/> stored in the store <see cref="_parsedInstances"/>
         /// </summary>
-        public IEnumerable<object> Successes =>
+        public IEnumerable<object?> Successes =>
             _parsedInstances.OfType<dynamic>()
                             .Where( result => result.Success );
                             //.Select(); //select all
@@ -71,7 +71,7 @@ namespace EasyParser.Core
         /// for <see cref="Successes"/> to see if all the values in <see cref="Successes"/>
         /// were <see langword="true"/> or not.
         /// </summary>
-        public bool Success => Successes.All( s => true );
+        public bool Success => Successes?.All( s => true ) ?? false;
 
         /// <summary>
         /// <inheritdoc/>
