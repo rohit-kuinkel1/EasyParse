@@ -11,6 +11,6 @@ namespace EasyParser.Parsing
         /// parses the provided <paramref name="args"/> to be used and stored internally for later use.
         /// </summary>
         /// <param name="args"></param>
-        public ParsingResult<T> Parse<T>( string[] args ) where T : class, new();
+        public ParsingResult<T> ParseOne<T>( string[] args ) where T : class, new();
     }
 }

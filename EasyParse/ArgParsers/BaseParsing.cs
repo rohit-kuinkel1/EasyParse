@@ -31,7 +31,7 @@ namespace EasyParser.Parsing
         /// <typeparam name="T"></typeparam>
         /// <param name="args"></param>
         /// <returns></returns>
-        public abstract ParsingResult<T> Parse<T>( string[] args ) where T : class, new();
+        public abstract ParsingResult<T> ParseOne<T>( string[] args ) where T : class, new();
 
         /// <summary>
         /// If the log level permits and some non-public properties are marked with <see cref="OptionsAttribute"/>, 
@@ -52,7 +52,7 @@ namespace EasyParser.Parsing
         }
 
         /// <summary>
-        /// retrieves the properties marked with the <see cref="OptionsAttribute"/> in the type provided to <see cref="Parse(string[])"/>.
+        /// retrieves the properties marked with the <see cref="OptionsAttribute"/> in the type provided to <see cref="ParseOne(string[])"/>.
         /// Param <paramref name="bindingFlags"/> is used to retrieve the properties with specific access specifiers.
         /// </summary>
         /// <param name="bindingFlags"></param>

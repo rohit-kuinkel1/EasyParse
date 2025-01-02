@@ -21,9 +21,9 @@ namespace EasyParser.Parsing
         /// <inheritdoc/>
         /// </summary>
         /// <param name="args"></param>
-        public override ParsingResult<T> Parse<T>( string[] args )
+        public override ParsingResult<T> ParseOne<T>( string[] args )
         {
-            Logger.BackTrace( $"Entering {nameof( NaturalLanguageParsing )}.{nameof( Parse )} with args " +
+            Logger.BackTrace( $"Entering {nameof( NaturalLanguageParsing )}.{nameof( ParseOne )} with args " +
                 $"with Len:{args.Length} and type T as {typeof( T ).FullName}" );
 
             _ = Utility.Utility.NotNullValidation( args );

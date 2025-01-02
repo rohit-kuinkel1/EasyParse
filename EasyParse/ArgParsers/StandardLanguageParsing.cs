@@ -40,47 +40,53 @@ namespace EasyParser.Parsing
         /// <inheritdoc/>
         /// </summary>
         /// <param name="args"></param>
-        public override ParsingResult<T> Parse<T>( string[] args )
+        public override ParsingResult<T> ParseOne<T>( string[] args ) // where T : class, new() //compiler will complain if you uncomment, here for readability
         {
-            Logger.BackTrace( $"Entering {nameof( StandardLanguageParsing )}.{nameof( Parse )} with args " +
-                $"with Len:{args.Length} and type T as {typeof( T ).FullName}" );
+            Logger.BackTrace( $"Parsing type {typeof( T ).FullName}" );
 
-            _ = Utility.Utility.NotNullValidation( args );
-
-            _verbStore = new Verb( typeof( T ), null, new List<Option>() );
-
-            if( typeof( T ).IsDefined( typeof( VerbAttribute ), inherit: false ) )
+            try
             {
-                _verbStore.VerbAttribute = Attribute.GetCustomAttribute( typeof( T ), typeof( VerbAttribute ) ) as VerbAttribute;
-            }
-            else
-            {
-                Logger.Debug( $"Type {typeof( T ).FullName} is not marked with VerbAttribute." );
-            }
+                _ = Utility.Utility.NotNullValidation( args );
 
-            var instance = new T();
+                _verbStore = new Verb( typeof( T ), null, new List<Option>() );
 
-            _allPropertyInfosFromType = typeof( T ).GetProperties( BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance );
-            LogPotentialNonPublicPropertyMarkedWithOptionsAttribute();
-            var publicPropertiesWithOptionsAttribute = GetPropertyBy( BindingFlags.Public | BindingFlags.Instance );
-
-            foreach( var property in publicPropertiesWithOptionsAttribute )
-            {
-                var optionsAttribute = Attribute.GetCustomAttribute( property, typeof( OptionsAttribute ) ) as OptionsAttribute;
-                if( Utility.Utility.NotNullValidation( optionsAttribute, throwIfNull: false ) )
+                if( typeof( T ).IsDefined( typeof( VerbAttribute ), inherit: false ) )
                 {
-                    var optionStore = new Option( property, optionsAttribute );
-                    _verbStore.Options.Add( optionStore );
+                    _verbStore.VerbAttribute = Attribute.GetCustomAttribute( typeof( T ), typeof( VerbAttribute ) ) as VerbAttribute;
                 }
-            }
+                else
+                {
+                    Logger.Debug( $"Type {typeof( T ).FullName} was not marked with the decorator VerbAttribute." );
+                }
 
-            if( !ParseOptions( args, _verbStore, instance ) )
+                var instance = new T();
+
+                _allPropertyInfosFromType = typeof( T ).GetProperties( BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance );
+                LogPotentialNonPublicPropertyMarkedWithOptionsAttribute();
+                var publicPropertiesWithOptionsAttribute = GetPropertyBy( BindingFlags.Public | BindingFlags.Instance );
+
+                foreach( var property in publicPropertiesWithOptionsAttribute )
+                {
+                    var optionsAttribute = Attribute.GetCustomAttribute( property, typeof( OptionsAttribute ) ) as OptionsAttribute;
+                    if( Utility.Utility.NotNullValidation( optionsAttribute, throwIfNull: false ) )
+                    {
+                        var optionStore = new Option( property, optionsAttribute );
+                        _verbStore.Options.Add( optionStore );
+                    }
+                }
+
+                if( !ParseOptions( args, _verbStore, instance ) )
+                {
+                    return new ParsingResult<T>( false, "Parsing Status: ERROR", default! );
+                }
+
+                Logger.BackTrace( _verbStore.ToString() );
+                return new ParsingResult<T>( true, "Parsing Status: OK", instance );
+            }
+            catch( Exception ex )
             {
-                return new ParsingResult<T>( false, "Parsing Status: ERROR", default! );
+                return new ParsingResult<T>( false, ex.Message, default! );
             }
-
-            Logger.BackTrace( _verbStore.ToString() );
-            return new ParsingResult<T>( true, "Parsing Status: OK", instance );
         }
 
         /// <summary>
@@ -199,5 +205,51 @@ namespace EasyParser.Parsing
             }
             return true;
         }
+    }
+
+    //dont think this is a good idea but for now lets keep it 
+    internal static class StandardLanguageParsingExtensions
+    {
+        public static ParsingResultStore Parse<T>( this StandardLanguageParsing stp, string[] args ) where T : class, new()
+        {
+            //maybe it would be better to make this a base class member property, but for now i will stick to defining this in each parse
+            var store = new ParsingResultStore();
+
+            var result = stp.ParseOne<T>( args );
+            store.AddResult( result );
+            return store;
+        }
+
+        public static ParsingResultStore Parse<T1, T2>( this StandardLanguageParsing stp, string[] args )
+            where T1 : class, new()
+            where T2 : class, new()
+        {
+            //maybe it would be better to make this a base class member property, but for now i will stick to defining this in each parse
+            var store = new ParsingResultStore();
+
+            var result1 = stp.ParseOne<T1>( args );
+            var result2 = stp.ParseOne<T2>( args );
+            store.AddResult( result1 );
+            store.AddResult( result2 );
+            return store;
+        }
+
+        public static ParsingResultStore Parse<T1, T2, T3>( this StandardLanguageParsing stp, string[] args )
+           where T1 : class, new()
+           where T2 : class, new()
+           where T3 : class, new()
+        {
+            //maybe it would be better to make this a base class member property, but for now i will stick to defining this in each parse
+            var store = new ParsingResultStore();
+
+            var result1 = stp.ParseOne<T1>( args );
+            var result2 = stp.ParseOne<T2>( args );
+            var result3 = stp.ParseOne<T3>( args );
+            store.AddResult( result1 );
+            store.AddResult( result2 );
+            store.AddResult( result3 );
+            return store;
+        }
+
     }
 }

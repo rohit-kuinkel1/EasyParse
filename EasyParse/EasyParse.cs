@@ -126,7 +126,7 @@ namespace EasyParser
                     );
                 }
 
-                return _parsing.Parse<T>( args );
+                return _parsing.ParseOne<T>( args );
             }
             catch( NullException ex )
             {
