@@ -58,7 +58,7 @@ namespace EasyParser.Core
                 _ = EasyParser.Utility.Utility.NotNullValidation(
                     obj: ParsedInstance,
                     throwIfNull: true,
-                    $"The property {nameof( ParsedInstance )} was null or empty when it was not e" );
+                    $"The property {nameof( ParsedInstance )} was null or empty when it was not expected to be" );
 
                 var instanceType = ParsedInstance!.GetType();
 

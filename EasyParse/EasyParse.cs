@@ -97,7 +97,7 @@ namespace EasyParser
         /// <exception cref="BadFormatException"> When the provided <paramref name="args"/> was badly formatted.</exception>
         /// <exception cref="IllegalOperation"> When type mismatch occurs or when static/abstract class is provided as type for instance.</exception>
         /// <exception cref="Exception"> For general unforseen exceptions.</exception>
-        public ParsingResult<T> Parse<T>( string[] args ) where T : class, new()
+        public ParsingResult<T> ParseOne<T>( string[] args ) where T : class, new()
         {
             try
             {

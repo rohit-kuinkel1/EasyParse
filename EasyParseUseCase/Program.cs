@@ -1,4 +1,6 @@
-﻿namespace Program
+﻿using EasyParser;
+
+namespace Program
 {
 
     /*
@@ -44,10 +46,9 @@
             //var args1 = new[] { "add", "--read", "Help.txt Ferrari Car", "--verbose", "True", "--stdin", "TRUE", "--count", "210" };
             var args1 = new[] { "add", "where", "read", "is", "Help File Test.txt", "verbose", "is", "True", "stdin", "is", "TRUE", "count", "is", "210" };
 
-            EasyParser.EasyParse.ExportDefaultConfig( exportWithMain: true );
-            var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.Debug, redirectLogsToFile: true, logDirectory: @"C:\Users\kuike\Desktop\EasyParseLogs" );
+            //EasyParser.EasyParse.ExportDefaultConfig( exportWithMain: true );
+            var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.Debug, redirectLogsToFile: false, logDirectory: @"C:\Users\kuike\Desktop\EasyParseLogs" );
             parser.SetLoggerStatusEnabled( true );
-
             var parsingResult = parser.Parse<ParseVerbs>( args1 );
             if( parsingResult.Success )
             {
@@ -55,7 +56,7 @@
             }
             else
             {
-                Console.WriteLine( parsingResult.ErrorMessage );
+                Console.WriteLine( parsingResult.Errors );
             }
 
         }
