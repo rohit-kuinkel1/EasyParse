@@ -53,17 +53,16 @@ namespace EasyParser.Core
         /// </summary>
         public IEnumerable<object?> Successes =>
             _parsedInstances.OfType<dynamic>()
-                            .Where( result => result.Success );
-                            //.Select(); //select all
+                            .Select( result => result.Success );
 
         /// <summary>
         /// <see cref="Errors"/> is an auto getter for all the <see cref="ParsingResult{T}.ErrorMessage"/> property 
         /// from each <see cref="ParsingResult{T}"/> stored in the store <see cref="_parsedInstances"/>
         /// </summary>
         public IEnumerable<string?> Errors =>
-            (IEnumerable<string?>)_parsedInstances.OfType<dynamic>()
-                            .Where( result => !result.Success )
-                            .Select( result => result.ErrorMessage);
+            _parsedInstances.OfType<dynamic>()
+                 .Where( result => !result.Success )
+                 .Select( result => (string?)result.ErrorMessage?.ToString() );
 
         /// <summary>
         /// <see cref="Successes"/> is an auto getter property indicating whether all parsing results were successful
@@ -71,7 +70,7 @@ namespace EasyParser.Core
         /// for <see cref="Successes"/> to see if all the values in <see cref="Successes"/>
         /// were <see langword="true"/> or not.
         /// </summary>
-        public bool Success => Successes?.All( s => true ) ?? false;
+        public bool Success => Successes?.All( s => s is not null && (bool)s ) ?? false;
 
         /// <summary>
         /// <inheritdoc/>

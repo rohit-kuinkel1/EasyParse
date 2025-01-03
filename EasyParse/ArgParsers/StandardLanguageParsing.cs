@@ -56,9 +56,10 @@ namespace EasyParser.Parsing
                 }
                 else
                 {
-                    Logger.Debug( $"Type {typeof( T ).FullName} was not marked with the decorator VerbAttribute." );
+                    Logger.Debug( $"Type/Class {typeof( T ).FullName} was not marked with the decorator VerbAttribute and hence cannot be used to parse args." );
                 }
 
+                //example: parser.Parse<ParseVerbs>( args ); instantiate an object of type ParseVerbs passed by the user
                 var instance = new T();
 
                 _allPropertyInfosFromType = typeof( T ).GetProperties( BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance );
@@ -77,11 +78,15 @@ namespace EasyParser.Parsing
 
                 if( !ParseOptions( args, _verbStore, instance ) )
                 {
-                    return new ParsingResult<T>( false, "Parsing Status: ERROR", default! );
+                    var parsingResultFailure = new ParsingResult<T>( false, "Parsing Status: ERROR", default! );
+                    Logger.BackTrace( $"Could not parsed the provided options, returning: {parsingResultFailure}" );
+                    return parsingResultFailure;
                 }
 
+                var parsingResultSuccess = new ParsingResult<T>( true, null, instance );
+                Logger.BackTrace( $"Parsed the provided options successfully, returning: {parsingResultSuccess}" );
                 Logger.BackTrace( _verbStore.ToString() );
-                return new ParsingResult<T>( true, "Parsing Status: OK", instance );
+                return parsingResultSuccess;
             }
             catch( Exception ex )
             {
@@ -156,6 +161,7 @@ namespace EasyParser.Parsing
         /// </example>
         private string ParseMultiWordValue( string[] args, ref int index, string longNamePrefix, char shortNamePrefix )
         {
+            Logger.BackTrace( $"Entering {nameof( ParseMultiWordValue )}" );
             var valueBuilder = new List<string>();
             index++;
 
@@ -171,6 +177,7 @@ namespace EasyParser.Parsing
 
         private bool ProcessParsedOptions( Verb verbStore, object instance, Dictionary<string, object> parsedOptions )
         {
+            Logger.BackTrace( $"Entering {nameof( ProcessParsedOptions )}" );
             foreach( var optionStore in verbStore.Options )
             {
                 try

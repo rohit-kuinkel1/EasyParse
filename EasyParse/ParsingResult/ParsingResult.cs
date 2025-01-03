@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Text;
-using EasyParser;
+using EasyParser.Utility;
 
 namespace EasyParser.Core
 {
@@ -15,7 +15,7 @@ namespace EasyParser.Core
         /// <summary>
         /// Get auto property for a value that indicates whether the parsing was successful or not
         /// </summary>
-        public bool Success { get; }
+        public bool Success { get; } = false;
 
         /// <summary>
         ///  Get auto property for the error message. 
@@ -53,21 +53,29 @@ namespace EasyParser.Core
         /// <returns>A string that lists all the properties and their values for the parsed instance.</returns>
         public override string ToString()
         {
+            Logger.BackTrace( $"Entering {nameof( ParsingResult<T> )}.{nameof( ToString )}" );
+            var stringBuilder = new StringBuilder();
             try
             {
+                if( !Success )
+                {
+                    _ = stringBuilder.AppendLine( $"Success: False, ErrorMessage: {ErrorMessage}, ParsedInstance: null" );
+                    return stringBuilder.ToString();
+                }
+
                 _ = EasyParser.Utility.Utility.NotNullValidation(
                     obj: ParsedInstance,
                     throwIfNull: true,
                     $"The property {nameof( ParsedInstance )} was null or empty when it was not expected to be" );
 
-                var instanceType = ParsedInstance!.GetType();
+#pragma warning disable CS8602 //If ParsedInstance was null, we would never reach here cause of throwIfNull: true
+                var instanceType = ParsedInstance.GetType();
+#pragma warning restore CS8602 //If ParsedInstance was null, we would never reach here cause of throwIfNull: true
 
                 //dont think its a good idea to get private attributes so sticking to public ones
                 var properties = instanceType.GetProperties( BindingFlags.Public | BindingFlags.Instance );
 
-                var stringBuilder = new StringBuilder();
-                _ = stringBuilder.AppendLine( $"{instanceType.Name} Properties:" );
-
+                _ = stringBuilder.AppendLine( $"{instanceType?.Name} Properties:" );
                 foreach( var property in properties )
                 {
                     var value = property.GetValue( ParsedInstance ) ?? "null";
@@ -76,7 +84,7 @@ namespace EasyParser.Core
 
                 return stringBuilder.ToString();
             }
-            catch( Exception ex )
+            catch( Exception ex ) when( ex is not NullException )
             {
                 Logger.Error( $"An unexpected error occured whilst trying to use ParsingResult.ToString()\n{ex.Message}" );
                 return $"ERROR: ParsingResult.ToString(): {ex.Message}";

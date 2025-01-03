@@ -57,11 +57,11 @@ namespace EasyParser.Parsing
 
             if( !ParseOptions( args, _verbStore, instance ) )
             {
-                return new ParsingResult<T>( false, "ERROR", default! );
+                return new ParsingResult<T>( false, "Parsing Status: ERROR", default! );
             }
 
             Logger.BackTrace( _verbStore.ToString() );
-            return new ParsingResult<T>( true, "OK", instance );
+            return new ParsingResult<T>( true, null, instance );
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using EasyParser;
+using EasyParser.Core;
 
 namespace Program
 {
@@ -43,21 +44,22 @@ namespace Program
         /// <param name="args"></param>
         public static void Main( string[] args )
         {
-            //var args1 = new[] { "add", "--read", "Help.txt Ferrari Car", "--verbose", "True", "--stdin", "TRUE", "--count", "215" };
-            var args1 = new[] { "add", "where", "read", "is", "Help File Test.txt", "verbose", "is", "True", "stdin", "is", "TRUE", "count", "is", "15" };
+            var args1 = new[] { "add", "--read", "Help.txt Ferrari Car", "--verbose", "True", "--stdin", "TRUE", "--count", "215" };
+            //var args1 = new[] { "add", "where", "read", "is", "Help File Test.txt", "verbose", "is", "True", "stdin", "is", "TRUE", "count", "is", "215" };
 
             //EasyParser.EasyParse.ExportDefaultConfig( exportWithMain: true );
-            var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.Debug, redirectLogsToFile: false, logDirectory: @"C:\Users\kuike\Desktop\EasyParseLogs" );
+            var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.BackTrace, redirectLogsToFile: false, logDirectory: @"C:\Users\kuike\Desktop\EasyParseLogs" );
             parser.SetLoggerStatusEnabled( true );
             var parsingResult = parser.Parse<ParseVerbs>( args1 );
 
             if( parsingResult.Success )
             {
-                Console.WriteLine( parsingResult.ToString() );
+                //Console.WriteLine( parsingResult.ToString() );
             }
             else
             {
-                Console.WriteLine( parsingResult.Errors );
+                Console.WriteLine( "dsdasd" );
+                //Console.WriteLine( parsingResult.Errors );
             }
 
         }

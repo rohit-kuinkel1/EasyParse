@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using EasyParse.Misc;
+using EasyParser.Core;
 using EasyParser.Enums;
 using EasyParser.Parsing;
 using EasyParser.Utility;
-using EasyParser.Core;
 
 namespace EasyParser
 {
@@ -45,7 +45,6 @@ namespace EasyParser
         /// <remarks>
         /// <see cref="LogLevel.BackTrace"/> cannot be set by users.
         /// </remarks>
-
         public EasyParse( LogLevel minLogLevel = LogLevel.Info, bool redirectLogsToFile = false, string? logDirectory = null )
         {
             Logger.Initialize( minLogLevel, redirectLogsToFile, logDirectory );
@@ -56,9 +55,9 @@ namespace EasyParser
         /// was passed to it. 
         /// </summary>
         /// <remarks>
-        /// Keep in mind however, when <see cref="Logger"/> is disabled by passing <see langword="false"/> to <see cref="SetLoggerStatusEnabled(bool)"/>,
+        /// Keep in mind however, when <see cref="Logger"/> is disabled (for example by passing <see langword="false"/> to <see cref="SetLoggerStatusEnabled(bool)"/>),
         /// the internal logs from <see cref="EasyParse"/> cannot be viewed or exported.
-        /// Alternatively since <see cref="Logger"/> is not public, you can pass <see cref="LogLevel.None"/> to <see cref="EasyParse"/> constructor 
+        /// Alternatively you can pass <see cref="LogLevel.None"/> to <see cref="EasyParse"/> constructor 
         /// which will do the same as passing <see langword="false"/> to <see cref="SetLoggerStatusEnabled(bool)"/>
         /// </remarks>
         /// <param name="isLoggerEnabled"></param>
@@ -77,7 +76,7 @@ namespace EasyParser
         /// If the conventional syntax was used, there is no need to use the 'where' keyword.
         /// Example: add --FilePath ABCDEFG/HIJKLMNOP --Contains "photos, text, data" --IsPasswordLocked false
         /// </para>
-        /// Save the value returned by <see cref="Parse{T}(string[])"/> locally to use it.
+        /// Save the value returned by <see cref="ParseOne{T}(string[])"/> locally to use it.
         /// <code>
         /// //where <typeparamref name="T"/> is the class where the verbs and its related options are defined.
         /// var result = easyParser.Parse{<typeparamref name="T"/>}(args);
@@ -101,10 +100,13 @@ namespace EasyParser
         {
             try
             {
-                _ = Utility.Utility.NotNullValidation( args, true );
+                _ = Utility.Utility.NotNullValidation(
+                    args,
+                    throwIfNull: true );
 
                 var isNaturalLanguage = args.Length > 1
-                                        && string.Equals( args[1], ParsingKeyword.Where.ToString(), StringComparison.OrdinalIgnoreCase );
+                                        && string.Equals( args[1], ParsingKeyword.Where.ToString(),
+                                                          StringComparison.OrdinalIgnoreCase );
 
                 var containsKeywords = args.Any( arg => Keywords.Contains( arg.ToLowerInvariant() ) );
 
@@ -121,8 +123,7 @@ namespace EasyParser
                 else
                 {
                     throw new BadFormatException(
-                        "Invalid structure for input args. Reserved keywords were detected to have been " +
-                        "used for standard parsing. Please refrain from mixing natural language and standard language format and try again."
+                        "Invalid structure for input args. Please refer to the documentation."
                     );
                 }
 
