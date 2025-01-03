@@ -68,11 +68,9 @@ namespace EasyParser.Core
                     throwIfNull: true,
                     $"The property {nameof( ParsedInstance )} was null or empty when it was not expected to be" );
 
-#pragma warning disable CS8602 //If ParsedInstance was null, we would never reach here cause of throwIfNull: true
-                var instanceType = ParsedInstance.GetType();
-#pragma warning restore CS8602 //If ParsedInstance was null, we would never reach here cause of throwIfNull: true
+                //If ParsedInstance was null, we would never reach here cause of throwIfNull: true so its safe to use !
+                var instanceType = ParsedInstance!.GetType();
 
-                //dont think its a good idea to get private attributes so sticking to public ones
                 var properties = instanceType.GetProperties( BindingFlags.Public | BindingFlags.Instance );
 
                 _ = stringBuilder.AppendLine( $"{instanceType?.Name} Properties:" );
