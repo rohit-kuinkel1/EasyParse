@@ -13,7 +13,7 @@ namespace EasyParser.Parsing
     /// addFile --name Text123.txt --filePath D:/git/Tools/ --smallerThan 5KB ......
     /// a -n Text123.txt -f D:/git/Tools/ -s 5KB ......
     /// </summary>
-    internal sealed class StandardLanguageParsing : Parsing
+    internal sealed class StandardLanguageParsing : BaseParsing
     {
         /// <summary>
         /// Denotes the prefix for longNames.
@@ -109,7 +109,7 @@ namespace EasyParser.Parsing
         /// <param name="verbStore"></param>
         /// <param name="instance"></param>
         /// <returns></returns>
-        private bool ParseOptions( string[] args, Verb verbStore, object instance )
+        protected override bool ParseOptions( string[] args, Verb verbStore, object instance )
         {
             Logger.BackTrace( $"Entering StandardLanguageParsing.ParseOptions with args Len:{args.Length}" );
 
@@ -173,44 +173,6 @@ namespace EasyParser.Parsing
 
             index--;
             return string.Join( " ", valueBuilder );
-        }
-
-        private bool ProcessParsedOptions( Verb verbStore, object instance, Dictionary<string, object> parsedOptions )
-        {
-            Logger.BackTrace( $"Entering {nameof( ProcessParsedOptions )}" );
-            foreach( var optionStore in verbStore.Options )
-            {
-                try
-                {
-                    var optionAttr = optionStore.OptionsAttribute;
-                    var aliases = optionAttr.Aliases;
-
-                    if( ( parsedOptions.TryGetValue( optionAttr.LongName, out var value )
-                            || parsedOptions.TryGetValue( optionAttr.ShortName.ToString(), out value )
-                            || aliases.Any( alias => parsedOptions.TryGetValue( alias, out value ) ) )
-                        && Utility.Utility.NotNullValidation( value ) )
-                    {
-                        if( !ValidateCommonAttributes( verbStore.Options, optionStore, parsedOptions ) )
-                        {
-                            return false;
-                        }
-
-                        var convertedValue = ConvertToOptionType( value, optionStore.Property.PropertyType, optionStore.OptionsAttribute.LongName );
-                        optionStore.Property.SetValue( instance, convertedValue );
-                    }
-                    else if( optionAttr.Required )
-                    {
-                        Logger.Critical( $"Option '{optionAttr.LongName}' is marked as required, but was not provided." );
-                        return false;
-                    }
-                }
-                catch( Exception ex )
-                {
-                    Logger.Critical( ex.Message );
-                    return false;
-                }
-            }
-            return true;
         }
     }
 }

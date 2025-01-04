@@ -15,7 +15,7 @@ namespace EasyParser.Parsing
     /// addFile where name is Text123.txt filePath is D:/git/Tools/ smallerThan is 5KB
     /// a where n is Text123.txt f is D:/git/Tools/ s is 5KB
     /// </summary>
-    internal sealed class NaturalLanguageParsing : Parsing
+    internal sealed class NaturalLanguageParsing : BaseParsing
     {
         /// <summary>
         /// <inheritdoc/>
@@ -75,7 +75,7 @@ namespace EasyParser.Parsing
         /// <param name="verbStore"></param>
         /// <param name="instance"></param>
         /// <returns>A bool that indicates whether the parsing was successful or not</returns>
-        private bool ParseOptions( string[] args, Verb verbStore, object instance )
+        protected override bool ParseOptions( string[] args, Verb verbStore, object instance )
         {
             Logger.BackTrace( $"Entering NaturalLanguageParsing.ParseOptions with args Len:{args.Length}" );
 
@@ -84,6 +84,7 @@ namespace EasyParser.Parsing
             _ = Utility.Utility.NotNullValidation( instance );
 
             var parsedOptions = new Dictionary<string, object>();
+
             var whereIndex = args.Select( ( arg, index ) => new { arg, index } )
                 .FirstOrDefault( x => string.Equals( x.arg.ToLowerInvariant(), ParsingKeyword.Where.ToString().ToLowerInvariant(), StringComparison.OrdinalIgnoreCase ) )?.index ?? -1;
 
@@ -135,44 +136,6 @@ namespace EasyParser.Parsing
 
             var resultString = string.Join( " ", valueBuilder );
             return resultString;
-        }
-
-        private bool ProcessParsedOptions( Verb verbStore, object instance, Dictionary<string, object> parsedOptions )
-        {
-            foreach( var option in verbStore.Options )
-            {
-                try
-                {
-                    var optionAttr = option.OptionsAttribute;
-                    var aliases = optionAttr.Aliases;
-
-                    if( ( parsedOptions.TryGetValue( optionAttr.LongName, out var value )
-                            || parsedOptions.TryGetValue( optionAttr.ShortName.ToString(), out value )
-                            || aliases.Any( alias => parsedOptions.TryGetValue( alias, out value ) ) )
-                        && Utility.Utility.NotNullValidation( value ) )
-                    {
-                        //validate all relations 
-                        if( !ValidateCommonAttributes( verbStore.Options, option, parsedOptions ) )
-                        {
-                            return false;
-                        }
-
-                        var convertedValue = ConvertToOptionType( value, option.Property.PropertyType, option.OptionsAttribute.LongName );
-                        option.Property.SetValue( instance, convertedValue );
-                    }
-                    else if( optionAttr.Required )
-                    {
-                        Logger.Critical( $"Option '{optionAttr.LongName}' was marked to be required, but was not provided." );
-                        return false;
-                    }
-                }
-                catch( Exception ex )
-                {
-                    Logger.Critical( ex.Message );
-                    return false;
-                }
-            }
-            return true;
-        }
+        }      
     }
 }

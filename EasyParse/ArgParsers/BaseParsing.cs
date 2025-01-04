@@ -13,7 +13,7 @@ namespace EasyParser.Parsing
     /// Base class containing common functionality for parsing implementations
     /// </summary>
     //if the base class implements the interface, then all the children will/should implement it automatically, which follows LSP
-    internal abstract class Parsing : IParsing
+    internal abstract class BaseParsing : IParsing
     {
         /// <summary>
         /// Stores all the propertyInfos for the classes marked with <see cref="VerbAttribute"/> regardless of the binding flags.
@@ -32,6 +32,16 @@ namespace EasyParser.Parsing
         /// <param name="args"></param>
         /// <returns></returns>
         public abstract ParsingResult<T> ParseOne<T>( string[] args ) where T : class, new();
+
+        /// <summary>
+        /// Parses the options provided.
+        /// Each child of <see cref="BaseParsing"/> will have its own implementations
+        /// </summary>
+        /// <param name="args"></param>
+        /// <param name="verbStore"></param>
+        /// <param name="instance"></param>
+        /// <returns></returns>
+        protected abstract bool ParseOptions( string[] args, Verb verbStore, object instance );
 
         /// <summary>
         /// If the log level permits and some non-public properties are marked with <see cref="OptionsAttribute"/>, 
@@ -88,6 +98,57 @@ namespace EasyParser.Parsing
             return
                 ValidateMutualRelationships( options, currentOption, parsedOptions )
                 && ValidateSettings( options, currentOption, parsedOptions );
+        }
+
+        /// <summary>
+        /// Processes the parsed options.
+        /// Each child class will have their own implementations of <see cref="ParseOptions(string[], Verb, object)"/> but at the end
+        /// they will follow this structure to process the parsed options since we will always end up with
+        /// these 3 things: <paramref name="verbStore"/> storing the verb which inturn has a collection of <see cref="Option"/>
+        /// in it, the parsed instance <see cref="ParsingResult{T}"/> and a dict of the parsedOptions, originally a 1D array
+        /// of <see cref="string"/> but now mapped into a <see cref="Dictionary{TKey, TValue}"/> where the key represents
+        /// the 1D array of string[] broken into individual tokens and the value represents the user passed value
+        /// </summary>
+        /// <param name="verbStore"></param>
+        /// <param name="instance"></param>
+        /// <param name="parsedOptions"></param>
+        /// <returns></returns>
+        protected bool ProcessParsedOptions( Verb verbStore, object instance, Dictionary<string, object> parsedOptions )
+        {
+            foreach( var option in verbStore.Options )
+            {
+                try
+                {
+                    var optionAttr = option.OptionsAttribute;
+                    var aliases = optionAttr.Aliases;
+
+                    if( ( parsedOptions.TryGetValue( optionAttr.LongName, out var value )
+                            || parsedOptions.TryGetValue( optionAttr.ShortName.ToString(), out value )
+                            || aliases.Any( alias => parsedOptions.TryGetValue( alias, out value ) ) )
+                        && Utility.Utility.NotNullValidation( value ) )
+                    {
+                        //validate all relations 
+                        if( !ValidateCommonAttributes( verbStore.Options, option, parsedOptions ) )
+                        {
+                            return false;
+                        }
+
+                        var convertedValue = ConvertToOptionType( value, option.Property.PropertyType, option.OptionsAttribute.LongName );
+                        option.Property.SetValue( instance, convertedValue );
+                    }
+                    else if( optionAttr.Required )
+                    {
+                        Logger.Critical( $"Option '{optionAttr.LongName}' was marked to be required, but was not provided." );
+                        return false;
+                    }
+                }
+                catch( Exception ex )
+                {
+                    Logger.Critical( ex.Message );
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>
@@ -239,7 +300,7 @@ namespace EasyParser.Parsing
                     return false;
                 }
 
-                if(  numericValue > settings.MaxValue )
+                if( numericValue > settings.MaxValue )
                 {
                     Logger.Critical(
                         $"Value {numericValue} for option '{optionName}' exceeds the maximum allowed value of {settings.MaxValue}." );
@@ -248,7 +309,7 @@ namespace EasyParser.Parsing
             }
 
             //validate regex pattern if a regex pattern was specified for this property
-            if( settings.CompiledRegex == null && !string.IsNullOrEmpty( settings.RegexPattern ) )          
+            if( settings.CompiledRegex == null && !string.IsNullOrEmpty( settings.RegexPattern ) )
             {
                 settings.CompiledRegex = new Regex( settings.RegexPattern, RegexOptions.Compiled );
                 if( !settings.CompiledRegex.IsMatch( stringValue ) )
@@ -261,6 +322,24 @@ namespace EasyParser.Parsing
                     return false;
                 }
             }
+
+            //validate allowed values if specified
+            if( settings.AllowedValues != null && settings.AllowedValues.Length > 0 )
+            {
+                var convertedValue = ConvertToOptionType( value, propertyType, optionName );
+
+                bool isAllowed = settings.AllowedValues.Any( allowedValue =>
+                    allowedValue?.GetType() == propertyType && //ensure types match
+                    allowedValue.Equals( convertedValue ) ); //case-sensitive comparison
+
+                if( !isAllowed )
+                {
+                    var allowedValuesStr = string.Join( ", ", settings.AllowedValues.Select( value => $"'{value}'" ) );
+                    Logger.Critical( $"Value '{stringValue}' for option '{optionName}' is not one of the allowed values: {allowedValuesStr}" );
+                    return false;
+                }
+            }
+
 
             return true;
         }
