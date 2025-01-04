@@ -33,6 +33,12 @@ namespace EasyParser.Core
         public int MaxValue { get; set; }
 
         /// <summary>
+        /// Array of allowed values that can be passed by the user.
+        /// When specified, only these values will be considered valid for the option.
+        /// </summary>
+        public object[]? AllowedValues { get; set; }
+
+        /// <summary>
         /// Defines the regex pattern to be used to be set for <see cref="CompiledRegex"/>
         /// </summary>
         public string RegexPattern { get; set; }
@@ -57,11 +63,13 @@ namespace EasyParser.Core
         /// <param name="maxValue">The maximum value for validation.</param>
         /// <param name="regexPattern">Regex pattern for value validation.</param>
         /// <param name="regexErrorMessage">Error message for regex validation.</param>
+        /// <param name="allowedValues"> Represents all the allowed values that can be passed as value for the property that has this decorator</param>
         public SettingsAttribute(
             int minValue = DefaultNotProvidedMinMax,
             int maxValue = DefaultNotProvidedMinMax,
             string regexPattern = "",
-            string regexErrorMessage = ""
+            string regexErrorMessage = "",
+            object[]? allowedValues = null
         )
             : base( string.Empty, Array.Empty<string>() ) //array.empty<T>() is slightly better than [] in terms of performance
         {
@@ -69,6 +77,7 @@ namespace EasyParser.Core
             MaxValue = maxValue;
             RegexOnFailureMessage = regexErrorMessage;
             RegexPattern = regexPattern;
+            AllowedValues = allowedValues;
 
             if( !string.IsNullOrWhiteSpace( regexPattern ) )
             {
