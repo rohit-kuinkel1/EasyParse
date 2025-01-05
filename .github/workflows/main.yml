@@ -1,49 +1,92 @@
-name: Build and Test
-
+name: Build, Test, and Analyze
 on:
   push:
     branches:
       - main
   pull_request:
-    branches:
-      - main
+    types: [opened, synchronize, reopened]
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-
+  build-and-analyze:
+    name: Build and analyze
+    runs-on: windows-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  #important for SonarCloud analysis
       
-    - name: Extract .NET version
-      id: extract-version
-      shell: pwsh
-      run: |
-        if (Test-Path "EasyParse/global.json") {
-          $version = (Get-Content "EasyParse/global.json" | ConvertFrom-Json).sdk.version
-          "dotnet_version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-        } 
-        else {
-          Write-Host "global.json not found, using latest LTS version"
-          "dotnet_version=8.0.x" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-        }
+      - name: Extract .NET version
+        id: extract-version
+        shell: pwsh
+        run: |
+          if (Test-Path "EasyParse/global.json") {
+            $version = (Get-Content "EasyParse/global.json" | ConvertFrom-Json).sdk.version
+            "dotnet_version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          } 
+          else {
+            Write-Host "global.json not found, using latest LTS version"
+            "dotnet_version=8.0.x" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          }
+          Write-Host "Dotnet Version was $version"
 
-        Write-Host "Dotnet Version was $version"
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ steps.extract-version.outputs.dotnet_version }}
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: ${{ steps.extract-version.outputs.dotnet_version }}
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'zulu'
 
-    - name: Restore dependencies
-      shell: pwsh
-      run: dotnet restore 
-      
-    - name: Build
-      shell: pwsh
-      run: dotnet build --configuration Release --no-restore
-      
-    - name: Test
-      shell: pwsh
-      run: dotnet test --configuration Release
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~\sonar\cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v4
+        with:
+          path: .\.sonar\scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        shell: powershell
+        run: |
+          New-Item -Path .\.sonar\scanner -ItemType Directory
+          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+
+      - name: Restore dependencies
+        shell: pwsh
+        run: dotnet restore 
+
+      - name: Begin SonarCloud Analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: powershell
+        run: |
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"rohit-kuinkel1_EasyParse" /o:"rohit-kuinkel1" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.qualitygate.wait=true /d:sonar.qualitygate.timeout=600 /d:sonar.issue.ignore.multicriteria=e1 /d:sonar.issue.ignore.multicriteria.e1.ruleKey=S125 /d:sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.cs
+
+      - name: Build
+        shell: pwsh
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        shell: pwsh
+        run: dotnet test --configuration Release
+
+      - name: End SonarCloud Analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        shell: powershell
+        run: |
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
