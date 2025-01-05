@@ -1,6 +1,6 @@
 //AUTO GENERATED USING https://github.com/rohit-kuinkel1/EasyParse/tree/main
 using EasyParser.Core;
-namespace Program.Parsing
+namespace Program
 {
     /// <summary>
     /// <para>
@@ -52,23 +52,64 @@ namespace Program.Parsing
         [Settings( MaxValue = 20, MinValue = 0 )]
         public int Count { get; set; }
     }
-  
-    //public static void Main(string[] args)
-    //{
-        ////LogLevel.BackTrace cannot be set by the users; levels => Debug, Info, Warning, Error, Critical, None
 
-        //var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.Debug, redirectLogsToFile: false );
-        // parser.SetLoggerStatusEnabled( true );
+    [Verb( 'p', "process", Required = false, HelpText = "Process video files with specified parameters." )]
+    public class VideoProcessVerbs
+    {
+        [Options( 'i', "input", Default = null, Required = true, HelpText = "Input video file path.", Aliases = new[] { "source", "videofile" } )]
+        [Settings( RegexPattern = @"^[a-zA-Z0-9\s]+\.(mp4|avi|mov)$", RegexOnFailureMessage = "File must be a valid video format (mp4, avi, or mov)" )]
+        [Mutual( EasyParser.Enums.MutualType.Inclusive, nameof( Quality ), nameof( Duration ) )]
+        public string? VideoPath { get; set; }
 
-        //var parsingResult = parser.Parse<ParseVerbs>(args);
-        //if(parsingResult.Success)
-        //{
-            //// do something
-        //}
-        //else
-        //{
-            //// do something
-            // Console.WriteLine(parsingResult.ErrorMessage);
-        //}
-    //}
+        [Options( 'q', "quality", Default = "720p", Required = false, HelpText = "Output video quality.", Aliases = new[] { "resolution", "format" } )]
+        [Settings( AllowedValues = new[] { "480p", "720p", "1080p", "4k" } )]
+        public string? Quality { get; set; }
+
+        [Options( 'd', "duration", Default = 0, Required = false, HelpText = "Maximum duration in seconds", Aliases = new[] { "length", "time" } )]
+        [Settings( MaxValue = 3600, MinValue = 1 )]
+        public int Duration { get; set; }
+
+        [Options( 'f', "force", Default = false, Required = false, HelpText = "Force overwrite existing files" )]
+        public bool Force { get; set; }
+    }
+
+    [Verb( 'b', "backup", Required = false, HelpText = "Backup database with specified options." )]
+    public class DatabaseBackupVerbs
+    {
+        [Options( 'h', "host", Default = "localhost", Required = true, HelpText = "Database host address.", Aliases = new[] { "server", "address" } )]
+        [Settings( RegexPattern = @"^([a-zA-Z0-9.-]+|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$", RegexOnFailureMessage = "Invalid host format" )]
+        [Mutual( EasyParser.Enums.MutualType.Inclusive, nameof( Port ), nameof( Compress ) )]
+        public string? Host { get; set; }
+
+        [Options( 'p', "port", Default = 5432, Required = false, HelpText = "Database port number", Aliases = new[] { "portnumber" } )]
+        [Settings( MaxValue = 65535, MinValue = 1 )]
+        public int Port { get; set; }
+
+        [Options( 'c', "compress", Default = false, Required = false, HelpText = "Enable backup compression" )]
+        public bool Compress { get; set; }
+
+        [Options( 'e', "encrypt", Default = false, Required = false, HelpText = "Enable encryption" )]
+        [Mutual( EasyParser.Enums.MutualType.Exclusive, nameof( Compress ) )]
+        public bool Encrypt { get; set; }
+    }
+
+    [Verb( 'w', "weather", Required = false, HelpText = "Configure weather station parameters." )]
+    public class WeatherStationVerbs
+    {
+        [Options( 'l', "location", Default = null, Required = true, HelpText = "Station location coordinates.", Aliases = new[] { "coordinates", "position" } )]
+        [Settings( RegexPattern = @"^-?\d+\.?\d*,\s*-?\d+\.?\d*$", RegexOnFailureMessage = "Location must be in format: latitude,longitude" )]
+        [Mutual( EasyParser.Enums.MutualType.Inclusive, nameof( Interval ), nameof( Units ) )]
+        public string? Location { get; set; }
+
+        [Options( 'i', "interval", Default = 5, Required = false, HelpText = "Measurement interval in minutes", Aliases = new[] { "frequency", "period" } )]
+        [Settings( MaxValue = 60, MinValue = 1 )]
+        public int Interval { get; set; }
+
+        [Options( 'u', "units", Default = "metric", Required = false, HelpText = "Measurement units system", Aliases = new[] { "system", "measurements" } )]
+        [Settings( AllowedValues = new[] { "metric", "imperial" } )]
+        public string? Units { get; set; }
+
+        [Options( 'o', "offline", Default = false, Required = false, HelpText = "Enable offline mode" )]
+        public bool Offline { get; set; }
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using EasyParse.Misc;
 using EasyParser.Core;
@@ -27,13 +28,6 @@ namespace EasyParser
             Enum.GetNames( typeof( ParsingKeyword ) )
                 .Select( k => k.ToLowerInvariant() )
         );
-
-        /// <summary>
-        /// Default constructor for <see cref="EasyParse"/>
-        /// </summary>
-        public EasyParse()
-        {
-        }
 
         /// <summary>
         /// Parameterized Constructor for <see cref="EasyParse"/>.
@@ -94,7 +88,7 @@ namespace EasyParser
         /// <returns>Instance of <see cref="ParsingResult{Type}"/> containing flag <see cref="bool"/> <see cref="ParsingResult{Type}.Success"/> which denotes if the parsing was successful or not.</returns>
         /// <exception cref="NullException"> When the provided <paramref name="args"/> was null.</exception>
         /// <exception cref="BadFormatException"> When the provided <paramref name="args"/> was badly formatted.</exception>
-        /// <exception cref="IllegalOperation"> When type mismatch occurs or when static/abstract class is provided as type for instance.</exception>
+        /// <exception cref="IllegalOperationException"> When type mismatch occurs or when static/abstract class is provided as type for instance.</exception>
         /// <exception cref="Exception"> For general unforseen exceptions.</exception>
         public ParsingResult<T> ParseOne<T>( string[] args ) where T : class, new()
         {
@@ -154,9 +148,11 @@ namespace EasyParser
 
             var initialDirectory = FileHandler.GetInitialDirectory();
 
-            var writableDirectory = targetDirectory ?? FileHandler.FindWritableParentDirectory( initialDirectory );
-            Console.WriteLine( $"Using directory: {writableDirectory}" );
+            var writableDirectory = targetDirectory 
+                ?? FileHandler.FindWritableParentDirectory( initialDirectory ) 
+                ?? Directory.GetCurrentDirectory();
 
+            Console.WriteLine( $"Using directory: {writableDirectory}" );
             FileHandler.SaveConfigFile( writableDirectory, configCode );
         }
     }

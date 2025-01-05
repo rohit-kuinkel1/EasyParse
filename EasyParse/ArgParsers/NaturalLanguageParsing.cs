@@ -94,7 +94,7 @@ namespace EasyParser.Parsing
                 return false;
             }
 
-            for( var i = whereIndex + 1; i < args.Length; )
+            for( var i = whereIndex + 1; i < args.Length; i++ )
             {
                 if( i + 2 < args.Length && args[i + 1].ToLowerInvariant() == ParsingKeyword.Is.ToString().ToLowerInvariant() )
                 {
@@ -102,15 +102,13 @@ namespace EasyParser.Parsing
                     var value = ParseMultiWordValue( args, ref i );
                     parsedOptions[optionName] = value;
                 }
-
-                i++;
             }
 
             var isProcessingSuccessful = ProcessParsedOptions( verbStore, instance, parsedOptions );
             return isProcessingSuccessful;
         }
 
-        private string ParseMultiWordValue( string[] args, ref int index )
+        private static string ParseMultiWordValue( string[] args, ref int index )
         {
             var valueBuilder = new List<string>();
             if( string.Equals( args[index + 1], "is", StringComparison.OrdinalIgnoreCase ) )
@@ -136,6 +134,6 @@ namespace EasyParser.Parsing
 
             var resultString = string.Join( " ", valueBuilder );
             return resultString;
-        }      
+        }
     }
 }

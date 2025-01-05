@@ -21,7 +21,7 @@
             return
         @"//AUTO GENERATED USING https://github.com/rohit-kuinkel1/EasyParse/tree/main
 using EasyParser.Core;
-namespace Program.Parsing
+namespace Program
 {
     /// <summary>
     /// <para>

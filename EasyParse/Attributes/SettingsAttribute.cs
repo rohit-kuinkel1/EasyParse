@@ -81,7 +81,10 @@ namespace EasyParser.Core
 
             if( !string.IsNullOrWhiteSpace( regexPattern ) )
             {
-                CompiledRegex = new Regex( regexPattern, RegexOptions.Compiled );
+                CompiledRegex = new Regex(
+                    regexPattern,
+                    RegexOptions.Compiled,
+                    TimeSpan.FromMilliseconds( 500 ) );
             }
         }
     }

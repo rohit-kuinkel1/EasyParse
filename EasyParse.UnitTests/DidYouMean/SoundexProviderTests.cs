@@ -46,8 +46,11 @@ namespace EasyParser.Tests
             string lower = SoundexProvider.GetCode( "robert" );
             string mixed = SoundexProvider.GetCode( "RoBeRt" );
 
-            Assert.That( upper, Is.EqualTo( lower ) );
-            Assert.That( upper, Is.EqualTo( mixed ) );
+            Assert.Multiple( () =>
+            {
+                Assert.That( upper, Is.EqualTo( lower ) );
+                Assert.That( upper, Is.EqualTo( mixed ) );
+            } );
         }
 
         [Test]
@@ -84,7 +87,7 @@ namespace EasyParser.Tests
         public void GetCode_LongString_ReturnsMaxFourCharacters()
         {
             string result = SoundexProvider.GetCode( "Schwarzenegger" );
-            Assert.That( result.Length, Is.EqualTo( 4 ) );
+            Assert.That( result, Has.Length.EqualTo( 4 ) );
         }
 
         [Test]

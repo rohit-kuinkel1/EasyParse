@@ -159,7 +159,7 @@ namespace EasyParser.Parsing
         /// For input: ["--description", "This", "is", "text", "--next-option"]
         /// Returns: "This is text"
         /// </example>
-        private string ParseMultiWordValue( string[] args, ref int index, string longNamePrefix, char shortNamePrefix )
+        private static string ParseMultiWordValue( string[] args, ref int index, string longNamePrefix, char shortNamePrefix )
         {
             Logger.BackTrace( $"Entering {nameof( ParseMultiWordValue )}" );
             var valueBuilder = new List<string>();

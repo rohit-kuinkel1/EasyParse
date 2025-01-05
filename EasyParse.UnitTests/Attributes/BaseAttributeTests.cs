@@ -39,7 +39,7 @@
 
             attribute.Aliases = validAliases;
 
-            Assert.That( attribute.Aliases.Length, Is.EqualTo( validAliases.Length ) );
+            Assert.That( attribute.Aliases, Has.Length.EqualTo( validAliases.Length ) );
             Assert.That( attribute.Aliases, Is.EquivalentTo( validAliases ) );
         }
 
@@ -54,9 +54,12 @@
             //because 2 aliases didnt fulfill the criteria of Length >=2, see BaseAttribute.Aliases
             var expectedAliases = new[] { "reading", "studying" };
 
-            Assert.That( mixedAliases.Length, Is.Not.EqualTo( attribute.Aliases.Length ) );
-            Assert.That( expectedAliases.Length, Is.EqualTo( 2 ) );
-            Assert.That( attribute.Aliases, Is.EquivalentTo( expectedAliases ) );
+            Assert.Multiple( () =>
+            {
+                Assert.That( mixedAliases, Has.Length.Not.EqualTo( attribute.Aliases.Length ) );
+                Assert.That( expectedAliases, Has.Length.EqualTo( 2 ) );
+                Assert.That( attribute.Aliases, Is.EquivalentTo( expectedAliases ) );
+            } );
         }
 
         [Test]
@@ -83,7 +86,8 @@
 
             //because all current aliases didnt fulfill the criteria of Length >=2, see BaseAttribute.Aliases
             Assert.That( attribute.Aliases, Is.Empty );
-            Assert.Multiple( () => {
+            Assert.Multiple( () =>
+            {
                 Assert.That( attribute.Aliases, Does.Not.Contain( invalidAliases[1] ) );
                 Assert.That( attribute.Aliases, Does.Not.Contain( invalidAliases[2] ) );
             } );

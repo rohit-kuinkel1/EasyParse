@@ -6,7 +6,7 @@ namespace EasyParser.Utility
     /// Base class for all utility-related exceptions.
     /// https://github.com/rohit-kuinkel1/EverydayAutomation/blob/main/C%23/Exceptions.cs
     /// </summary>
-    internal class EasyParseException : Exception
+    public class EasyParseException : Exception
     {
         /// <summary>
         /// Denotes the prefix for each error message for easier source recognition.
@@ -145,35 +145,35 @@ namespace EasyParser.Utility
     /// <summary>
     /// Exception thrown when a fatal operation cannot continue.
     /// </summary>
-    internal class IllegalOperation : EasyParseException
+    internal class IllegalOperationException : EasyParseException
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="IllegalOperation"/> class.
+        /// Initializes a new instance of the <see cref="IllegalOperationException"/> class.
         /// </summary>
-        public IllegalOperation()
-            : base( $"{Prefix} {nameof(IllegalOperation)}, Cannot continue because of a fatal operation." )
+        public IllegalOperationException()
+            : base( $"{Prefix} {nameof(IllegalOperationException)}, Cannot continue because of a fatal operation." )
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IllegalOperation"/> class with a specified message.
+        /// Initializes a new instance of the <see cref="IllegalOperationException"/> class with a specified message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public IllegalOperation( string message )
-            : base( $"{Prefix} {nameof( IllegalOperation )}, {message}" )
+        public IllegalOperationException( string message )
+            : base( $"{Prefix} {nameof( IllegalOperationException )}, {message}" )
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IllegalOperation"/> class with a specified message and inner exception.
+        /// Initializes a new instance of the <see cref="IllegalOperationException"/> class with a specified message and inner exception.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public IllegalOperation(
+        public IllegalOperationException(
             string message,
             Exception innerException
             )
-            : base( $"{Prefix} {nameof( IllegalOperation )}, {message}", innerException )
+            : base( $"{Prefix} {nameof( IllegalOperationException )}, {message}", innerException )
         {
         }
     }
@@ -254,35 +254,35 @@ namespace EasyParser.Utility
     /// <summary>
     /// Exception thrown when a file format that is not supported is used.
     /// </summary>
-    internal class InvalidFileFormat : EasyParseException
+    internal class InvalidFileFormatException : EasyParseException
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="InvalidFileFormat"/> class.
+        /// Initializes a new instance of the <see cref="InvalidFileFormatException"/> class.
         /// </summary>
-        public InvalidFileFormat()
-            : base( $"{Prefix} {nameof(InvalidFileFormat)}, Cannot continue because of an invalid file format." )
+        public InvalidFileFormatException()
+            : base( $"{Prefix} {nameof(InvalidFileFormatException)}, Cannot continue because of an invalid file format." )
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InvalidFileFormat"/> class with a specified message.
+        /// Initializes a new instance of the <see cref="InvalidFileFormatException"/> class with a specified message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public InvalidFileFormat( string message )
-            : base( $"{Prefix} {nameof( InvalidFileFormat )} {message}" )
+        public InvalidFileFormatException( string message )
+            : base( $"{Prefix} {nameof( InvalidFileFormatException )} {message}" )
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InvalidFileFormat"/> class with a specified message and inner exception.
+        /// Initializes a new instance of the <see cref="InvalidFileFormatException"/> class with a specified message and inner exception.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public InvalidFileFormat(
+        public InvalidFileFormatException(
             string message,
             Exception innerException
             )
-            : base( $"{Prefix} {nameof(InvalidFileFormat)}, {message}", innerException )
+            : base( $"{Prefix} {nameof(InvalidFileFormatException)}, {message}", innerException )
         {
         }
     }

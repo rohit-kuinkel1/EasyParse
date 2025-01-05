@@ -69,12 +69,12 @@ namespace EasyParser.Core
         /// <summary>
         /// Gets whether any verb corrections have been made.
         /// </summary>
-        public bool HasVerbCorrections => _verbCorrections.Any();
+        public bool HasVerbCorrections => _verbCorrections.Count() != 0;
 
         /// <summary>
         /// Gets whether any option corrections have been made.
         /// </summary>
-        public bool HasOptionCorrections => _optionCorrections.Any();
+        public bool HasOptionCorrections => _optionCorrections.Count() != 0;
 
         /// <summary>
         /// Gets whether any corrections (verb or option) have been made.

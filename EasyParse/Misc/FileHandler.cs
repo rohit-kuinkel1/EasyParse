@@ -40,7 +40,7 @@ namespace EasyParse.Misc
             }
         }
 
-        public static string FindWritableParentDirectory( string? startDirectory )
+        public static string? FindWritableParentDirectory( string? startDirectory )
         {
             if( startDirectory == null )
             {
@@ -79,19 +79,20 @@ namespace EasyParse.Misc
         /// <param name="configContent"></param>
         public static void SaveConfigFile( string directory, string configContent )
         {
+            string finalPath = string.Empty;
             try
             {
-                var finalPath = Directory.Exists( directory )
-                    ? directory
-                    : Directory.GetCurrentDirectory();
+                finalPath = Directory.Exists( directory )
+                   ? directory
+                   : Directory.GetCurrentDirectory();
 
-                var filePath = Path.Combine( directory, "EasyParseOptions.cs" );
+                var filePath = Path.Combine( finalPath, "EasyParseOptions.cs" );
                 File.WriteAllText( filePath, configContent );
                 Console.WriteLine( $"Configuration code has been saved to: {filePath}" );
             }
             catch( Exception ex )
             {
-                Console.WriteLine( $"Unable to save file in {directory}. Error: {ex.Message}" );
+                Console.WriteLine( $"Unable to save file in {finalPath}. Error: {ex.Message}" );
             }
         }
     }

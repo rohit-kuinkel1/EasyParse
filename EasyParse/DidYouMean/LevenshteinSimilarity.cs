@@ -34,7 +34,7 @@ namespace EasyParser.Core
         /// <param name="source">The source string to compare</param>
         /// <param name="target">The target string to compare</param>
         /// <returns>The Levenshtein distance between the source and target strings</returns>
-        private int CalculateDistance( string source, string target )
+        private static int CalculateDistance( string source, string target )
         {
             var n = source.Length;
             var m = target.Length;

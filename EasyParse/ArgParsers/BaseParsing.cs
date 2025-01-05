@@ -25,6 +25,7 @@ namespace EasyParser.Parsing
         /// </summary>
         protected Verb? _verbStore;
 
+        #region AbstractMethods
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
@@ -42,7 +43,9 @@ namespace EasyParser.Parsing
         /// <param name="instance"></param>
         /// <returns></returns>
         protected abstract bool ParseOptions( string[] args, Verb verbStore, object instance );
+        #endregion
 
+        #region PropertyManipulationOfInstance
         /// <summary>
         /// If the log level permits and some non-public properties are marked with <see cref="OptionsAttribute"/>, 
         /// then let the user know about it using <see cref="Logger.Debug(string)"/>
@@ -51,12 +54,13 @@ namespace EasyParser.Parsing
         {
             Logger.BackTrace( $"Entering {GetType().Name}.LogPotentialNonPublicPropertyMarkedWithOptionsAttribute()" );
             var nonPublicPropertiesWithOptionsAttribute = GetPropertyBy( BindingFlags.NonPublic | BindingFlags.Instance );
+
             if( nonPublicPropertiesWithOptionsAttribute.Length != 0 )
             {
-                foreach( var property in nonPublicPropertiesWithOptionsAttribute )
+                foreach( var propertyName in nonPublicPropertiesWithOptionsAttribute.Select( np => np.Name ) )
                 {
-                    Logger.Debug( $"Property '{property.Name}' is marked with OptionsAttribute but is not set to public." +
-                        $"Knowingly avoiding non-public property {property.Name}..." );
+                    Logger.Debug( $"Property '{propertyName}' is marked with OptionsAttribute but is not set to public." +
+                        $" Knowingly avoiding non-public property {propertyName}..." );
                 }
             }
         }
@@ -82,24 +86,9 @@ namespace EasyParser.Parsing
                     ).ToArray()
                 : Array.Empty<PropertyInfo>();
         }
+        #endregion
 
-        /// <summary>
-        /// One size fits all
-        /// </summary>
-        /// <param name="options"></param>
-        /// <param name="currentOption"></param>
-        /// <param name="parsedOptions"></param>
-        /// <returns></returns>
-        protected bool ValidateCommonAttributes(
-            ICollection<Option> options,
-            Option currentOption,
-            Dictionary<string, object> parsedOptions )
-        {
-            return
-                ValidateMutualRelationships( options, currentOption, parsedOptions )
-                && ValidateSettings( options, currentOption, parsedOptions );
-        }
-
+        #region BaseProcessParsedOptions
         /// <summary>
         /// Processes the parsed options.
         /// Each child class will have their own implementations of <see cref="ParseOptions(string[], Verb, object)"/> but at the end
@@ -151,6 +140,26 @@ namespace EasyParser.Parsing
             return true;
         }
 
+
+        /// <summary>
+        /// One size fits all
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="currentOption"></param>
+        /// <param name="parsedOptions"></param>
+        /// <returns></returns>
+        protected bool ValidateCommonAttributes(
+            ICollection<Option> options,
+            Option currentOption,
+            Dictionary<string, object> parsedOptions )
+        {
+            return
+                ValidateMutualRelationships( options, currentOption, parsedOptions )
+                && ValidateSettings( options, currentOption, parsedOptions );
+        }
+        #endregion
+
+        #region ValidateMutualRelations
         /// <summary>
         /// Validates the mutual agreement <see cref="MutualAttribute"/> between <see cref="OptionsAttribute"/>
         /// </summary>
@@ -193,11 +202,13 @@ namespace EasyParser.Parsing
             }
             return true;
         }
+        #endregion
 
+        #region validateOptions
         /// <summary>
         /// Checks if an option is provided in the parsed options
         /// </summary>
-        protected bool IsOptionProvided( Option option, Dictionary<string, object> parsedOptions )
+        protected static bool IsOptionProvided( Option option, Dictionary<string, object> parsedOptions )
         {
             var longName = option.OptionsAttribute.LongName;
             var shortName = option.OptionsAttribute.ShortName.ToString();
@@ -221,7 +232,7 @@ namespace EasyParser.Parsing
         /// --Count "20"
         /// </para>
         /// </remarks>
-        protected object ConvertToOptionType( object value, Type targetType, string optionName )
+        protected static object ConvertToOptionType( object value, Type targetType, string optionName )
         {
             var valueStr = value.ToString()?.Trim( '"' ) ?? string.Empty;
             if( valueStr.Length == 0 )
@@ -250,7 +261,9 @@ namespace EasyParser.Parsing
 
             return Convert.ChangeType( valueStr, targetType );
         }
+        #endregion
 
+        #region ValidateSettings
         /// <summary>
         /// Validates a value against the settings defined in <see cref="SettingsAttribute"/>.
         /// This includes color settings, numeric range validation, and regex pattern matching...
@@ -262,7 +275,8 @@ namespace EasyParser.Parsing
         protected bool ValidateSettings(
             ICollection<Option> options,
             Option currentOption,
-            Dictionary<string, object> parsedOptions )
+            Dictionary<string, object> parsedOptions
+        )
         {
             var settings = currentOption.SettingsAttribute;
             if( settings == null )
@@ -270,12 +284,8 @@ namespace EasyParser.Parsing
                 return true;
             }
 
-            //get the actual value from parsed options
-            var value = parsedOptions.FirstOrDefault( p =>
-                p.Key == currentOption.OptionsAttribute.LongName ||
-                p.Key == currentOption.OptionsAttribute.ShortName.ToString() ||
-                currentOption.OptionsAttribute.Aliases.Contains( p.Key ) ).Value;
-
+            // Get the actual value from parsed options
+            var value = GetValueFromParsedOptions( currentOption, parsedOptions );
             if( value == null )
             {
                 return true;
@@ -285,33 +295,86 @@ namespace EasyParser.Parsing
             var propertyType = currentOption.Property.PropertyType;
             var optionName = currentOption.OptionsAttribute.LongName;
 
-            //validate numeric range if applicable / possible
-            if( propertyType == typeof( int ) && ( settings.MinValue != SettingsAttribute.DefaultNotProvidedMinMax && settings.MaxValue != SettingsAttribute.DefaultNotProvidedMinMax ) )
+            if( !ValidateNumericRange( stringValue, settings, optionName ) )
             {
-                if( !int.TryParse( stringValue, out int numericValue ) )
-                {
-                    Logger.Critical( $"Value '{stringValue}' for option '{optionName}' must be a valid integer." );
-                    return false;
-                }
-                if( numericValue < settings.MinValue )
-                {
-                    Logger.Critical(
-                        $"Value {numericValue} for option '{optionName}' is below the minimum allowed value of {settings.MinValue}." );
-                    return false;
-                }
-
-                if( numericValue > settings.MaxValue )
-                {
-                    Logger.Critical(
-                        $"Value {numericValue} for option '{optionName}' exceeds the maximum allowed value of {settings.MaxValue}." );
-                    return false;
-                }
+                return false;
             }
 
-            //validate regex pattern if a regex pattern was specified for this property
+            if( !ValidateRegex( stringValue, settings, optionName ) )
+            {
+                return false;
+            }
+
+            if( !ValidateAllowedValues( value, settings, propertyType, stringValue, optionName ) )
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Helper for <see cref="ValidateSettings(ICollection{Option}, Option, Dictionary{string, object})"/>
+        /// </summary>
+        /// <param name="currentOption"></param>
+        /// <param name="parsedOptions"></param>
+        /// <returns></returns>
+        private object GetValueFromParsedOptions( Option currentOption, Dictionary<string, object> parsedOptions )
+        {
+            return parsedOptions.FirstOrDefault( p =>
+                p.Key == currentOption.OptionsAttribute.LongName ||
+                p.Key == currentOption.OptionsAttribute.ShortName.ToString() ||
+                currentOption.OptionsAttribute.Aliases.Contains( p.Key ) ).Value;
+        }
+
+        /// <summary>
+        /// Helper for <see cref="ValidateSettings(ICollection{Option}, Option, Dictionary{string, object})"/>
+        /// </summary>
+        /// <param name="stringValue"></param>
+        /// <param name="settings"></param>
+        /// <param name="optionName"></param>
+        /// <returns></returns>
+        private bool ValidateNumericRange( string stringValue, SettingsAttribute settings, string optionName )
+        {
+            if( settings.MinValue == SettingsAttribute.DefaultNotProvidedMinMax || settings.MaxValue == SettingsAttribute.DefaultNotProvidedMinMax )
+            {
+                return true; // No validation if min or max are not provided
+            }
+
+            if( !int.TryParse( stringValue, out int numericValue ) )
+            {
+                Logger.Critical( $"Value '{stringValue}' for option '{optionName}' must be a valid integer." );
+                return false;
+            }
+
+            if( numericValue < settings.MinValue )
+            {
+                Logger.Critical( $"Value {numericValue} for option '{optionName}' is below the minimum allowed value of {settings.MinValue}." );
+                return false;
+            }
+
+            if( numericValue > settings.MaxValue )
+            {
+                Logger.Critical( $"Value {numericValue} for option '{optionName}' exceeds the maximum allowed value of {settings.MaxValue}." );
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Helper for <see cref="ValidateSettings(ICollection{Option}, Option, Dictionary{string, object})"/>
+        /// </summary>
+        /// <param name="stringValue"></param>
+        /// <param name="settings"></param>
+        /// <param name="optionName"></param>
+        /// <returns></returns>
+        private bool ValidateRegex( string stringValue, SettingsAttribute settings, string optionName )
+        {
             if( settings.CompiledRegex == null && !string.IsNullOrEmpty( settings.RegexPattern ) )
             {
-                settings.CompiledRegex = new Regex( settings.RegexPattern, RegexOptions.Compiled );
+                settings.CompiledRegex = new Regex( settings.RegexPattern, RegexOptions.Compiled, TimeSpan.FromMilliseconds( 500 ) );
+
                 if( !settings.CompiledRegex.IsMatch( stringValue ) )
                 {
                     var errorMessage = string.IsNullOrEmpty( settings.RegexOnFailureMessage )
@@ -323,25 +386,38 @@ namespace EasyParser.Parsing
                 }
             }
 
-            //validate allowed values if specified
+            return true;
+        }
+
+        /// <summary>
+        /// Helper for <see cref="ValidateSettings(ICollection{Option}, Option, Dictionary{string, object})"/>
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="settings"></param>
+        /// <param name="propertyType"></param>
+        /// <param name="stringValue"></param>
+        /// <param name="optionName"></param>
+        /// <returns></returns>
+        private bool ValidateAllowedValues( object value, SettingsAttribute settings, Type propertyType, string stringValue, string optionName )
+        {
             if( settings.AllowedValues != null && settings.AllowedValues.Length > 0 )
             {
                 var convertedValue = ConvertToOptionType( value, propertyType, optionName );
 
                 bool isAllowed = settings.AllowedValues.Any( allowedValue =>
-                    allowedValue?.GetType() == propertyType && //ensure types match
-                    allowedValue.Equals( convertedValue ) ); //case-sensitive comparison
+                    allowedValue?.GetType() == propertyType &&
+                    allowedValue.Equals( convertedValue ) );
 
                 if( !isAllowed )
                 {
-                    var allowedValuesStr = string.Join( ", ", settings.AllowedValues.Select( value => $"'{value}'" ) );
+                    var allowedValuesStr = string.Join( ", ", settings.AllowedValues.Select( v => $"'{v}'" ) );
                     Logger.Critical( $"Value '{stringValue}' for option '{optionName}' is not one of the allowed values: {allowedValuesStr}" );
                     return false;
                 }
             }
 
-
             return true;
         }
     }
+    #endregion
 }

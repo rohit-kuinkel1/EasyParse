@@ -47,14 +47,43 @@ namespace Program
             var args1 = new[] { "add", "--read", "Help.txt Ferrari Car", "--verbose", "True", "--stdin", "TRUE", "--count", "215" };
             //var args1 = new[] { "add", "where", "read", "is", "Help File Test.txt", "verbose", "is", "True", "stdin", "is", "TRUE", "count", "is", "215" };
 
+            var videoArgs = new[] { "process", "--input", "vacation.mp4", "--quality", "1080p", "--duration", "300", "--force", "true" };
+            //var videoArgs = new[] { "process", "where", "source", "is", "vacation.mp4", "resolution", "is", "1080p", "time", "is", "300", "force", "is", "true" };
+
+            var dbArgs = new[] { "backup", "--host", "db.example.com", "--port", "5432", "--compress", "true", "--encrypt", "false" };
+            //var dbArgs = new[] { "backup", "where", "server", "is", "db.example.com", "portnumber", "is", "5432", "compress", "is", "true", "encrypt", "is", "false" };
+
+            var weatherArgs = new[] { "weather", "--location", "40.7128,-74.0060", "--interval", "15", "--units", "metric", "--offline", "true" };
+            //var weatherArgs = new[] { "weather", "where", "coordinates", "is", "40.7128,-74.0060", "frequency", "is", "15", "system", "is", "metric", "offline", "is", "true" };
+
+
             //EasyParser.EasyParse.ExportDefaultConfig( exportWithMain: true );
             var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.BackTrace, redirectLogsToFile: false, logDirectory: @"C:\Users\kuike\Desktop\EasyParseLogs" );
             parser.SetLoggerStatusEnabled( true );
-            var parsingResult = parser.Parse<ParseVerbs>( args1 );
+            //var parsingResult = parser.Parse<ParseVerbs>( args1 );
+
+            var parsingResult = parser.Parse<ParseVerbs, VideoProcessVerbs, DatabaseBackupVerbs, WeatherStationVerbs>( args );
 
             if( parsingResult.Success )
             {
-                //Console.WriteLine( parsingResult.ToString() );
+                var instances = parsingResult.ParsedInstances;
+                foreach( var instance in instances )
+                {
+                    if( instance is ParseVerbs )
+                    {
+                    }
+                    else if (instance is VideoProcessVerbs)
+                    { 
+                    }
+                    else if( instance is DatabaseBackupVerbs )
+                    {
+                    }
+                    else if( instance is WeatherStationVerbs )
+                    {
+                    }
+                }
+
+                Console.WriteLine( parsingResult.ToString() );
             }
             else
             {

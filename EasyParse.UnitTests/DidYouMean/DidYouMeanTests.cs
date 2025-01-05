@@ -169,9 +169,13 @@ namespace EasyParser.Tests
 
             var suggestions = _didYouMean.GetOptionSuggestions( "hel", options ).ToList();
 
-            Assert.That( suggestions, Contains.Item( "h" ) );
-            Assert.That( suggestions.First(), Is.EqualTo( "help" ) );
-            Assert.That( suggestions, Contains.Item( "helicopter" ) );
+            Assert.Multiple( () =>
+            {
+                Assert.That( suggestions, Contains.Item( "h" ) );
+                Assert.That( suggestions.First(), Is.EqualTo( "help" ) );
+                Assert.That( suggestions, Contains.Item( "helicopter" ) );
+            } );
+
         }
 
         [Test]
@@ -185,9 +189,13 @@ namespace EasyParser.Tests
 
             var suggestions = _didYouMean.GetOptionSuggestions( "fildr", options ).ToList();
 
-            Assert.That( suggestions, Contains.Item( "f" ) );
-            Assert.That( suggestions, Contains.Item( "filter" ) );
-            Assert.That( suggestions, Contains.Item( "folder" ) );
+            Assert.Multiple( () =>
+            {
+                Assert.That( suggestions, Contains.Item( "f" ) );
+                Assert.That( suggestions, Contains.Item( "filter" ) );
+                Assert.That( suggestions, Contains.Item( "folder" ) );
+            } );
+
         }
 
         [Test]
@@ -239,8 +247,12 @@ namespace EasyParser.Tests
             };
 
             var suggestions = _didYouMean.GetOptionSuggestions( "deb", options ).ToList();
-            Assert.That( suggestions, Contains.Item( "debug" ) );
-            Assert.That( suggestions, Does.Not.Contain( "verbose" ) );
+
+            Assert.Multiple( () =>
+            {
+                Assert.That( suggestions, Contains.Item( "debug" ) );
+                Assert.That( suggestions, Does.Not.Contain( "verbose" ) );
+            } );
         }
 
         [Test]
