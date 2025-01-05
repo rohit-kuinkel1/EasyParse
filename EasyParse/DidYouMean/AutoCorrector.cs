@@ -69,12 +69,14 @@ namespace EasyParser.Core
         /// <summary>
         /// Gets whether any verb corrections have been made.
         /// </summary>
-        public bool HasVerbCorrections => _verbCorrections.Count() != 0;
+        // _verbCorrections will never be null since its instantiated in the constructor so its safe here
+        public bool HasVerbCorrections => _verbCorrections.Count != 0;
 
         /// <summary>
         /// Gets whether any option corrections have been made.
         /// </summary>
-        public bool HasOptionCorrections => _optionCorrections.Count() != 0;
+         // _optionCorrections will never be null since its instantiated in the constructor so its safe here
+        public bool HasOptionCorrections => _optionCorrections.Count != 0;
 
         /// <summary>
         /// Gets whether any corrections (verb or option) have been made.

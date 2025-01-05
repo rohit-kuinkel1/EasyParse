@@ -15,6 +15,7 @@ namespace EasyParser.Parsing
     //if the base class implements the interface, then all the children will/should implement it automatically, which follows LSP
     internal abstract class BaseParsing : IParsing
     {
+        #region CommonClassProperty
         /// <summary>
         /// Stores all the propertyInfos for the classes marked with <see cref="VerbAttribute"/> regardless of the binding flags.
         /// </summary>
@@ -24,6 +25,7 @@ namespace EasyParser.Parsing
         /// Container to store the <see cref="VerbAttribute"/> and its related <see cref="OptionsAttribute"/>.
         /// </summary>
         protected Verb? _verbStore;
+        #endregion
 
         #region AbstractMethods
         /// <summary>
@@ -102,7 +104,7 @@ namespace EasyParser.Parsing
         /// <param name="instance"></param>
         /// <param name="parsedOptions"></param>
         /// <returns></returns>
-        protected bool ProcessParsedOptions( Verb verbStore, object instance, Dictionary<string, object> parsedOptions )
+        protected static bool ProcessParsedOptions( Verb verbStore, object instance, Dictionary<string, object> parsedOptions )
         {
             foreach( var option in verbStore.Options )
             {
@@ -148,7 +150,7 @@ namespace EasyParser.Parsing
         /// <param name="currentOption"></param>
         /// <param name="parsedOptions"></param>
         /// <returns></returns>
-        protected bool ValidateCommonAttributes(
+        protected static bool ValidateCommonAttributes(
             ICollection<Option> options,
             Option currentOption,
             Dictionary<string, object> parsedOptions )
@@ -167,7 +169,7 @@ namespace EasyParser.Parsing
         /// <param name="currentOption"></param>
         /// <param name="parsedOptions"></param>
         /// <returns></returns>
-        protected bool ValidateMutualRelationships(
+        protected static bool ValidateMutualRelationships(
             ICollection<Option> options,
             Option currentOption,
             Dictionary<string, object> parsedOptions )
@@ -272,7 +274,7 @@ namespace EasyParser.Parsing
         /// <param name="currentOption"></param>
         /// <param name="parsedOptions"></param>
         /// <returns></returns>
-        protected bool ValidateSettings(
+        protected static bool ValidateSettings(
             ICollection<Option> options,
             Option currentOption,
             Dictionary<string, object> parsedOptions
@@ -319,7 +321,7 @@ namespace EasyParser.Parsing
         /// <param name="currentOption"></param>
         /// <param name="parsedOptions"></param>
         /// <returns></returns>
-        private object GetValueFromParsedOptions( Option currentOption, Dictionary<string, object> parsedOptions )
+        private static object GetValueFromParsedOptions( Option currentOption, Dictionary<string, object> parsedOptions )
         {
             return parsedOptions.FirstOrDefault( p =>
                 p.Key == currentOption.OptionsAttribute.LongName ||
@@ -334,7 +336,7 @@ namespace EasyParser.Parsing
         /// <param name="settings"></param>
         /// <param name="optionName"></param>
         /// <returns></returns>
-        private bool ValidateNumericRange( string stringValue, SettingsAttribute settings, string optionName )
+        private static bool ValidateNumericRange( string stringValue, SettingsAttribute settings, string optionName )
         {
             if( settings.MinValue == SettingsAttribute.DefaultNotProvidedMinMax || settings.MaxValue == SettingsAttribute.DefaultNotProvidedMinMax )
             {
@@ -369,7 +371,7 @@ namespace EasyParser.Parsing
         /// <param name="settings"></param>
         /// <param name="optionName"></param>
         /// <returns></returns>
-        private bool ValidateRegex( string stringValue, SettingsAttribute settings, string optionName )
+        private static bool ValidateRegex( string stringValue, SettingsAttribute settings, string optionName )
         {
             if( settings.CompiledRegex == null && !string.IsNullOrEmpty( settings.RegexPattern ) )
             {
@@ -398,7 +400,7 @@ namespace EasyParser.Parsing
         /// <param name="stringValue"></param>
         /// <param name="optionName"></param>
         /// <returns></returns>
-        private bool ValidateAllowedValues( object value, SettingsAttribute settings, Type propertyType, string stringValue, string optionName )
+        private static bool ValidateAllowedValues( object value, SettingsAttribute settings, Type propertyType, string stringValue, string optionName )
         {
             if( settings.AllowedValues != null && settings.AllowedValues.Length > 0 )
             {

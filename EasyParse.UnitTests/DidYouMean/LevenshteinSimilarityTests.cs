@@ -35,8 +35,11 @@ namespace EasyParser.Tests
             double result1 = _similarity.Calculate( source, target );
             double result2 = _similarity.Calculate( target, source );
 
-            Assert.That( result1, Is.EqualTo( 0.0 ) );
-            Assert.That( result2, Is.EqualTo( 0.0 ) );
+            Assert.Multiple( () =>
+            {
+                Assert.That( result1, Is.EqualTo( 0.0 ) );
+                Assert.That( result2, Is.EqualTo( 0.0 ) );
+            } );
         }
 
         [Test]
@@ -152,9 +155,11 @@ namespace EasyParser.Tests
                 result3 = _similarity.Calculate( null!, null! );
             } );
 
-            Assert.That( result1, Is.EqualTo( 0.0 ) );
-            Assert.That( result2, Is.EqualTo( 0.0 ) );
-            Assert.That( result3, Is.EqualTo( 0.0 ) );
+            Assert.Multiple( () => {
+                Assert.That( result1, Is.EqualTo( 0.0 ) );
+                Assert.That( result2, Is.EqualTo( 0.0 ) );
+                Assert.That( result3, Is.EqualTo( 0.0 ) );
+            } );         
         }
 
         [TestCase( "kitten", "sitting" )]
