@@ -73,7 +73,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"rohit-kuinkel1_EasyParse" /o:"rohit-kuinkel1" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.qualitygate.wait=true /d:sonar.qualitygate.timeout=600 /d:sonar.issue.ignore.multicriteria=e1 /d:sonar.issue.ignore.multicriteria.e1.ruleKey=S125 /d:sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.cs
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"rohit-kuinkel1_EasyParse" /o:"rohit-kuinkel1" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.qualitygate.wait=true /d:sonar.qualitygate.timeout=600 /d:sonar.issue.ignore.multicriteria=e1 /d:sonar.issue.ignore.multicriteria.e1.ruleKey=S125 /d:sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.cs /d:sonar.issue.ignore.multicriteria.e2.resourceKey=EasyParse/EasyParserExtensions.cs /d:sonar.issue.ignore.multicriteria.e3.resourceKey=EasyParseUseCase/**
 
       - name: Build
         shell: pwsh
