@@ -64,7 +64,7 @@ namespace EasyParse.Misc
                 }
                 else
                 {
-                    Logger.Warn( $"Cannot access or write to parent directory. Using current directory: {currentDirectory}" );
+                    Logger.Warn( $"Cannot access or write to the parent directory of the CWD. Using current directory: {currentDirectory}" );
                     break;
                 }
             }
@@ -77,14 +77,15 @@ namespace EasyParse.Misc
         /// </summary>
         /// <param name="directory"></param>
         /// <param name="configContent"></param>
-        public static void SaveConfigFile( string directory, string configContent )
+        public static void SaveConfigFile( string? directory, string configContent )
         {
             string finalPath = string.Empty;
             try
             {
-                finalPath = Directory.Exists( directory )
-                   ? directory
-                   : Directory.GetCurrentDirectory();
+                finalPath =
+                    /*!string.IsNullOrEmpty( directory ) &&*/ Directory.Exists( directory ) 
+                    ? directory
+                    : Directory.GetCurrentDirectory();
 
                 var filePath = Path.Combine( finalPath, "EasyParseOptions.cs" );
                 File.WriteAllText( filePath, configContent );

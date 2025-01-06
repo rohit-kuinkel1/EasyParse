@@ -148,11 +148,9 @@ namespace EasyParser
 
             var initialDirectory = FileHandler.GetInitialDirectory();
 
-            var writableDirectory = targetDirectory 
-                ?? FileHandler.FindWritableParentDirectory( initialDirectory ) 
-                ?? Directory.GetCurrentDirectory();
+            var writableDirectory = targetDirectory ?? FileHandler.FindWritableParentDirectory( initialDirectory );
 
-            Console.WriteLine( $"Using directory: {writableDirectory}" );
+            Logger.Info( $"Using directory: {writableDirectory}" );
             FileHandler.SaveConfigFile( writableDirectory, configCode );
         }
     }
