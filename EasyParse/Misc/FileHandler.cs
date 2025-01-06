@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-
+using EasyParser;
 namespace EasyParse.Misc
 {
     internal static class FileHandler
@@ -11,14 +11,14 @@ namespace EasyParse.Misc
             var entryAssembly = Assembly.GetEntryAssembly();
             if( entryAssembly == null )
             {
-                Console.WriteLine( "Unable to determine the entry assembly." );
+                Logger.Info( "Unable to determine the entry assembly." );
                 return default;
             }
 
             var currentDirectory = Path.GetDirectoryName( entryAssembly.Location );
             if( currentDirectory == null )
             {
-                Console.WriteLine( "Unable to determine the current directory." );
+                Logger.Error( "Unable to determine the current directory." );
                 return default;
             }
 
@@ -44,7 +44,7 @@ namespace EasyParse.Misc
         {
             if( startDirectory == null )
             {
-                Console.WriteLine( $"Param {nameof( startDirectory )} was null when it was not supposed to be. Cannot export default config" );
+                Logger.Error( $"Param {nameof( startDirectory )} was null when it was not supposed to be. Cannot export default config" );
                 return default;
             }
 
@@ -54,7 +54,7 @@ namespace EasyParse.Misc
                 var parentDirectory = Directory.GetParent( currentDirectory )?.FullName;
                 if( parentDirectory == null )
                 {
-                    Console.WriteLine( $"Reached the root directory. Using current directory: {currentDirectory}" );
+                    Logger.Info( $"Reached the root directory. Using current directory: {currentDirectory}" );
                     break;
                 }
 
@@ -64,7 +64,7 @@ namespace EasyParse.Misc
                 }
                 else
                 {
-                    Console.WriteLine( $"Cannot access or write to parent directory. Using current directory: {currentDirectory}" );
+                    Logger.Warn( $"Cannot access or write to parent directory. Using current directory: {currentDirectory}" );
                     break;
                 }
             }
@@ -88,11 +88,11 @@ namespace EasyParse.Misc
 
                 var filePath = Path.Combine( finalPath, "EasyParseOptions.cs" );
                 File.WriteAllText( filePath, configContent );
-                Console.WriteLine( $"Configuration code has been saved to: {filePath}" );
+                Logger.Info( $"Configuration code has been saved to: {filePath}" );
             }
             catch( Exception ex )
             {
-                Console.WriteLine( $"Unable to save file in {finalPath}. Error: {ex.Message}" );
+                Logger.Error( $"Unable to save file in {finalPath}. Error: {ex.Message}" );
             }
         }
     }

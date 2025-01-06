@@ -93,7 +93,7 @@ namespace EasyParser
         /// <summary>
         /// Flag to enable or disable logging. When set to <see langword="false"/>, no logs will be written.
         /// </summary>
-        private static bool _isLoggerEnabled = true;
+        private static bool _isLoggerEnabled = false;
 
         /// <summary>
         /// Gets or sets whether logging is enabled.
@@ -124,19 +124,22 @@ namespace EasyParser
         internal static void Initialize( LogLevel minLogLevel = LogLevel.Debug, bool redirectLogsToFile = false, string? baseLogDirectory = null )
         {
             RedirectLogsToFile = redirectLogsToFile;
-
             BaseLogDirectory = baseLogDirectory ?? BaseLogDirectory;
-            Logger.Debug( $"Set {nameof( BaseLogDirectory )} to point to {BaseLogDirectory}" );
 
-            //if( minLogLevel > LogLevel.BackTrace )
-            //{
-            _minLogLevel = minLogLevel;
-            //}
-            //else 
-            //{
-            //     Logger.Debug( "Cannot set LogLevel.BackTrace for external usage" );
-            //_minLogLevel = LogLevel.Debug;
-            //}
+            if( Logger.IsLoggerEnabled )
+            {
+                Logger.Debug( $"Set {nameof( BaseLogDirectory )} to point to {BaseLogDirectory}" );
+            }
+
+            if( minLogLevel > LogLevel.BackTrace )
+            {
+                _minLogLevel = minLogLevel;
+            }
+            else
+            {
+                Logger.Debug( $"Cannot set LogLevel.BackTrace for external usage, setting it to {LogLevel.Debug} instead" );
+                _minLogLevel = LogLevel.Debug;
+            }
 
         }
 

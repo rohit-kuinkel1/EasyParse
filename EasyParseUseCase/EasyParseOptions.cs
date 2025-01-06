@@ -42,7 +42,7 @@ namespace Program
         public string? InputFile { get; set; }
 
         [Options('v', "verbose", Default = false, Required = true, HelpText = "Prints all messages to standard output.")]
-        [Mutual( EasyParser.Enums.MutualType.Exclusive, nameof( Count ))]
+        //[Mutual( EasyParser.Enums.MutualType.Exclusive, nameof( Count ))]
         public bool Verbose { get; set; }
 
         [Options('s', "stdin", Default = false, Required = false, HelpText = "Read from stdin", Aliases = new[] { "standardin", "stdinput" })]
@@ -89,7 +89,7 @@ namespace Program
         public bool Compress { get; set; }
 
         [Options( 'e', "encrypt", Default = false, Required = false, HelpText = "Enable encryption" )]
-        [Mutual( EasyParser.Enums.MutualType.Exclusive, nameof( Compress ) )]
+        [Mutual( EasyParser.Enums.MutualType.Inclusive, nameof( Compress ) )]
         public bool Encrypt { get; set; }
     }
 

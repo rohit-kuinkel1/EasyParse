@@ -73,7 +73,7 @@ namespace EasyParser.Core
 
                 var properties = instanceType.GetProperties( BindingFlags.Public | BindingFlags.Instance );
 
-                _ = stringBuilder.AppendLine( $"{instanceType.Name} Properties:" );
+                _ = stringBuilder.AppendLine( $"Properties for parsed instance {instanceType.Name}:" );
                 foreach( var property in properties )
                 {
                     var value = property.GetValue( ParsedInstance ) ?? "null";

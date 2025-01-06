@@ -1,5 +1,4 @@
 ﻿using EasyParser;
-using EasyParser.Core;
 
 namespace Program
 {
@@ -44,7 +43,7 @@ namespace Program
         /// <param name="args"></param>
         public static void Main( string[] args )
         {
-            var args1 = new[] { "add", "--read", "Help.txt Ferrari Car", "--verbose", "True", "--stdin", "TRUE", "--count", "215" };
+            //var args1 = new[] { "add", "--read", "Help.txt Ferrari Car", "--verbose", "True", "--stdin", "TRUE", "--count", "215" };
             //var args1 = new[] { "add", "where", "read", "is", "Help File Test.txt", "verbose", "is", "True", "stdin", "is", "TRUE", "count", "is", "215" };
 
             var videoArgs = new[] { "process", "--input", "vacation.mp4", "--quality", "1080p", "--duration", "300", "--force", "true" };
@@ -56,13 +55,23 @@ namespace Program
             var weatherArgs = new[] { "weather", "--location", "40.7128,-74.0060", "--interval", "15", "--units", "metric", "--offline", "true" };
             //var weatherArgs = new[] { "weather", "where", "coordinates", "is", "40.7128,-74.0060", "frequency", "is", "15", "system", "is", "metric", "offline", "is", "true" };
 
+            var testArgs = new[]
+            {
+                "add", "--read", "Help File Test.txt", "--verbose", "True", "--stdin", "TRUE", "--count", "15",
+                "&", 
+                "process", "--input", "vacation.mp4", "--quality", "1080p", "--duration", "300", "--force", "true",
+                "&",
+                "backup", "--host", "db.example.com", "--port", "5432", "--compress", "true", "--encrypt", "false",
+                "&",
+                "weather", "--location", "40.7128,-74.0060", "--interval", "15", "--units", "metric", "--offline", "true"
+            };
 
             //EasyParser.EasyParse.ExportDefaultConfig( exportWithMain: true );
             var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.BackTrace, redirectLogsToFile: false, logDirectory: @"C:\Users\kuike\Desktop\EasyParseLogs" );
             parser.SetLoggerStatusEnabled( true );
             //var parsingResult = parser.Parse<ParseVerbs>( args1 );
 
-            var parsingResult = parser.Parse<ParseVerbs, VideoProcessVerbs, DatabaseBackupVerbs, WeatherStationVerbs>( args );
+            var parsingResult = parser.Parse<ParseVerbs, VideoProcessVerbs, DatabaseBackupVerbs, WeatherStationVerbs>( testArgs );
 
             if( parsingResult.Success )
             {
@@ -72,8 +81,8 @@ namespace Program
                     if( instance is ParseVerbs )
                     {
                     }
-                    else if (instance is VideoProcessVerbs)
-                    { 
+                    else if( instance is VideoProcessVerbs )
+                    {
                     }
                     else if( instance is DatabaseBackupVerbs )
                     {
@@ -81,13 +90,13 @@ namespace Program
                     else if( instance is WeatherStationVerbs )
                     {
                     }
-                }
 
-                Console.WriteLine( parsingResult.ToString() );
+                    Console.WriteLine( instance.ToString() );
+                }
             }
             else
             {
-                Console.WriteLine( "dsdasd" );
+               // Console.WriteLine( "dsdasd" );
                 //Console.WriteLine( parsingResult.Errors );
             }
 
