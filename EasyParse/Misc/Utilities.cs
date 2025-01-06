@@ -48,6 +48,7 @@ namespace EasyParser.Utility
                 string s => string.IsNullOrWhiteSpace( s ),
                 Array array => array.Length == 0,
                 ICollection collection => collection.Count == 0,
+                IEnumerable enumerable => !enumerable.GetEnumerator().MoveNext(),
                 _ => false
             };
 

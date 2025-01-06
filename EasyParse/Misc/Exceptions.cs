@@ -72,7 +72,7 @@ namespace EasyParser.Utility
         public NullException(
             string message,
             Type type )
-            : base( $"{Prefix} {nameof(NullException)}, Type:{type} {message} " )
+            : base( $"{Prefix} {nameof(NullException)}, Type: {type} {message}" )
         {
         }
 
