@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <Folder Include="ArgParsers\" />
-    <Folder Include="Misc\" />
     <Folder Include="Store\" />
   </ItemGroup>
 

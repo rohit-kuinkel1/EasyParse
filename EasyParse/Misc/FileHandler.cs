@@ -11,7 +11,7 @@ namespace EasyParse.Misc
             var entryAssembly = Assembly.GetEntryAssembly();
             if( entryAssembly == null )
             {
-                Logger.Info( "Unable to determine the entry assembly." );
+                Logger.Error( "Unable to determine the entry assembly." );
                 return default;
             }
 
@@ -30,8 +30,8 @@ namespace EasyParse.Misc
             try
             {
                 var testFile = Path.Combine( directory, "test_write_permission.tmp" );
-                File.WriteAllText( testFile, "test" );
-                File.Delete( testFile );
+                File.WriteAllText( path: testFile, contents: "test" );
+                File.Delete( path: testFile );
                 return true;
             }
             catch
@@ -74,6 +74,7 @@ namespace EasyParse.Misc
 
         /// <summary>
         /// Saves the config provided in <paramref name="configContent"/> to path <paramref name="directory"/>.
+        /// It creates a .CS file with the name of <see cref="Template.templateFileName"/>
         /// </summary>
         /// <param name="directory"></param>
         /// <param name="configContent"></param>
@@ -83,11 +84,11 @@ namespace EasyParse.Misc
             try
             {
                 finalPath =
-                    /*!string.IsNullOrEmpty( directory ) &&*/ Directory.Exists( directory ) 
+                    /*!string.IsNullOrEmpty( directory ) &&*/ Directory.Exists( directory )
                     ? directory
                     : Directory.GetCurrentDirectory();
 
-                var filePath = Path.Combine( finalPath, "EasyParseOptions.cs" );
+                var filePath = Path.Combine( finalPath, Template.templateFileName );
                 File.WriteAllText( filePath, configContent );
                 Logger.Info( $"Configuration code has been saved to: {filePath}" );
             }

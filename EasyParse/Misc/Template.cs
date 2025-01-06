@@ -2,6 +2,7 @@
 {
     internal static class Template
     {
+        internal static readonly string templateFileName = "EasyParseOptions.cs";
         internal static string GetConfigTemplateWithMain()
         {
             return Template.GetConfigTemplateBase() + "\n" + Template.GetMainMethodTemplate() + "\n}";
