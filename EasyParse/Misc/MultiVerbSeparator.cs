@@ -42,36 +42,13 @@ namespace EasyParser.Misc
                 }
             }
 
+            //without this statement, the last group of arguments would be missed if it doesnt end with VERB_SEPARATOR so this helps us collect all of the parsed string.
             if( currentGroup.Count > 0 )
             {
                 groups.Add( currentGroup.ToArray() );
             }
 
             return groups.ToArray();
-        }
-
-        /// <summary>
-        /// Gets the verb attribute for a type if it exists
-        /// </summary>
-        public static VerbAttribute? GetVerbAttribute( Type type )
-        {
-            return type.GetCustomAttribute<VerbAttribute>();
-        }
-
-        /// <summary>
-        /// Checks if the type matches the verb name from arguments
-        /// </summary>
-        public static bool MatchesVerb( Type type, string[] args )
-        {
-            if( args.Length == 0 ) return false;
-
-            var verb = GetVerbAttribute( type );
-            if( verb == null ) return false;
-
-            var verbName = args[0].ToLowerInvariant();
-            return verb.LongName.Equals( verbName, StringComparison.OrdinalIgnoreCase )
-                || verb.ShortName.ToString().Equals( verbName, StringComparison.OrdinalIgnoreCase )
-                || verb.Aliases.Any( alias => alias.Equals( verbName, StringComparison.OrdinalIgnoreCase ) );
         }
 
         /// <summary>
@@ -88,7 +65,10 @@ namespace EasyParser.Misc
         public static bool IsMatchingVerbType<T>( string verbName ) where T : class, new()
         {
             var verbAttribute = typeof( T ).GetCustomAttribute<VerbAttribute>();
-            if( verbAttribute == null ) return false;
+            if( verbAttribute == null )
+            {
+                return false;
+            }
 
             return verbAttribute.LongName.Equals( verbName, StringComparison.OrdinalIgnoreCase ) ||
                    verbAttribute.ShortName.ToString().Equals( verbName, StringComparison.OrdinalIgnoreCase ) ||
