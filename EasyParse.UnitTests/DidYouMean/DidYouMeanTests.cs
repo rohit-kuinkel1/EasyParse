@@ -2,7 +2,7 @@
 using EasyParse.Tests;
 using EasyParser.Core;
 
-namespace EasyParser.Tests
+namespace EasyParser.DidYouMeanTests
 {
 
     [TestFixture]

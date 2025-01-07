@@ -65,6 +65,16 @@ namespace EasyParser
         private static LogLevel _minLogLevel;
 
         /// <summary>
+        /// minimum LogLevel for <see cref="EasyParse"/>.
+        /// Only log messages equal or above this level will be printed to the console.
+        /// </summary>
+        public static LogLevel MinLogLevel
+        {
+            get => _minLogLevel;
+            set => _minLogLevel = value;
+        }
+
+        /// <summary>
         /// Represents the padding for the log messages.
         /// </summary>
         private static readonly int Padding = 10;
@@ -82,7 +92,7 @@ namespace EasyParser
         /// <summary>
         /// Final subdirectory for the log dump
         /// </summary>
-        private const string EasyParseLogDir = "EasyParserLogs";
+        internal const string EasyParseLogDir = "EasyParserLogs";
 
         /// <summary>
         /// Represents the base directory where a new directory <see cref="EasyParseLogDir"/> will be created 
@@ -91,9 +101,15 @@ namespace EasyParser
         private static string BaseLogDirectory { get; set; }
 
         /// <summary>
+        /// Represents the final directory where the log files will reside.
+        /// Is a combination of <see cref="BaseLogDirectory"/> and <see cref="EasyParseLogDir"/> at the end.
+        /// </summary>
+        private static string FinalLogDirectory { get; set; }
+
+        /// <summary>
         /// Flag to enable or disable logging. When set to <see langword="false"/>, no logs will be written.
         /// </summary>
-        private static bool _isLoggerEnabled = false;
+        private static bool _isLoggerEnabled = true;
 
         /// <summary>
         /// Gets or sets whether logging is enabled.
@@ -113,6 +129,19 @@ namespace EasyParser
         {
             _minLogLevel = LogLevel.Debug;
             BaseLogDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            FinalLogDirectory = string.Concat( BaseLogDirectory, EasyParseLogDir );
+        }
+
+        /// <summary>
+        /// Resets the Logger to its initial state.
+        /// </summary>
+        internal static void Reset()
+        {
+            _minLogLevel = LogLevel.Debug;
+            _isLoggerEnabled = false;
+            RedirectLogsToFile = false;
+            BaseLogDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            FinalLogDirectory = string.Concat( BaseLogDirectory, EasyParseLogDir );
         }
 
         /// <summary>
@@ -124,23 +153,36 @@ namespace EasyParser
         internal static void Initialize( LogLevel minLogLevel = LogLevel.Debug, bool redirectLogsToFile = false, string? baseLogDirectory = null )
         {
             RedirectLogsToFile = redirectLogsToFile;
-            BaseLogDirectory = baseLogDirectory ?? BaseLogDirectory;
+            FinalLogDirectory = !string.IsNullOrEmpty( baseLogDirectory )
+                ? Path.Combine( baseLogDirectory, EasyParseLogDir )
+                : Path.Combine( BaseLogDirectory, EasyParseLogDir );
 
-            if( Logger.IsLoggerEnabled )
+            CreateDirectoryIfNotExists( FinalLogDirectory );
+
+            if( Logger.IsLoggerEnabled && !redirectLogsToFile )
             {
                 Logger.Debug( $"Set {nameof( BaseLogDirectory )} to point to {BaseLogDirectory}" );
             }
 
-            if( minLogLevel > LogLevel.BackTrace )
-            {
-                _minLogLevel = minLogLevel;
-            }
-            else
-            {
-                Logger.Debug( $"Cannot set LogLevel.BackTrace for external usage, setting it to {LogLevel.Debug} instead" );
-                _minLogLevel = LogLevel.Debug;
-            }
+            //if( minLogLevel > LogLevel.BackTrace )
+            //{
+            _minLogLevel = minLogLevel;
+            //}
+            //else
+            //{
+            //    Logger.Debug( $"Cannot set LogLevel.BackTrace for external usage, setting it to {LogLevel.Debug} instead" );
+            //    _minLogLevel = LogLevel.Debug;
+            //}
+        }
 
+        private static void CreateDirectoryIfNotExists( string? directory = null )
+        {
+            var dir = directory ?? FinalLogDirectory;
+
+            if( !Directory.Exists( dir ) )
+            {
+                Directory.CreateDirectory( dir );
+            }
         }
 
         /// <summary>
@@ -199,10 +241,10 @@ namespace EasyParser
         {
             try
             {
-                var logDirectory = Path.Combine( BaseLogDirectory, EasyParseLogDir );
-                _ = Directory.CreateDirectory( logDirectory );
+                //final check, if the dir doesnt exist, create it
+                CreateDirectoryIfNotExists( FinalLogDirectory );
 
-                var logFilePath = Path.Combine( logDirectory, $"EasyParser_{DateTime.Now:yyyy_MM_dd_HH_mm}.log" );
+                var logFilePath = Path.Combine( FinalLogDirectory, $"EasyParser_{DateTime.Now:yyyy_MM_dd_HH_mm}.log" );
                 File.AppendAllText( logFilePath, message + Environment.NewLine );
             }
             catch( Exception ex ) //in this case log all the exceptions

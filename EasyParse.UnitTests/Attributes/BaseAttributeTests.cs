@@ -1,4 +1,5 @@
-﻿namespace EasyParser.Core.Tests
+﻿using EasyParser.Core;
+namespace EasyParser.AttributeTests
 {
     /// <remarks>
     /// testing <see cref="Attribute"/> is not standard but in our case <see cref="BaseAttribute"/> has a logic in <see cref="BaseAttribute.Aliases"/> so it makes sense to test

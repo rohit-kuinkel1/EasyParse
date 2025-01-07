@@ -67,7 +67,12 @@ namespace Program
             };
 
             //EasyParser.EasyParse.ExportDefaultConfig( exportWithMain: true );
-            var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.BackTrace, redirectLogsToFile: false, logDirectory: @"C:\Users\kuike\Desktop\EasyParseLogs" );
+            var parser = new EasyParser.EasyParse( 
+                minLogLevel: EasyParser.LogLevel.BackTrace, 
+                redirectLogsToFile: false, 
+                logDirectory: @"C:\Users\kuike\Desktop\EasyParseLogs" 
+            );
+
             parser.SetLoggerStatusEnabled( true );
             //var parsingResult = parser.Parse<ParseVerbs>( args1 );
 

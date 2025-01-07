@@ -1,8 +1,7 @@
-﻿using System.Collections.Immutable;
-using EasyParse.Tests;
+﻿using EasyParse.Tests;
 using EasyParser.Utility;
 
-namespace EasyParser.Tests
+namespace EasyParser.MiscTests
 {
     [TestFixture]
     public class UtilityTests

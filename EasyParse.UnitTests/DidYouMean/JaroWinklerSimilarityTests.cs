@@ -1,6 +1,6 @@
 ﻿using EasyParser.Core;
 
-namespace EasyParser.Tests
+namespace EasyParser.DidYouMeanTests
 {
     [TestFixture]
     public class JaroWinklerSimilarityTests

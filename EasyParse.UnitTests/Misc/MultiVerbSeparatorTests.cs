@@ -1,7 +1,7 @@
 ﻿using EasyParser.Core;
 using EasyParser.Misc;
 
-namespace EasyParser.Tests
+namespace EasyParser.MiscTests
 {
     [TestFixture]
     public class VerbParsingUtilityTests

@@ -1,7 +1,7 @@
 ﻿using System.Security.AccessControl;
 using EasyParse.Misc;
 
-namespace EasyParse.Tests
+namespace EasyParser.MiscTests
 {
     [TestFixture]
     public class FileHandlerTests
@@ -38,11 +38,11 @@ namespace EasyParse.Tests
         public void GetInitialDirectory_ShouldReturnValidDirectory()
         {
             var result = FileHandler.GetInitialDirectory();
-
+            TestContext.Out.WriteLine( result );
             Assert.Multiple( () =>
             {
                 Assert.That( result, Is.Not.Null );
-                Assert.That( result?.EndsWith( @"EasyParse\EasyParse\EasyParse.UnitTests\bin\Release\net8.0" ) ?? false, Is.True );
+                Assert.That( result?.EndsWith( @"EasyParse\EasyParse\EasyParse.UnitTests\bin\Release\net8.0" ) ?? false, Is.True, "Did you change from Release to Debug mode ?" );
                 Assert.That( Directory.Exists( result ), Is.True );
             } );
         }

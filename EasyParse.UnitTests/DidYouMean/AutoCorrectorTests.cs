@@ -2,7 +2,7 @@
 using EasyParse.Tests;
 using EasyParser.Core;
 
-namespace EasyParser.Tests
+namespace EasyParser.DidYouMeanTests
 {
     [TestFixture]
     public class AutoCorrectorTests
@@ -198,7 +198,7 @@ namespace EasyParser.Tests
         public void TryCorrectOption_EmptyCollection_ReturnsNull()
         {
             var availableOptions = new List<Option>
-            {          
+            {
             };
 
             var result = _autoCorrector.TryCorrectOption( "help", availableOptions );
