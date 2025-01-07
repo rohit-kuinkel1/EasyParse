@@ -1,9 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Versioning;
 using EasyParser;
 namespace EasyParse.Misc
 {
+    [SupportedOSPlatform( "windows" )]
     internal static class FileHandler
     {
         public static string? GetInitialDirectory()

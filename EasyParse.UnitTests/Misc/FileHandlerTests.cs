@@ -1,8 +1,10 @@
-﻿using System.Security.AccessControl;
+﻿using System.Runtime.Versioning;
+using System.Security.AccessControl;
 using EasyParse.Misc;
 
 namespace EasyParser.MiscTests
 {
+    [SupportedOSPlatform( "windows" )]
     [TestFixture]
     public class FileHandlerTests
     {
