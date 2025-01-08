@@ -22,21 +22,35 @@ namespace EasyParser.Core
     ///     <see cref="MutualType.Inclusive"/> indicates a mutually inclusive relationship, meaning both related entities must be defined at a given time.
     /// </para>
     /// </summary>
-
     [AttributeUsage( AttributeTargets.Property /*| AttributeTargets.Class | AttributeTargets.Struct*/, AllowMultiple = true )]
     public sealed class MutualAttribute : BaseAttribute
     {
+        private string[] relatedEntities = Array.Empty<string>();
+        private MutualType relationshipType;
+
         /// <summary>
         /// The name of the entity that is part of the mutual relationship.
         /// </summary>
-        public string[] RelatedEntities { get; }
+        public string[] RelatedEntities
+        {
+            get => relatedEntities;
+            set
+            {
+                ArgumentNullException.ThrowIfNull( value );
+                relatedEntities = value;
+            }
+        }
 
         /// <summary>
         /// The type of mutual relationship.
         /// <see cref="MutualType.Exclusive"/> denotes a mutually exclusive relationship, meaning only one can exist at a given point.
         /// <see cref="MutualType.Inclusive"/> denotes a mutually inclusive relationship, meaning both have to exist at a given point.
         /// </summary>
-        public MutualType RelationshipType { get; }
+        public MutualType RelationshipType
+        {
+            get => relationshipType;
+            set => relationshipType = value;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MutualAttribute"/> class.
@@ -54,13 +68,10 @@ namespace EasyParser.Core
             bool takeRelatedEntitiesAsReference,
             params string[] relatedEntities
         )
-        : base( string.Empty, Array.Empty<string>() )
+            : base( string.Empty, Array.Empty<string>() )
         {
-            ArgumentNullException.ThrowIfNull( relatedEntities );
-            //relationshipType cannot be passed as null so we skip that check for now
-
-            RelatedEntities = takeRelatedEntitiesAsReference ? relatedEntities : relatedEntities.ToArray();
             RelationshipType = relationshipType;
+            RelatedEntities = takeRelatedEntitiesAsReference ? relatedEntities : relatedEntities.ToArray();
         }
 
         /// <summary>

@@ -16,7 +16,12 @@ namespace EasyParser.Core
         /// <summary>
         /// placeholder for default values for MinValue and MaxValue
         /// </summary>
-        internal const int DefaultNotProvidedMinMax = -99999;
+        internal const int DefaultNotProvidedMinMax = -99999999;
+
+        private int minValue = DefaultNotProvidedMinMax;
+        private int maxValue = DefaultNotProvidedMinMax;
+        private string? regexPattern;
+        private string regexOnFailureMessage = "Validation against Regex Pattern failed";
 
         /// <summary>
         /// Minimum value for validation (used for numeric types).
@@ -24,7 +29,19 @@ namespace EasyParser.Core
         /// set a lower limit to the class property. 
         /// (Class needs to have <see cref="VerbAttribute"/> as its decorator)
         /// </summary>
-        public int MinValue { get; set; }
+        public int MinValue
+        {
+            get => minValue;
+            set
+            {
+                if( maxValue != DefaultNotProvidedMinMax && value > maxValue )
+                {
+                    throw new IllegalOperationException( $"{nameof( MinValue )} cannot be bigger than {nameof( MaxValue )}" );
+                }
+
+                minValue = value;
+            }
+        }
 
         /// <summary>
         /// Maximum value for validation (used for numeric types).
@@ -32,19 +49,25 @@ namespace EasyParser.Core
         /// set an upper limit to the class property.
         /// (class needs to have <see cref="VerbAttribute"/> as its decorator)
         /// </summary>
-        public int MaxValue { get; set; }
+        public int MaxValue
+        {
+            get => maxValue;
+            set
+            {
+                if( minValue != DefaultNotProvidedMinMax && value < minValue )
+                {
+                    throw new IllegalOperationException( $"{nameof( MinValue )} cannot be less than {nameof( MaxValue )}" );
+                }
+
+                maxValue = value;
+            }
+        }
 
         /// <summary>
         /// Array of allowed values that can be passed by the user.
         /// When specified, only these values will be considered valid for the option.
         /// </summary>
         public object[]? AllowedValues { get; set; }
-
-        /// <summary>
-        /// stores the filtered regex pattern as string
-        /// </summary>
-        //marked nullable bc the compiler complains if we exit without assigning the constructor, but we need filtering before assigning adn that happens through RegexPattern
-        private string? regexPattern;
 
         /// <summary>
         /// Defines the regex pattern to be used to be set for <see cref="CompiledRegex"/>
@@ -54,11 +77,20 @@ namespace EasyParser.Core
             get => regexPattern;
             set
             {
-                if( !string.IsNullOrEmpty( value ) && string.IsNullOrWhiteSpace( value ) )
-                {
-                    throw new ArgumentException( "RegexPattern cannot be whitespace", nameof( value ) );
-                }
                 regexPattern = value;
+
+                if( !string.IsNullOrEmpty( value ) && !string.IsNullOrWhiteSpace( value ) )
+                {
+                    CompiledRegex = new Regex(
+                        value ?? throw new ArgumentNullException( nameof( value ) ),
+                        RegexOptions.Compiled,
+                        TimeSpan.FromMilliseconds( 500 ) );
+                }
+                else
+                {
+                    Logger.Error( $"Did not create a Regex instance out of {nameof( value )}:{value} because its invalid." +
+                        $"{nameof(CompiledRegex)} for {nameof(SettingsAttribute)} is still set to 'NULL'" );
+                }
             }
         }
 
@@ -68,12 +100,18 @@ namespace EasyParser.Core
         /// helping attribute to the <see cref="OptionsAttribute"/> it can 
         /// be used to leverage runtime regex pattern matching checks automatically.
         /// </summary>
-        internal Regex? CompiledRegex { get; set; }
+        internal Regex? CompiledRegex { get; set; } = null;
 
         /// <summary>
         /// Error message for regex validation.
         /// </summary>
-        public string RegexOnFailureMessage { get; set; }
+        public string RegexOnFailureMessage
+        {
+            get => regexOnFailureMessage;
+            set => regexOnFailureMessage = !string.IsNullOrWhiteSpace( value )
+                ? value
+                : "Validation against the provided Regex Pattern failed";
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsAttribute"/> class.
@@ -82,7 +120,7 @@ namespace EasyParser.Core
         /// <param name="maxValue">The maximum value for validation.</param>
         /// <param name="regexPattern">Regex pattern for value validation.</param>
         /// <param name="regexErrorMessage">Error message for regex validation.</param>
-        /// <param name="allowedValues"> Represents all the allowed values that can be passed as value for the property that has this decorator</param>
+        /// <param name="allowedValues">Represents all the allowed values that can be passed as value for the property that has this decorator</param>
         public SettingsAttribute(
             int minValue = DefaultNotProvidedMinMax,
             int maxValue = DefaultNotProvidedMinMax,
@@ -92,19 +130,11 @@ namespace EasyParser.Core
         )
             : base( string.Empty, Array.Empty<string>() ) //array.empty<T>() is slightly better than [] in terms of performance
         {
-            MinValue = minValue <= maxValue ? minValue : throw new IllegalOperationException($"{nameof(minValue)} cannot be bigger than {nameof(maxValue)}");
-            MaxValue = maxValue >= minValue ? maxValue : throw new IllegalOperationException( $"{nameof( minValue )} cannot be less than {nameof( maxValue )}" ); ;
+            MinValue = minValue;
+            MaxValue = maxValue;
             RegexOnFailureMessage = regexErrorMessage;
             RegexPattern = regexPattern;
             AllowedValues = allowedValues?.ToArray();
-
-            if( !string.IsNullOrWhiteSpace( regexPattern ) )
-            {
-                CompiledRegex = new Regex(
-                    regexPattern,
-                    RegexOptions.Compiled,
-                    TimeSpan.FromMilliseconds( 500 ) );
-            }
         }
     }
     #endregion

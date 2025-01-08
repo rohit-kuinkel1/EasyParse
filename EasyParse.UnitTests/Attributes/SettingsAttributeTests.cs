@@ -17,7 +17,7 @@ namespace EasyParser.Tests.Core
                 Assert.That( attribute.MinValue, Is.EqualTo( SettingsAttribute.DefaultNotProvidedMinMax ) );
                 Assert.That( attribute.MaxValue, Is.EqualTo( SettingsAttribute.DefaultNotProvidedMinMax ) );
                 Assert.That( attribute.RegexPattern, Is.Empty );
-                Assert.That( attribute.RegexOnFailureMessage, Is.Empty );
+                Assert.That( attribute.RegexOnFailureMessage, Is.EqualTo( "Validation against the provided Regex Pattern failed" ) );
                 Assert.That( attribute.AllowedValues, Is.Null );
                 Assert.That( attribute.CompiledRegex, Is.Null );
             } );
@@ -79,7 +79,8 @@ namespace EasyParser.Tests.Core
         {
             Assert.Multiple( () =>
             {
-                Assert.Throws<ArgumentException>( () => new SettingsAttribute( regexPattern: "   " ) );
+                //invalid regex patterns like whitespaces are just ignored
+                Assert.DoesNotThrow( () => new SettingsAttribute( regexPattern: "   " ) );
             } );
         }
 
