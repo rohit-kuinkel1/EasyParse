@@ -31,7 +31,8 @@ namespace EasyParser.Core
         /// reading, studying, s ;but we dont want s to be a long name alias since it is a char
         /// In other words; using auto property helps add logic for validation which wouldnt be possible if we just used <see cref="_aliases"/>
         /// </remarks>
-        private string[] _aliases;
+        //this is marked nullable bc the compiler will complain if we dont set val for this directly before we exit it but we do it through Aliases with filtering
+        private string[]? _aliases;
 
         /// <summary>
         /// Gets the aliases for the option or verb.
@@ -64,7 +65,7 @@ namespace EasyParser.Core
         )
         {
             HelpText = helpText;
-            _aliases = aliases;
+            Aliases = aliases;
         }
     }
 }
