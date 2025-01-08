@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using EasyParser.Enums;
 
 namespace EasyParser.Core
@@ -22,7 +23,7 @@ namespace EasyParser.Core
     /// </para>
     /// </summary>
 
-    [AttributeUsage( AttributeTargets.Property | AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = true )]
+    [AttributeUsage( AttributeTargets.Property /*| AttributeTargets.Class | AttributeTargets.Struct*/, AllowMultiple = true )]
     public sealed class MutualAttribute : BaseAttribute
     {
         /// <summary>
@@ -39,16 +40,35 @@ namespace EasyParser.Core
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MutualAttribute"/> class.
+        /// This special constructor takes <paramref name="takeRelatedEntitiesAsReference"/> which can be used
+        /// to take finer control over how you want <see cref="RelatedEntities"/> to be referred to, 
+        /// by reference or by a copy of the original array. When <paramref name="takeRelatedEntitiesAsReference"/>
+        /// is set to <see langword="true"/> then <paramref name="relatedEntities"/> is taken by reference and any change 
+        /// to the original array <paramref name="relatedEntities"/> will be reflected on <see cref="RelatedEntities"/>
+        /// </summary>
+        /// <param name="relationshipType">The type of mutual relationship.</param>
+        /// <param name="takeRelatedEntitiesAsReference"> Specifies if the passed relatedEntities are to be taken as reference</param>
+        /// <param name="relatedEntities">The names of the related options or verb.</param>
+        public MutualAttribute( MutualType relationshipType, bool takeRelatedEntitiesAsReference, params string[] relatedEntities )
+        : base( string.Empty, Array.Empty<string>() )
+        {
+            ArgumentNullException.ThrowIfNull( relatedEntities );
+            //relationshipType cannot be passed as null so we skip that check for now
+
+            RelatedEntities = takeRelatedEntitiesAsReference ? relatedEntities : relatedEntities.ToArray();
+            RelationshipType = relationshipType;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MutualAttribute"/> class.
         /// </summary>
         /// <param name="relationshipType">The type of mutual relationship.</param>
         /// <param name="relatedEntities">The names of the related options or verb.</param>
         public MutualAttribute( MutualType relationshipType, params string[] relatedEntities )
-        : base( string.Empty, Array.Empty<string>() )
+        : this( relationshipType, false, relatedEntities )
         {
-            RelatedEntities = relatedEntities;
-            RelationshipType = relationshipType;
         }
-        
+
         /// <summary>
         /// Returns a string representation of the instance.
         /// </summary>
