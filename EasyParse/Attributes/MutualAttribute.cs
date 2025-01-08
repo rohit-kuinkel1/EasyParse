@@ -49,7 +49,11 @@ namespace EasyParser.Core
         /// <param name="relationshipType">The type of mutual relationship.</param>
         /// <param name="takeRelatedEntitiesAsReference"> Specifies if the passed relatedEntities are to be taken as reference</param>
         /// <param name="relatedEntities">The names of the related options or verb.</param>
-        public MutualAttribute( MutualType relationshipType, bool takeRelatedEntitiesAsReference, params string[] relatedEntities )
+        public MutualAttribute(
+            MutualType relationshipType,
+            bool takeRelatedEntitiesAsReference,
+            params string[] relatedEntities
+        )
         : base( string.Empty, Array.Empty<string>() )
         {
             ArgumentNullException.ThrowIfNull( relatedEntities );
@@ -64,8 +68,11 @@ namespace EasyParser.Core
         /// </summary>
         /// <param name="relationshipType">The type of mutual relationship.</param>
         /// <param name="relatedEntities">The names of the related options or verb.</param>
-        public MutualAttribute( MutualType relationshipType, params string[] relatedEntities )
-        : this( relationshipType, false, relatedEntities )
+        public MutualAttribute(
+            MutualType relationshipType,
+            params string[] relatedEntities
+        )
+            : this( relationshipType, false, relatedEntities )
         {
         }
 

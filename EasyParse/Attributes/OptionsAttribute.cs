@@ -52,13 +52,28 @@ namespace EasyParser.Core
             string errorMessage = "",
             params string[] aliases
         )
-            : base( helpText, aliases )
+        : base( helpText, aliases )
         {
-            ShortName = shortName;
-            LongName = longName;
+            //ensure shortName is not null/empty/whitespace character
+            ShortName = char.IsWhiteSpace( shortName ) || shortName == default
+                ? throw new ArgumentException( "Short name cannot just be whitespaces or default char value", nameof( shortName ) )
+                : shortName;
+
+            //longName must be non-null, non-empty, non-whitespace, and >= 2 chars
+            LongName = string.IsNullOrEmpty( longName )
+                ? throw new ArgumentNullException( nameof( longName ) )
+                : longName.Length >= 2 && !string.IsNullOrWhiteSpace( longName )
+                    ? longName
+                    : throw new ArgumentException( "Long name must be at least 2 characters and not whitespace", nameof( longName ) );
+
+            //bool cant be null since its not a ref type and we didnt say its nullable
             Required = isRequired;
             Default = defaultValue;
-            ErrorMessage = errorMessage;
+
+            //ensure the error msg is not just whitespace if it was provided
+            ErrorMessage = !string.IsNullOrEmpty( errorMessage ) && string.IsNullOrWhiteSpace( errorMessage )
+                ? throw new ArgumentException( "Error message cannot just be whitespaces", nameof( errorMessage ) )
+                : errorMessage;
         }
 
         /// <summary>
@@ -68,7 +83,7 @@ namespace EasyParser.Core
         /// <returns>A string representing the options attribute.</returns>
         public override string ToString()
         {
-            return 
+            return
                 $"\n\t\tOptionsAttribute: \n" +
                 $"\t\t\tLongName:{LongName}, \n" +
                 $"\t\t\tShortName:{ShortName}, \n" +
