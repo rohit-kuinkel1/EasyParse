@@ -6,6 +6,7 @@ using EasyParser;
 namespace EasyParse.Misc
 {
     [SupportedOSPlatform( "windows" )]
+    [SupportedOSPlatform( "linux" )]
     internal static class FileHandler
     {
         public static string? GetInitialDirectory()
