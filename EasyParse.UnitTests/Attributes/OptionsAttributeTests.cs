@@ -134,7 +134,8 @@ namespace EasyParser.Tests.Core
         }
 
         [TestCase( "" )]
-        [TestCase( null )]
+        [TestCase( "null" )]
+       // [TestCase( null )] NUnit1101
         public void Constructor_WithInvalidLongName_ThrowsArgumentException( string invalidLongName )
         {
             const char shortName = 't';

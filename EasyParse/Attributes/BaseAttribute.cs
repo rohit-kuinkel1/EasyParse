@@ -9,15 +9,19 @@ namespace EasyParser.Core
     /// </summary>
     public abstract class BaseAttribute : Attribute
     {
+        #region FieldProperties
         /// <summary>
         /// defines the minimum length for a string to be considered as an alias for an attribute
         /// </summary>
-        private static readonly int ThresholdForAliasLength = 2;
+        private static readonly int MinThresholdForAliasLength = 2;
 
         /// <summary>
-        /// Gets or sets the help text for the command.
+        /// Backing field for the helpText. 
         /// </summary>
-        public string HelpText { get; set; }
+        /// <remarks>
+        /// Should be exclusively set using <see cref="HelpText"/>
+        /// </remarks>
+        [Validated] private string? _helpText;
 
         /// <summary>
         /// Holds the aliases/different name for the same attribute.
@@ -32,7 +36,18 @@ namespace EasyParser.Core
         /// In other words; using auto property helps add logic for validation which wouldnt be possible if we just used <see cref="_aliases"/>
         /// </remarks>
         //this is marked nullable bc the compiler will complain if we dont set val for this directly before we exit it but we do it through Aliases with filtering
-        private string[]? _aliases;
+        [Validated] private string[]? _aliases;
+        #endregion
+
+        #region AutoProperties
+        /// <summary>
+        /// Auto property for <see cref="_helpText"/> with set validation
+        /// </summary>
+        public string HelpText
+        {
+            get => _helpText ?? "No help text was defined for this field";
+            set => _helpText = string.IsNullOrEmpty( value ) ? "No help text was defined for this field" : value;
+        }
 
         /// <summary>
         /// Gets the aliases for the option or verb.
@@ -42,18 +57,20 @@ namespace EasyParser.Core
             get => _aliases ?? Array.Empty<string>();
             set
             {
-                var validAliases = value.Where( alias => !string.IsNullOrWhiteSpace( alias ) && alias.Length >= ThresholdForAliasLength ).ToArray();
-                var discardedAliases = value.Where( alias => alias.Length < ThresholdForAliasLength ).ToArray();
+                var validAliases = value.Where( alias => !string.IsNullOrWhiteSpace( alias ) && alias.Length >= MinThresholdForAliasLength ).ToArray();
+                var discardedAliases = value.Where( alias => alias.Length < MinThresholdForAliasLength ).ToArray();
 
                 _aliases = validAliases;
 
                 if( discardedAliases.Length > 0 )
                 {
-                    Logger.Debug( $"Some aliases were discarded because they were either empty or their length was less than the defined threshold ({ThresholdForAliasLength}): {string.Join( ", ", discardedAliases )}" );
+                    Logger.Debug( $"Some aliases were discarded because they were either empty or their length was less than the defined threshold ({MinThresholdForAliasLength}): {string.Join( ", ", discardedAliases )}" );
                 }
             }
         }
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="BaseAttribute"/> class.
         /// </summary>
@@ -67,5 +84,6 @@ namespace EasyParser.Core
             HelpText = helpText;
             Aliases = aliases;
         }
+        #endregion
     }
 }

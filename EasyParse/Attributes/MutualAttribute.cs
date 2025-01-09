@@ -25,17 +25,31 @@ namespace EasyParser.Core
     [AttributeUsage( AttributeTargets.Property /*| AttributeTargets.Class | AttributeTargets.Struct*/, AllowMultiple = true )]
     public sealed class MutualAttribute : BaseAttribute
     {
-        private string[] relatedEntities = Array.Empty<string>();
-        private MutualType relationshipType;
+        #region FieldProperties
+        /// <summary>
+        /// holds all the related entities for this <see cref="MutualAttribute"/>
+        /// </summary>
+        /// <remarks>
+        /// Should be exclusively set using <see cref="RelatedEntities"/>
+        /// </remarks>
+        [Validated] private string[]? relatedEntities;
 
+        /// <summary>
+        /// holds all relationshipType for this <see cref="MutualAttribute"/>
+        /// </summary>
+        [NoValidationRequired] private MutualType relationshipType;
+        #endregion
+
+        #region AutoProperties
         /// <summary>
         /// The name of the entity that is part of the mutual relationship.
         /// </summary>
         public string[] RelatedEntities
         {
-            get => relatedEntities;
+            get => relatedEntities ?? Array.Empty<string>();
             set
             {
+                //if the user tries to pass null explicitly, then throw an exception
                 ArgumentNullException.ThrowIfNull( value );
                 relatedEntities = value;
             }
@@ -51,7 +65,9 @@ namespace EasyParser.Core
             get => relationshipType;
             set => relationshipType = value;
         }
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="MutualAttribute"/> class.
         /// This special constructor takes <paramref name="takeRelatedEntitiesAsReference"/> which can be used
@@ -86,7 +102,9 @@ namespace EasyParser.Core
             : this( relationshipType, false, relatedEntities )
         {
         }
+        #endregion
 
+        #region Misc
         /// <summary>
         /// Returns a string representation of the instance.
         /// </summary>
@@ -96,5 +114,6 @@ namespace EasyParser.Core
             var entities = string.Join( ", ", RelatedEntities );
             return $"[Mutual: {RelationshipType} with {entities}]";
         }
+        #endregion
     }
 }
