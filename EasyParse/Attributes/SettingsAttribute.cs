@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using EasyParser.Utility;
 
 namespace EasyParser.Core
 {
-    #region UnderConstruction
     /// <summary>
     /// Attribute for defining settings for options.
     /// Includes properties for color, validation ranges, and regex pattern matching.
@@ -13,22 +11,43 @@ namespace EasyParser.Core
     [AttributeUsage( AttributeTargets.Property, AllowMultiple = false )]
     public sealed class SettingsAttribute : BaseAttribute
     {
+        #region FieldProperties
         /// <summary>
         /// placeholder for default values for MinValue and MaxValue
         /// </summary>
-        internal const int DefaultNotProvidedMinMax = -99999999;
+        internal const int DefaultNotProvidedMinMax = -999999999;
 
-        private int minValue = DefaultNotProvidedMinMax;
-        private int maxValue = DefaultNotProvidedMinMax;
-        private string? regexPattern;
-        private string regexOnFailureMessage = "Validation against Regex Pattern failed";
+        /// <summary>
+        /// holsd the validated minimum value possible for this <see cref="OptionsAttribute"/>
+        /// </summary>
+        [Validated] private int minValue = DefaultNotProvidedMinMax;
 
+        /// <summary>
+        /// holds the validated maximum value possible for this <see cref="OptionsAttribute"/>
+        /// </summary>
+        [Validated] private int maxValue = DefaultNotProvidedMinMax;
+
+        /// <summary>
+        /// holds the validated supplied regex pattern to be used for pattern matching during parsing
+        /// </summary>
+        [Validated] private string regexPattern = string.Empty;
+
+        /// <summary>
+        /// holds the error message to be shown explicitly only when the regex validation fails.
+        /// </summary>
+        [Validated] private string regexOnFailureMessage = "Validation against Regex Pattern failed";
+        #endregion
+
+        #region AutoProperties
         /// <summary>
         /// Minimum value for validation (used for numeric types).
         /// When used in conjuction with <see cref="OptionsAttribute"/> it helps 
         /// set a lower limit to the class property. 
-        /// (Class needs to have <see cref="VerbAttribute"/> as its decorator)
         /// </summary>
+        /// <remarks>
+        /// The Class needs to have <see cref="VerbAttribute"/> as its decorator for <see cref="OptionsAttribute"/> and <see cref="SettingsAttribute"/> to work on the classes properties
+        /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public int MinValue
         {
             get => minValue;
@@ -36,7 +55,7 @@ namespace EasyParser.Core
             {
                 if( maxValue != DefaultNotProvidedMinMax && value > maxValue )
                 {
-                    throw new IllegalOperationException( $"{nameof( MinValue )} cannot be bigger than {nameof( MaxValue )}" );
+                    throw new ArgumentOutOfRangeException( $"{nameof( MinValue )} cannot be bigger than {nameof( MaxValue )}" );
                 }
 
                 minValue = value;
@@ -47,8 +66,11 @@ namespace EasyParser.Core
         /// Maximum value for validation (used for numeric types).
         /// When used in conjuction with <see cref="OptionsAttribute"/> it helps 
         /// set an upper limit to the class property.
-        /// (class needs to have <see cref="VerbAttribute"/> as its decorator)
         /// </summary>
+        /// <remarks>
+        /// The Class needs to have <see cref="VerbAttribute"/> as its decorator for <see cref="OptionsAttribute"/> and <see cref="SettingsAttribute"/> to work on the classes properties
+        /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public int MaxValue
         {
             get => maxValue;
@@ -56,7 +78,7 @@ namespace EasyParser.Core
             {
                 if( minValue != DefaultNotProvidedMinMax && value < minValue )
                 {
-                    throw new IllegalOperationException( $"{nameof( MinValue )} cannot be less than {nameof( MaxValue )}" );
+                    throw new ArgumentOutOfRangeException( $"{nameof( MaxValue )} cannot be less than {nameof( MinValue )}" );
                 }
 
                 maxValue = value;
@@ -67,12 +89,14 @@ namespace EasyParser.Core
         /// Array of allowed values that can be passed by the user.
         /// When specified, only these values will be considered valid for the option.
         /// </summary>
-        public object[]? AllowedValues { get; set; }
+        [NoValidationRequired] public object[]? AllowedValues { get; set; }
 
         /// <summary>
         /// Defines the regex pattern to be used to be set for <see cref="CompiledRegex"/>
+        /// If the supplied value was null or empty or just whitespaces, then Regex validation will obviously be done because 
+        /// the <see cref="CompiledRegex"/> will remain <see langword="null"/>
         /// </summary>
-        public string? RegexPattern
+        public string RegexPattern
         {
             get => regexPattern;
             set
@@ -82,14 +106,15 @@ namespace EasyParser.Core
                 if( !string.IsNullOrEmpty( value ) && !string.IsNullOrWhiteSpace( value ) )
                 {
                     CompiledRegex = new Regex(
-                        value ?? throw new ArgumentNullException( nameof( value ) ),
+                        value,
                         RegexOptions.Compiled,
-                        TimeSpan.FromMilliseconds( 500 ) );
+                        TimeSpan.FromMilliseconds( 500 )
+                    );
                 }
                 else
                 {
                     Logger.Error( $"Did not create a Regex instance out of {nameof( value )}:{value} because its invalid." +
-                        $"{nameof(CompiledRegex)} for {nameof(SettingsAttribute)} is still set to 'NULL'" );
+                        $"{nameof( CompiledRegex )} for {nameof( SettingsAttribute )} is still set to 'NULL'" );
                 }
             }
         }
@@ -100,7 +125,7 @@ namespace EasyParser.Core
         /// helping attribute to the <see cref="OptionsAttribute"/> it can 
         /// be used to leverage runtime regex pattern matching checks automatically.
         /// </summary>
-        internal Regex? CompiledRegex { get; set; } = null;
+        internal Regex? CompiledRegex { get; private set; } = null;
 
         /// <summary>
         /// Error message for regex validation.
@@ -112,23 +137,27 @@ namespace EasyParser.Core
                 ? value
                 : "Validation against the provided Regex Pattern failed";
         }
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="SettingsAttribute"/> class.
         /// </summary>
         /// <param name="minValue">The minimum value for validation.</param>
         /// <param name="maxValue">The maximum value for validation.</param>
+        /// <param name="helpText"> The help text to show for <see cref="SettingsAttribute"/></param>
         /// <param name="regexPattern">Regex pattern for value validation.</param>
         /// <param name="regexErrorMessage">Error message for regex validation.</param>
         /// <param name="allowedValues">Represents all the allowed values that can be passed as value for the property that has this decorator</param>
         public SettingsAttribute(
             int minValue = DefaultNotProvidedMinMax,
             int maxValue = DefaultNotProvidedMinMax,
+            string helpText = "",
             string regexPattern = "",
             string regexErrorMessage = "",
             object[]? allowedValues = null
         )
-            : base( string.Empty, Array.Empty<string>() ) //array.empty<T>() is slightly better than [] in terms of performance
+            : base( string.Empty, helpText, Array.Empty<string>() ) //array.empty<T>() is slightly better than [] in terms of performance
         {
             MinValue = minValue;
             MaxValue = maxValue;
@@ -136,6 +165,23 @@ namespace EasyParser.Core
             RegexPattern = regexPattern;
             AllowedValues = allowedValues?.ToArray();
         }
+        #endregion
+
+        #region Misc
+        /// <summary>
+        /// Returns a string representation of the <see cref="SettingsAttribute"/> instance,
+        /// including its properties.
+        /// </summary>
+        /// <returns>A string representing the options attribute.</returns>
+        public override string ToString()
+        {
+            return
+                $"\n\t\tSettingsAttribute: \n" +
+                $"\t\t\t{nameof( MinValue )}:{MinValue}, \n" +
+                $"\t\t\t{nameof( MaxValue )}:{MaxValue}, \n" +
+                $"\t\t\t{nameof( RegexPattern )}:{RegexPattern}, \n" +
+                $"\t\t\t{nameof( RegexOnFailureMessage )}:{RegexOnFailureMessage}, \n";
+        }
+        #endregion
     }
-    #endregion
 }

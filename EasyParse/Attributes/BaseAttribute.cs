@@ -53,8 +53,8 @@ namespace EasyParser.Core
         /// </summary>
         public string HelpText
         {
-            get => _helpText ?? "No help text was defined for this field";
-            set => _helpText = string.IsNullOrEmpty( value ) ? "No help text was defined for this field" : value.Trim();
+            get => _helpText ?? string.Empty;
+            set => _helpText = string.IsNullOrEmpty( value ) ? string.Empty : value.Trim();
         }
 
         /// <summary>
@@ -62,8 +62,8 @@ namespace EasyParser.Core
         /// </summary>
         public string ErrorMessage
         {
-            get => _helpText ?? "ERROR";
-            set => _helpText = string.IsNullOrEmpty( value ) ? "ERROR" : value.Trim();
+            get => _errorMessage ?? string.Empty;
+            set => _errorMessage = string.IsNullOrEmpty( value ) ? string.Empty : value.Trim();
         }
 
         /// <summary>

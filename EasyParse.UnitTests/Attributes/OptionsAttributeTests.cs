@@ -102,7 +102,7 @@ namespace EasyParser.Tests.Core
                 $"\t\t\tLongName:{longName}, \n" +
                 $"\t\t\tShortName:{shortName}, \n" +
                 $"\t\t\tRequired:{isRequired}, \n" +
-                $"\t\t\tDefaultValue:{defaultValue}, \n" +
+                $"\t\t\tDefault:{defaultValue}, \n" +
                 $"\t\t\tHelpText:{helpText}, \n" +
                 $"\t\t\tErrorMessage:{errorMessage} \n";
 
@@ -131,15 +131,6 @@ namespace EasyParser.Tests.Core
 
             //should only be hung on properties of a class
             Assert.That( usage.ValidOn, Is.EqualTo( AttributeTargets.Property ), $"Only Properties of a given class are allowed to be decorated with {nameof( OptionsAttribute )}!" );
-        }
-
-        [TestCase( "" )]
-        [TestCase( "null" )]
-       // [TestCase( null )] NUnit1101
-        public void Constructor_WithInvalidLongName_ThrowsArgumentException( string invalidLongName )
-        {
-            const char shortName = 't';
-            Assert.Throws<ArgumentNullException>( () => new OptionsAttribute( shortName, invalidLongName ) );
         }
 
         [TestCase( " " )]

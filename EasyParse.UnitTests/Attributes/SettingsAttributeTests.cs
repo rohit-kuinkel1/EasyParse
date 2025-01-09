@@ -146,7 +146,7 @@ namespace EasyParser.Tests.Core
         [Test]
         public void Constructor_WithMinValueGreaterThanMaxValue_ThrowsIllegalOperationException()
         {
-            Assert.Throws<IllegalOperationException>( () => new SettingsAttribute( minValue: 10, maxValue: 1 ) );
+            Assert.Throws<ArgumentOutOfRangeException>( () => new SettingsAttribute( minValue: 10, maxValue: 1 ) );
         }
 
         [Test]

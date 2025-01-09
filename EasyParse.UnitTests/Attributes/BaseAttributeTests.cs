@@ -10,8 +10,8 @@ namespace EasyParser.AttributeTests
     {
         private class MockAttribClassAttribute : BaseAttribute
         {
-            public MockAttribClassAttribute( string helpText, params string[] aliases )
-                : base( helpText, aliases )
+            public MockAttribClassAttribute( string helpText, string errorMessage = "", params string[] aliases )
+                : base( helpText, errorMessage, aliases )
             {
             }
         }
@@ -97,7 +97,7 @@ namespace EasyParser.AttributeTests
         [Test]
         public void Constructor_WithAliases_SetsValidAliases()
         {
-            var attribute = new MockAttribClassAttribute( "Help message", "reading", "s", "studying" );
+            var attribute = new MockAttribClassAttribute( "Help message", "ERROR", "reading", "s", "studying" );
 
             var expectedAliases = new[] { "reading", "studying" };
             Assert.That( attribute.Aliases, Is.EquivalentTo( expectedAliases ) );

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Versioning;
 using EasyParse.Misc;
 using EasyParser.Core;
 using EasyParser.Enums;
@@ -140,6 +141,8 @@ namespace EasyParser
         /// Exports the default EasyParser configuration to a file named EasyParse.cs.
         /// Although the nested functions in <see cref="ExportDefaultConfig"/> are not conventional, they get the job done for now so i'll just let them be.
         /// </summary>
+        [SupportedOSPlatform( "windows" )]
+        [SupportedOSPlatform( "linux" )]
         public static void ExportDefaultConfig( string? targetDirectory = null, bool exportWithMain = false )
         {
             var configCode = exportWithMain

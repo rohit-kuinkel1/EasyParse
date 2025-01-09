@@ -84,7 +84,7 @@ namespace EasyParser.Core
             bool takeRelatedEntitiesAsReference,
             params string[] relatedEntities
         )
-            : base( string.Empty, Array.Empty<string>() )
+            : base( string.Empty, string.Empty, Array.Empty<string>() )
         {
             RelationshipType = relationshipType;
             RelatedEntities = takeRelatedEntitiesAsReference ? relatedEntities : relatedEntities.ToArray();

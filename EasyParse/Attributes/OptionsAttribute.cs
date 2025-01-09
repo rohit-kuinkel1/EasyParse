@@ -24,7 +24,7 @@ namespace EasyParser.Core
         /// <summary>
         /// holds the long name for this <see cref="OptionsAttribute"/>
         /// </summary>
-        [Validated] private string? _longName;
+        [Validated] private string _longName = string.Empty;
         #endregion
 
         #region AutoProperties
@@ -44,7 +44,7 @@ namespace EasyParser.Core
         /// Gets or sets the long name given to this option.
         /// Validates the provided value to ensure it is not null, empty, whitespace, and is at least 2 characters long after using <see cref="string.Trim()"/>.
         /// </summary>
-        public string? LongName
+        public string LongName
         {
             get => _longName;
             set => _longName = string.IsNullOrEmpty( value )
@@ -122,12 +122,12 @@ namespace EasyParser.Core
         {
             return
                 $"\n\t\tOptionsAttribute: \n" +
-                $"\t\t\tLongName: {LongName}, \n" +
-                $"\t\t\tShortName: {ShortName}, \n" +
-                $"\t\t\tRequired: {Required}, \n" +
-                $"\t\t\tDefaultValue: {Default}, \n" +
-                $"\t\t\tHelpText: {HelpText}, \n" +
-                $"\t\t\tErrorMessage: {ErrorMessage} \n";
+                $"\t\t\t{nameof( LongName )}:{LongName}, \n" +
+                $"\t\t\t{nameof( ShortName )}:{ShortName}, \n" +
+                $"\t\t\t{nameof( Required )}:{Required}, \n" +
+                $"\t\t\t{nameof( Default )}:{Default}, \n" +
+                $"\t\t\t{nameof( HelpText )}:{HelpText}, \n" +
+                $"\t\t\t{nameof( ErrorMessage )}:{ErrorMessage} \n";
         }
         #endregion
     }

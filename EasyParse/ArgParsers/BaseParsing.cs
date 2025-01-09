@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using EasyParser.Core;
 using EasyParser.Enums;
 using EasyParser.Utility;
@@ -373,10 +372,8 @@ namespace EasyParser.Parsing
         /// <returns></returns>
         private static bool ValidateRegex( string stringValue, SettingsAttribute settings, string optionName )
         {
-            if( settings.CompiledRegex == null && !string.IsNullOrEmpty( settings.RegexPattern ) )
+            if( settings.CompiledRegex != null )
             {
-                settings.CompiledRegex = new Regex( settings.RegexPattern, RegexOptions.Compiled, TimeSpan.FromMilliseconds( 500 ) );
-
                 if( !settings.CompiledRegex.IsMatch( stringValue ) )
                 {
                     var errorMessage = string.IsNullOrEmpty( settings.RegexOnFailureMessage )

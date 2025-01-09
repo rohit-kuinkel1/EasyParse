@@ -32,15 +32,17 @@ namespace EasyParser.Core
         /// <param name="longName">The long name of the verb.</param>
         /// <param name="isRequired">Indicates whether the verb is required.</param>
         /// <param name="helpText">The help text for the verb.</param>
+        /// <param name="errorMessage"> The error message to know for general errors during parsing for this <see cref="VerbAttribute"/></param>
         /// <param name="aliases">The aliases for the verb.</param>
         public VerbAttribute(
             char shortName,
             string longName,
             bool isRequired = false,
             string helpText = "",
+            string errorMessage = "",
             params string[] aliases
         )
-            : base( helpText, aliases )
+            : base( helpText, errorMessage, aliases )
         {
             ShortName = shortName;
             LongName = longName;
@@ -55,10 +57,10 @@ namespace EasyParser.Core
         public override string ToString()
         {
             return
-                $"\nVerbAttribute: \n" +
-                $"LongName:{LongName}, \n" +
-                $"Short Name:{ShortName}, \n" +
-                $"Required: {Required}\n";
+                $"\n{nameof( VerbAttribute )}: \n" +
+                $"\t{nameof( LongName )}:{LongName}, \n" +
+                $"\t{nameof( ShortName )}:{ShortName}, \n" +
+                $"\t{nameof( Required )}:{Required}\n";
         }
     }
 }
