@@ -176,7 +176,7 @@ namespace EasyParser.Core
         public override string ToString()
         {
             return
-                $"\n\t\tSettingsAttribute: \n" +
+                $"\n\t\t{nameof(SettingsAttribute)}: \n" +
                 $"\t\t\t{nameof( MinValue )}:{MinValue}, \n" +
                 $"\t\t\t{nameof( MaxValue )}:{MaxValue}, \n" +
                 $"\t\t\t{nameof( RegexPattern )}:{RegexPattern}, \n" +

@@ -121,7 +121,7 @@ namespace EasyParser.Core
         public override string ToString()
         {
             return
-                $"\n\t\tOptionsAttribute: \n" +
+                $"\n\t\t{nameof(OptionsAttribute)}: \n" +
                 $"\t\t\t{nameof( LongName )}:{LongName}, \n" +
                 $"\t\t\t{nameof( ShortName )}:{ShortName}, \n" +
                 $"\t\t\t{nameof( Required )}:{Required}, \n" +

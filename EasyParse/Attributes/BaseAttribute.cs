@@ -105,5 +105,20 @@ namespace EasyParser.Core
             Aliases = aliases;
         }
         #endregion
+
+        #region Misc
+        /// <summary>
+        /// <inheritdoc/>
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return
+                $"\n{nameof( BaseAttribute )}: \n" +
+                $"\t{nameof( HelpText )}: {HelpText}, \n" +
+                $"\t{nameof( ErrorMessage )}: {ErrorMessage}, \n" +
+                $"\t{nameof( Aliases )}: {string.Join( ", ", Aliases )}\n";
+        }
+        #endregion
     }
 }
