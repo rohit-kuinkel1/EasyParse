@@ -3,36 +3,72 @@
 namespace EasyParser.Core
 {
     /// <summary>
-    /// Attribute for defining command-line options.
+    /// Attribute for defining command line options.
+    /// <see cref="OptionsAttribute"/> is meant to be hung on class properties to define a class property as an option for a verb
+    /// For example in git commit -m, commit would be the "verb" and "-m" would be the option.
+    /// In the code below -s or --stdin would be the option
+    /// <code>
+    ///  [Options('s', "stdin", Default = false, Required = false, HelpText = "Read from stdin", Aliases = new[] { "standardin", "stdinput" })]
+    ///  public bool Stdin { get; set; }
+    /// </code>
     /// </summary>
     [AttributeUsage( AttributeTargets.Property, AllowMultiple = false )]
     public sealed class OptionsAttribute : BaseAttribute
     {
+        #region FieldProperties
         /// <summary>
-        /// Gets the short name for the option (single-character).
+        /// holds the short name for this <see cref="OptionsAttribute"/>
         /// </summary>
-        public char ShortName { get; set; }
+        [Validated] private char? _shortName;
 
         /// <summary>
-        /// Gets the long name given to this option.
+        /// holds the long name for this <see cref="OptionsAttribute"/>
         /// </summary>
-        public string LongName { get; set; }
+        [Validated] private string? _longName;
+        #endregion
+
+        #region AutoProperties
+        /// <summary>
+        /// Gets or sets the short name for the option (single-character).
+        /// Validates the provided value to ensure it is not whitespace or default char value.
+        /// </summary>
+        public char ShortName
+        {
+            get => _shortName ?? default;
+            set => _shortName = char.IsWhiteSpace( value ) || value == default
+                ? throw new ArgumentException( "Short name cannot just be whitespaces or default char value", nameof( ShortName ) )
+                : value;
+        }
+
+        /// <summary>
+        /// Gets or sets the long name given to this option.
+        /// Validates the provided value to ensure it is not null, empty, whitespace, and is at least 2 characters long after using <see cref="string.Trim()"/>.
+        /// </summary>
+        public string? LongName
+        {
+            get => _longName;
+            set => _longName = string.IsNullOrEmpty( value )
+                ? throw new ArgumentNullException( nameof( LongName ) )
+                : value.Trim().Length >= 2 && !string.IsNullOrWhiteSpace( value )
+                    ? value.Trim()
+                    : throw new ArgumentException( "Long name must be at least 2 characters without whitespaces", nameof( LongName ) );
+        }
 
         /// <summary>
         /// Specifies the necessity of the attribute.
+        /// When set to <see langword="true"/>, this option is mandatory which means the parsing will fail
+        /// if this option was not provided.
         /// </summary>
-        public bool Required { get; set; }
+        [NoValidationRequired] public bool Required { get; set; }
 
         /// <summary>
-        /// Gets the default value for the option.
+        /// Gets or sets the default value for the option.
+        /// Can be anything hence the type <see cref="object"/>
         /// </summary>
-        public object? Default { get; set; }
+        [NoValidationRequired] public object? Default { get; set; }
+        #endregion
 
-        /// <summary>
-        /// Gets or sets the custom error message for invalid input.
-        /// </summary>
-        public string ErrorMessage { get; set; }
-
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="OptionsAttribute"/> class.
         /// </summary>
@@ -52,30 +88,31 @@ namespace EasyParser.Core
             string errorMessage = "",
             params string[] aliases
         )
-        : base( helpText, aliases )
+        : base( helpText, errorMessage, aliases )
         {
-            //ensure shortName is not null/empty/whitespace character
-            ShortName = char.IsWhiteSpace( shortName ) || shortName == default
-                ? throw new ArgumentException( "Short name cannot just be whitespaces or default char value", nameof( shortName ) )
-                : shortName;
-
-            //longName must be non-null, non-empty, non-whitespace, and >= 2 chars
-            LongName = string.IsNullOrEmpty( longName )
-                ? throw new ArgumentNullException( nameof( longName ) )
-                : longName.Length >= 2 && !string.IsNullOrWhiteSpace( longName )
-                    ? longName
-                    : throw new ArgumentException( "Long name must be at least 2 characters and not whitespace", nameof( longName ) );
-
-            //bool cant be null since its not a ref type and we didnt say its nullable
+            ShortName = shortName;
+            LongName = longName;
             Required = isRequired;
             Default = defaultValue;
-
-            //ensure the error msg is not just whitespace if it was provided
-            ErrorMessage = !string.IsNullOrEmpty( errorMessage ) && string.IsNullOrWhiteSpace( errorMessage )
-                ? throw new ArgumentException( "Error message cannot just be whitespaces", nameof( errorMessage ) )
-                : errorMessage;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OptionsAttribute"/> class.
+        /// </summary>
+        /// <param name="shortName">The short name for the option (single character).</param>
+        /// <param name="longName">The long name for the option.</param>
+        /// <param name="isRequired">Indicates whether the option is required.</param>
+        public OptionsAttribute(
+            char shortName,
+            string longName,
+            bool isRequired
+        )
+        : this( shortName, longName, isRequired, null, "", "", Array.Empty<string>() )
+        {
+        }
+        #endregion
+
+        #region Misc
         /// <summary>
         /// Returns a string representation of the <see cref="OptionsAttribute"/> instance,
         /// including its short name, long name, whether it is required, default value, help text, and error message.
@@ -85,12 +122,13 @@ namespace EasyParser.Core
         {
             return
                 $"\n\t\tOptionsAttribute: \n" +
-                $"\t\t\tLongName:{LongName}, \n" +
-                $"\t\t\tShortName:{ShortName}, \n" +
-                $"\t\t\tRequired:{Required}, \n" +
-                $"\t\t\tDefaultValue:{Default}, \n" +
-                $"\t\t\tHelpText:{HelpText}, \n" +
-                $"\t\t\tErrorMessage:{ErrorMessage} \n";
+                $"\t\t\tLongName: {LongName}, \n" +
+                $"\t\t\tShortName: {ShortName}, \n" +
+                $"\t\t\tRequired: {Required}, \n" +
+                $"\t\t\tDefaultValue: {Default}, \n" +
+                $"\t\t\tHelpText: {HelpText}, \n" +
+                $"\t\t\tErrorMessage: {ErrorMessage} \n";
         }
+        #endregion
     }
 }

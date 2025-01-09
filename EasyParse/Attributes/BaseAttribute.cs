@@ -24,6 +24,14 @@ namespace EasyParser.Core
         [Validated] private string? _helpText;
 
         /// <summary>
+        /// Backing field for the error message. 
+        /// </summary>
+        /// <remarks>
+        /// Should be exclusively set using <see cref="ErrorMessage"/>
+        /// </remarks>
+        [Validated] private string? _errorMessage;
+
+        /// <summary>
         /// Holds the aliases/different name for the same attribute.
         /// For example an attribute with name Play can have aliases Playing and when the
         /// user inputs Playing, it should be smart enough to know that Play was meant since
@@ -46,7 +54,16 @@ namespace EasyParser.Core
         public string HelpText
         {
             get => _helpText ?? "No help text was defined for this field";
-            set => _helpText = string.IsNullOrEmpty( value ) ? "No help text was defined for this field" : value;
+            set => _helpText = string.IsNullOrEmpty( value ) ? "No help text was defined for this field" : value.Trim();
+        }
+
+        /// <summary>
+        /// Auto property for <see cref="_errorMessage"/> with set validation
+        /// </summary>
+        public string ErrorMessage
+        {
+            get => _helpText ?? "ERROR";
+            set => _helpText = string.IsNullOrEmpty( value ) ? "ERROR" : value.Trim();
         }
 
         /// <summary>
@@ -75,13 +92,16 @@ namespace EasyParser.Core
         /// Initializes a new instance of the <see cref="BaseAttribute"/> class.
         /// </summary>
         /// <param name="helpText">The help text for the command.</param>
+        /// <param name="errorMessage"> The error message to show in case of errors related generally to this attribute.</param>
         /// <param name="aliases">The aliases for the attribute used.</param>
         protected BaseAttribute(
             string helpText,
+            string errorMessage,
             params string[] aliases
         )
         {
             HelpText = helpText;
+            ErrorMessage = errorMessage;
             Aliases = aliases;
         }
         #endregion
