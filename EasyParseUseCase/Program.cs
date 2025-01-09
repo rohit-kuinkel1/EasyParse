@@ -67,7 +67,7 @@ namespace Program
             };
 
             //EasyParser.EasyParse.ExportDefaultConfig( exportWithMain: true );
-            var parser = new EasyParser.EasyParse( 
+            var parser = EasyParser.EasyParse.Initialize( 
                 minLogLevel: EasyParser.LogLevel.BackTrace, 
                 redirectLogsToFile: false, 
                 logDirectory: @"C:\Users\kuike\Desktop\EasyParseLogs" 

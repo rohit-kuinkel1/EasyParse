@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
 using EasyParse.Misc;
@@ -40,10 +39,50 @@ namespace EasyParser
         /// <remarks>
         /// <see cref="LogLevel.BackTrace"/> cannot be set by users.
         /// </remarks>
-        public EasyParse( LogLevel minLogLevel = LogLevel.Info, bool redirectLogsToFile = false, string? logDirectory = null )
+        private EasyParse( LogLevel minLogLevel = LogLevel.Info, bool redirectLogsToFile = false, string? logDirectory = null )
         {
             Logger.Initialize( minLogLevel, redirectLogsToFile, logDirectory );
         }
+
+        #region Singelton
+        /// <summary>
+        /// <see cref="_instance"/> holds the singelton instance for <see cref="EasyParse"/>
+        /// </summary>
+        private static EasyParse? _instance;
+
+        /// <summary>
+        /// public constructor call for <see cref="EasyParse"/>
+        /// </summary>
+        /// <param name="minLogLevel"></param>
+        /// <param name="redirectLogsToFile"></param>
+        /// <param name="logDirectory"></param>
+        /// <returns></returns>
+        // Helps keep the code base for the users of the tool cleaner since they dont have to hassle with instantiating an instance with new
+        public static EasyParse Initialize( LogLevel minLogLevel = LogLevel.Info, bool redirectLogsToFile = false, string? logDirectory = null )
+        {
+            if( _instance == null )
+            {
+                _instance = new EasyParse( minLogLevel, redirectLogsToFile, logDirectory );
+            }
+            return _instance;
+        }
+
+        /// <summary>
+        /// Auto property to access the singelton instance of <see cref="EasyParse"/>
+        /// </summary>
+        public static EasyParse Instance
+        {
+            get
+            {
+                if( _instance == null )
+                {
+                    _instance = new EasyParse();
+                }
+
+                return _instance;
+            }
+        }
+        #endregion
 
         /// <summary>
         /// <see cref="SetLoggerStatusEnabled(bool)"/> sets the logger on or off depending on whether <see langword="true"/> or <see langword="false"/>

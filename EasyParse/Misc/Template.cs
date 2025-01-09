@@ -84,12 +84,13 @@ namespace Program
     //{
         ////LogLevel.BackTrace cannot be set by the users; levels => Debug, Info, Warning, Error, Critical, None
 
-        //var parser = new EasyParser.EasyParse( minLogLevel: EasyParser.LogLevel.Debug, redirectLogsToFile: false );
+        //var parser = EasyParser.EasyParse.Initialize( minLogLevel: EasyParser.LogLevel.Debug, redirectLogsToFile: false, logDirectory: @""<C:\Users\JohnSmith\Desktop\EasyParseLogs>"");
         // parser.SetLoggerStatusEnabled( true );
 
         //var parsingResult = parser.Parse<ParseVerbs>(args);
         //if(parsingResult.Success)
         //{
+            //var parsedInstances = parsingResult.ParsedInstances;
             //// do something
         //}
         //else
