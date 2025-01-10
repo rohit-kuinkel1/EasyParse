@@ -74,7 +74,26 @@ namespace EasyParser.AttributeTests
 
             //because all current aliases didnt fulfill the criteria of Length >=2, see BaseAttribute.Aliases
             Assert.That( attribute.Aliases, Is.Empty );
+
         }
+
+        //This will move in the direction of integration testing
+        //[Test]
+        //public void Aliases_WithAllInvalidAliases_MessageDisplayedInConsole()
+        //{
+        //    Logger.Initialize(LogLevel.Debug);
+        //    var attribute = new MockAttribClassAttribute( "Help message" );
+
+        //    var invalidAliases = new[] { "s", "r", "" };
+
+        //    var debugOutput = new StringWriter();
+        //    Console.SetOut( debugOutput );
+        //    attribute.Aliases = invalidAliases;
+        //    var logMessage = debugOutput.ToString();
+        //    Assert.That( logMessage, Does.Contain( "Some aliases were discarded because they were either empty or their length was less than the defined threshold" ) );
+
+        //    Logger.Reset();
+        //}
 
         [Test]
         public void Aliases_WithSpacesAsAliases_ReturnsEmptyArray()

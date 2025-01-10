@@ -42,23 +42,29 @@ namespace EasyParser.Core
 
         #region AutoProperties
         /// <summary>
-        /// The name of the entity that is part of the mutual relationship.
+        /// The names of the entities that are a part of the mutual relationship.      
         /// </summary>
+        /// <remarks>
+        /// Holds all entities related to this <see cref="MutualAttribute"/>
+        /// (both <see cref="MutualType.Exclusive"/> and <see cref="MutualType.Inclusive"/>)
+        /// </remarks>
         public string[] RelatedEntities
         {
             get => relatedEntities ?? Array.Empty<string>();
             set
             {
                 //if the user tries to pass null explicitly, then throw an exception
-                ArgumentNullException.ThrowIfNull( value );
-                relatedEntities = value;
+                //ArgumentNullException.ThrowIfNull( value );
+                relatedEntities = value == null
+                    ? Array.Empty<string>()
+                    : value;
             }
         }
 
         /// <summary>
         /// The type of mutual relationship.
-        /// <see cref="MutualType.Exclusive"/> denotes a mutually exclusive relationship, meaning only one can exist at a given point.
-        /// <see cref="MutualType.Inclusive"/> denotes a mutually inclusive relationship, meaning both have to exist at a given point.
+        /// <see cref="MutualType.Exclusive"/> denotes a mutually exclusive relationship, meaning only one of the property can exist/be mentioned at a given point.
+        /// <see cref="MutualType.Inclusive"/> denotes a mutually inclusive relationship, meaning both of the properties have to exist/be mentioned at a given point.
         /// </summary>
         public MutualType RelationshipType
         {

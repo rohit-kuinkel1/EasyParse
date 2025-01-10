@@ -5,7 +5,8 @@ namespace EasyParser.Core
 {
     /// <summary>
     /// Base class for defining shared properties between options and verbs.
-    /// Only contains very very generic attributes like <see cref="HelpText"/>.
+    /// Only contains very generic attributes like <see cref="HelpText"/> or 
+    /// <see cref="ErrorMessage"/>.
     /// </summary>
     public abstract class BaseAttribute : Attribute
     {
@@ -13,7 +14,7 @@ namespace EasyParser.Core
         /// <summary>
         /// defines the minimum length for a string to be considered as an alias for an attribute
         /// </summary>
-        private static readonly int MinThresholdForAliasLength = 2;
+        protected static readonly int MinThresholdForAliasLength = 2;
 
         /// <summary>
         /// Backing field for the helpText. 
@@ -21,6 +22,7 @@ namespace EasyParser.Core
         /// <remarks>
         /// Should be exclusively set using <see cref="HelpText"/>
         /// </remarks>
+        //this is marked nullable bc the compiler will complain if we dont set val for this directly before we exit the constructor but we do it through HelpText with filtering
         [Validated] private string? _helpText;
 
         /// <summary>
@@ -43,7 +45,7 @@ namespace EasyParser.Core
         /// reading, studying, s ;but we dont want s to be a long name alias since it is a char
         /// In other words; using auto property helps add logic for validation which wouldnt be possible if we just used <see cref="_aliases"/>
         /// </remarks>
-        //this is marked nullable bc the compiler will complain if we dont set val for this directly before we exit it but we do it through Aliases with filtering
+        //this is marked nullable bc the compiler will complain if we dont set val for this directly before we exit the constructor but we do it through Aliases with filtering
         [Validated] private string[]? _aliases;
         #endregion
 
@@ -67,8 +69,12 @@ namespace EasyParser.Core
         }
 
         /// <summary>
-        /// Gets the aliases for the option or verb.
+        /// Gets and sets the aliases for the option or verb.
+        /// Be careful however, invalid Aliases will be discarded.
         /// </summary>
+        /// <remarks>
+        /// An Alias is invalid when its length, excluding whitespaces, is less than 2
+        ///</remarks>
         public string[] Aliases
         {
             get => _aliases ?? Array.Empty<string>();

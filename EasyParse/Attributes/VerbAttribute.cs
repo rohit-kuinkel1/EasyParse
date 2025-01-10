@@ -9,22 +9,66 @@ namespace EasyParser.Core
     [AttributeUsage( AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false )]
     public sealed class VerbAttribute : BaseAttribute
     {
+        #region FieldProperties
         /// <summary>
-        /// Auto property for the short name for the option (single-character).
+        /// Holds the short name for the verb (single-character).
         /// </summary>
-        public char ShortName { get; set; }
+        [Validated] private char shortName;
 
         /// <summary>
-        /// Auto property for the long name given to this verb.
+        /// Holds the long name given to this verb.
         /// </summary>
-        public string LongName { get; set; }
+        [Validated] private string longName = string.Empty;
+
+        #endregion
+
+        #region AutoProperties
+        /// <summary>
+        /// Short name for the verb (single-character).
+        /// </summary>
+        public char ShortName
+        {
+            get => shortName;
+            set
+            {
+                if( char.IsWhiteSpace( value ) )
+                {
+                    throw new ArgumentException( "Short name cannot be a whitespace character and must be a valid character value.", nameof( ShortName ) );
+                }
+
+                shortName = value;
+            }
+        }
 
         /// <summary>
-        /// Auto property that specifies the necessity of the attribute.
-        /// When set to <see langword="true"/> and not provided, will throw an <see cref="Exception"/>
+        /// Long name given to this verb.
         /// </summary>
-        public bool Required { get; set; }
+        public string LongName
+        {
+            get => longName;
+            set
+            {
+                if( string.IsNullOrWhiteSpace( value ) || string.IsNullOrEmpty( value ) )
+                {
+                    throw new ArgumentNullException( $"{nameof( LongName )} cannot be null or whitespace.", nameof( LongName ) );
+                }
 
+                if( value.Trim().Length < BaseAttribute.MinThresholdForAliasLength )
+                {
+                    throw new ArgumentException( $"{nameof( LongName )} must have length of at least {MinThresholdForAliasLength} excluding whitespaces", nameof( LongName ) );
+                }
+
+                longName = value;
+            }
+        }
+
+        /// <summary>
+        /// Indicates whether the verb is required or not.
+        /// </summary>
+        [NoValidationRequired] public bool Required { get; set; }
+        #endregion
+
+        #region Constructors
         /// <summary>
         /// Initializes a new instance of the <see cref="VerbAttribute"/> class.
         /// </summary>
@@ -32,7 +76,7 @@ namespace EasyParser.Core
         /// <param name="longName">The long name of the verb.</param>
         /// <param name="isRequired">Indicates whether the verb is required.</param>
         /// <param name="helpText">The help text for the verb.</param>
-        /// <param name="errorMessage"> The error message to know for general errors during parsing for this <see cref="VerbAttribute"/></param>
+        /// <param name="errorMessage">The error message for general errors during parsing.</param>
         /// <param name="aliases">The aliases for the verb.</param>
         public VerbAttribute(
             char shortName,
@@ -50,6 +94,23 @@ namespace EasyParser.Core
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="VerbAttribute"/> class.
+        /// </summary>
+        /// <param name="shortName">The short name of the verb.</param>
+        /// <param name="longName">The long name of the verb.</param>
+        /// <param name="isRequired">Indicates whether the verb is required.</param>
+        public VerbAttribute(
+            char shortName,
+            string longName,
+            bool isRequired = false
+        )
+            : this( shortName, longName, isRequired, "", "", Array.Empty<string>() )
+        {
+        }
+        #endregion
+
+        #region Misc
+        /// <summary>
         /// Returns a string representation of the <see cref="VerbAttribute"/> instance,
         /// including its short name, long name, and whether it is required.
         /// </summary>
@@ -62,5 +123,6 @@ namespace EasyParser.Core
                 $"\t{nameof( ShortName )}:{ShortName}, \n" +
                 $"\t{nameof( Required )}:{Required}\n";
         }
+        #endregion
     }
 }

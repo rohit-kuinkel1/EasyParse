@@ -19,7 +19,7 @@ namespace EasyParser.Core
         /// <summary>
         /// holds the short name for this <see cref="OptionsAttribute"/>
         /// </summary>
-        [Validated] private char? _shortName;
+        [Validated] private char _shortName;
 
         /// <summary>
         /// holds the long name for this <see cref="OptionsAttribute"/>
@@ -34,7 +34,7 @@ namespace EasyParser.Core
         /// </summary>
         public char ShortName
         {
-            get => _shortName ?? default;
+            get => _shortName;
             set => _shortName = char.IsWhiteSpace( value ) || value == default
                 ? throw new ArgumentException( "Short name cannot just be whitespaces or default char value", nameof( ShortName ) )
                 : value;
@@ -51,7 +51,7 @@ namespace EasyParser.Core
                 ? throw new ArgumentNullException( nameof( LongName ) )
                 : value.Trim().Length >= 2 && !string.IsNullOrWhiteSpace( value )
                     ? value.Trim()
-                    : throw new ArgumentException( "Long name must be at least 2 characters without whitespaces", nameof( LongName ) );
+                    : throw new ArgumentException( "Long name must be at least 2 characters excluding whitespaces", nameof( LongName ) );
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace EasyParser.Core
         public override string ToString()
         {
             return
-                $"\n\t\t{nameof(OptionsAttribute)}: \n" +
+                $"\n\t\t{nameof( OptionsAttribute )}: \n" +
                 $"\t\t\t{nameof( LongName )}:{LongName}, \n" +
                 $"\t\t\t{nameof( ShortName )}:{ShortName}, \n" +
                 $"\t\t\t{nameof( Required )}:{Required}, \n" +
