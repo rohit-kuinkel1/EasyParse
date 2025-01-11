@@ -4,6 +4,7 @@ namespace EasyParser.Core
 {
     /// <summary>
     /// Attribute for defining command line options.
+    /// This class cannot be inherited.
     /// <see cref="OptionsAttribute"/> is meant to be hung on class properties to define a class property as an option for a verb
     /// For example in git commit -m, commit would be the "verb" and "-m" would be the option.
     /// In the code below -s or --stdin would be the option

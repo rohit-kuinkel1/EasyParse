@@ -6,6 +6,7 @@ namespace EasyParser.Core
 {
     /// <summary>
     /// Specifies the mutual relationship between entities (options or verbs).
+    /// This class cannot be inherited.
     /// <para>
     /// Use case example:
     /// <code>

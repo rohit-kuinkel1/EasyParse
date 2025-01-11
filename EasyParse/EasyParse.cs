@@ -58,7 +58,11 @@ namespace EasyParser
         /// <param name="logDirectory"></param>
         /// <returns></returns>
         // Helps keep the code base for the users of the tool cleaner since they dont have to hassle with instantiating an instance with new
-        public static EasyParse Initialize( LogLevel minLogLevel = LogLevel.Info, bool redirectLogsToFile = false, string? logDirectory = null )
+        public static EasyParse Initialize(
+            LogLevel minLogLevel = LogLevel.Info,
+            bool redirectLogsToFile = false,
+            string? logDirectory = null
+        )
         {
             if( _instance == null )
             {
@@ -68,7 +72,7 @@ namespace EasyParser
         }
 
         /// <summary>
-        /// Auto property to access the singelton instance of <see cref="EasyParse"/>
+        /// Auto GET property to access the singelton instance of <see cref="EasyParse"/>
         /// </summary>
         public static EasyParse Instance
         {
@@ -134,13 +138,10 @@ namespace EasyParser
         {
             try
             {
-                _ = Utility.Utility.NotNullValidation(
-                    args,
-                    throwIfNull: true );
+                _ = Utility.Utility.NotNullValidation( args, throwIfNull: true );
 
                 var isNaturalLanguage = args.Length > 1
-                                        && string.Equals( args[1], ParsingKeyword.Where.ToString(),
-                                                          StringComparison.OrdinalIgnoreCase );
+                                        && string.Equals( args[1], ParsingKeyword.Where.ToString(), StringComparison.OrdinalIgnoreCase );
 
                 var containsKeywords = args.Any( arg => Keywords.Contains( arg.ToLowerInvariant() ) );
 

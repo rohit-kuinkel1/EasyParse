@@ -57,7 +57,7 @@ namespace Program
 
             var testArgs = new[]
             {
-                "add", "--read", "Help File Test.txt", "--verbose", "True", "--stdin", "TRUE", "--count", "15",
+                "add", "--reda", "Help File Test.txt", "--verbose", "True", "--stdin", "TRUE", "--count", "15",
                 "&", 
                 "process", "--input", "vacation.mp4", "--quality", "1080p", "--duration", "300", "--force", "true",
                 "&",

@@ -5,6 +5,7 @@ namespace EasyParser.Core
     /// <summary>
     /// Attribute for defining command-line verbs.
     /// Verbs represent actions that a user can execute.
+    /// This class cannot be inherited.
     /// </summary>
     [AttributeUsage( AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false )]
     public sealed class VerbAttribute : BaseAttribute

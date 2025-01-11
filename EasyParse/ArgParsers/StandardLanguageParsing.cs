@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using EasyParser.Core;
+using EasyParser.Utility;
 
 namespace EasyParser.Parsing
 {
@@ -56,7 +56,7 @@ namespace EasyParser.Parsing
                 }
                 else
                 {
-                    Logger.Debug( $"Type/Class {typeof( T ).FullName} was not marked with the decorator VerbAttribute and hence cannot be used to parse args." );
+                    throw new IllegalOperationException( $"Type/Class {typeof( T ).FullName} was not marked with the decorator VerbAttribute and hence cannot be used to parse args." );
                 }
 
                 //example: parser.Parse<ParseVerbs>( args ); instantiate an object of type ParseVerbs passed by the user
@@ -109,6 +109,7 @@ namespace EasyParser.Parsing
         /// <param name="verbStore"></param>
         /// <param name="instance"></param>
         /// <returns></returns>
+        /// <exception cref="EasyParser.Utility.NullException"></exception>
         protected override bool ParseOptions( string[] args, Verb verbStore, object instance )
         {
             Logger.BackTrace( $"Entering StandardLanguageParsing.ParseOptions with args Len:{args.Length}" );
@@ -135,7 +136,8 @@ namespace EasyParser.Parsing
                 }
             }
 
-            return ProcessParsedOptions( verbStore, instance, parsedOptions );
+            var isProcessingSuccessful = ProcessParsedOptions( verbStore, instance, parsedOptions );
+            return isProcessingSuccessful;
         }
 
         /// <summary>

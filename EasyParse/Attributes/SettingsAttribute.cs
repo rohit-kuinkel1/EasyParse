@@ -7,6 +7,7 @@ namespace EasyParser.Core
     /// <summary>
     /// Attribute for defining settings for options.
     /// Includes properties for color, validation ranges, and regex pattern matching.
+    /// This class cannot be inherited.
     /// </summary>
     [AttributeUsage( AttributeTargets.Property, AllowMultiple = false )]
     public sealed class SettingsAttribute : BaseAttribute
