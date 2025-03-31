@@ -75,7 +75,11 @@ namespace EasyParser.Parsing
         /// <param name="verbStore"></param>
         /// <param name="instance"></param>
         /// <returns>A bool that indicates whether the parsing was successful or not</returns>
-        protected override bool ParseOptions( string[] args, Verb verbStore, object instance )
+        protected override bool ParseOptions( 
+            string[] args, 
+            Verb verbStore, 
+            object instance
+        )
         {
             Logger.BackTrace( $"Entering NaturalLanguageParsing.ParseOptions with args Len:{args.Length}" );
 

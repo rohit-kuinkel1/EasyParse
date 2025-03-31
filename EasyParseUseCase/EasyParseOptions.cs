@@ -36,7 +36,7 @@ namespace Program
     [Verb('a', "add", Required = false, HelpText = "Add file contents to the index.")]
     public class ParseVerbs
     {
-        [Options('r', "read", Default = null, Required = false, HelpText = "Input files to be processed.", Aliases = new[] { "reading", "studying" })] //Aliases must be strings with len >= 2
+        [Options('r', "read", Default = null, Required = true, HelpText = "Input files to be processed.", Aliases = new[] { "reading", "studying" })] //Aliases must be strings with len >= 2
         [Settings( RegexPattern = @"^[a-zA-Z0-9\s]+\.(txt|doc|pdf)$", RegexOnFailureMessage = "File must have a valid extension (txt, doc, or pdf)" )]
         [Mutual(EasyParser.Enums.MutualType.Inclusive, nameof(Verbose), nameof(Stdin))]
         public string? InputFile { get; set; }

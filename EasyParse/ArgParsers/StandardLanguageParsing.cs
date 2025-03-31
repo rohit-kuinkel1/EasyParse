@@ -110,7 +110,11 @@ namespace EasyParser.Parsing
         /// <param name="instance"></param>
         /// <returns></returns>
         /// <exception cref="EasyParser.Utility.NullException"></exception>
-        protected override bool ParseOptions( string[] args, Verb verbStore, object instance )
+        protected override bool ParseOptions(
+            string[] args,
+            Verb verbStore,
+            object instance
+        )
         {
             Logger.BackTrace( $"Entering StandardLanguageParsing.ParseOptions with args Len:{args.Length}" );
 
@@ -161,7 +165,12 @@ namespace EasyParser.Parsing
         /// For input: ["--description", "This", "is", "text", "--next-option"]
         /// Returns: "This is text"
         /// </example>
-        private static string ParseMultiWordValue( string[] args, ref int index, string longNamePrefix, char shortNamePrefix )
+        private static string ParseMultiWordValue(
+            string[] args,
+            ref int index,
+            string longNamePrefix,
+            char shortNamePrefix
+        )
         {
             Logger.BackTrace( $"Entering {nameof( ParseMultiWordValue )}" );
             var valueBuilder = new List<string>();

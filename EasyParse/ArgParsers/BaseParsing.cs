@@ -43,7 +43,11 @@ namespace EasyParser.Parsing
         /// <param name="verbStore"></param>
         /// <param name="instance"></param>
         /// <returns></returns>
-        protected abstract bool ParseOptions( string[] args, Verb verbStore, object instance );
+        protected abstract bool ParseOptions( 
+            string[] args, 
+            Verb verbStore, 
+            object instance 
+        );
         #endregion
 
         #region PropertyManipulationOfInstance
@@ -103,7 +107,11 @@ namespace EasyParser.Parsing
         /// <param name="instance"></param>
         /// <param name="parsedOptions"></param>
         /// <returns></returns>
-        protected static bool ProcessParsedOptions( Verb verbStore, object instance, Dictionary<string, object> parsedOptions )
+        protected static bool ProcessParsedOptions(
+            Verb verbStore,
+            object instance,
+            IDictionary<string, object> parsedOptions
+        )
         {
             foreach( var option in verbStore.Options )
             {
@@ -152,7 +160,7 @@ namespace EasyParser.Parsing
         protected static bool ValidateCommonAttributes(
             ICollection<Option> options,
             Option currentOption,
-            Dictionary<string, object> parsedOptions )
+            IDictionary<string, object> parsedOptions )
         {
             return
                 ValidateMutualRelationships( options, currentOption, parsedOptions )
@@ -171,7 +179,7 @@ namespace EasyParser.Parsing
         protected static bool ValidateMutualRelationships(
             ICollection<Option> options,
             Option currentOption,
-            Dictionary<string, object> parsedOptions )
+            IDictionary<string, object> parsedOptions )
         {
             foreach( var mutualAttr in currentOption.MutualAttributes )
             {
@@ -209,7 +217,10 @@ namespace EasyParser.Parsing
         /// <summary>
         /// Checks if an option is provided in the parsed options
         /// </summary>
-        protected static bool IsOptionProvided( Option option, Dictionary<string, object> parsedOptions )
+        protected static bool IsOptionProvided(
+            Option option,
+            IDictionary<string, object> parsedOptions
+        )
         {
             var longName = option.OptionsAttribute.LongName;
             var shortName = option.OptionsAttribute.ShortName.ToString();
@@ -233,7 +244,11 @@ namespace EasyParser.Parsing
         /// --Count "20"
         /// </para>
         /// </remarks>
-        protected static object ConvertToOptionType( object value, Type targetType, string optionName )
+        protected static object ConvertToOptionType(
+            object value,
+            Type targetType,
+            string optionName
+        )
         {
             var valueStr = value.ToString()?.Trim( '"' ) ?? string.Empty;
             if( valueStr.Length == 0 )
@@ -276,7 +291,7 @@ namespace EasyParser.Parsing
         protected static bool ValidateSettings(
             ICollection<Option> options,
             Option currentOption,
-            Dictionary<string, object> parsedOptions
+            IDictionary<string, object> parsedOptions
         )
         {
             var settings = currentOption.SettingsAttribute;
@@ -315,12 +330,15 @@ namespace EasyParser.Parsing
         }
 
         /// <summary>
-        /// Helper for <see cref="ValidateSettings(ICollection{Option}, Option, Dictionary{string, object})"/>
+        /// Helper for <see cref="ValidateSettings(ICollection{Option}, Option, IDictionary{string, object})"/>
         /// </summary>
         /// <param name="currentOption"></param>
         /// <param name="parsedOptions"></param>
         /// <returns></returns>
-        private static object GetValueFromParsedOptions( Option currentOption, Dictionary<string, object> parsedOptions )
+        private static object GetValueFromParsedOptions(
+            Option currentOption,
+            IDictionary<string, object> parsedOptions
+        )
         {
             return parsedOptions.FirstOrDefault( p =>
                 p.Key == currentOption.OptionsAttribute.LongName ||
@@ -329,13 +347,17 @@ namespace EasyParser.Parsing
         }
 
         /// <summary>
-        /// Helper for <see cref="ValidateSettings(ICollection{Option}, Option, Dictionary{string, object})"/>
+        /// Helper for <see cref="ValidateSettings(ICollection{Option}, Option, IDictionary{string, object})"/>
         /// </summary>
         /// <param name="stringValue"></param>
         /// <param name="settings"></param>
         /// <param name="optionName"></param>
         /// <returns></returns>
-        private static bool ValidateNumericRange( string stringValue, SettingsAttribute settings, string optionName )
+        private static bool ValidateNumericRange(
+            string stringValue,
+            SettingsAttribute settings,
+            string optionName
+        )
         {
             if( settings.MinValue == SettingsAttribute.DefaultNotProvidedMinMax || settings.MaxValue == SettingsAttribute.DefaultNotProvidedMinMax )
             {
@@ -364,13 +386,17 @@ namespace EasyParser.Parsing
         }
 
         /// <summary>
-        /// Helper for <see cref="ValidateSettings(ICollection{Option}, Option, Dictionary{string, object})"/>
+        /// Helper for <see cref="ValidateSettings(ICollection{Option}, Option, IDictionary{string, object})"/>
         /// </summary>
         /// <param name="stringValue"></param>
         /// <param name="settings"></param>
         /// <param name="optionName"></param>
         /// <returns></returns>
-        private static bool ValidateRegex( string stringValue, SettingsAttribute settings, string optionName )
+        private static bool ValidateRegex(
+            string stringValue,
+            SettingsAttribute settings,
+            string optionName
+        )
         {
             if( settings.CompiledRegex != null )
             {
@@ -389,7 +415,7 @@ namespace EasyParser.Parsing
         }
 
         /// <summary>
-        /// Helper for <see cref="ValidateSettings(ICollection{Option}, Option, Dictionary{string, object})"/>
+        /// Helper for <see cref="ValidateSettings(ICollection{Option}, Option, IDictionary{string, object})"/>
         /// </summary>
         /// <param name="value"></param>
         /// <param name="settings"></param>
@@ -397,7 +423,13 @@ namespace EasyParser.Parsing
         /// <param name="stringValue"></param>
         /// <param name="optionName"></param>
         /// <returns></returns>
-        private static bool ValidateAllowedValues( object value, SettingsAttribute settings, Type propertyType, string stringValue, string optionName )
+        private static bool ValidateAllowedValues(
+            object value,
+            SettingsAttribute settings,
+            Type propertyType,
+            string stringValue,
+            string optionName
+        )
         {
             if( settings.AllowedValues != null && settings.AllowedValues.Length > 0 )
             {
