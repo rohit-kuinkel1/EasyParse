@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace EasyParser.Core
+namespace EasyParse.Core
 {
     internal sealed class DidYouMean
     {

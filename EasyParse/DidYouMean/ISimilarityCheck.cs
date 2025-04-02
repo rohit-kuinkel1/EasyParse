@@ -1,4 +1,4 @@
-﻿namespace EasyParser.Core
+﻿namespace EasyParse.Core
 { 
     /// <summary>
     /// Default contract to implement for all the DYM algorithms.

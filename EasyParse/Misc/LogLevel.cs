@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasyParser
+namespace EasyParse
 {
     /// <summary>
     /// LogLevels for our internal logger.

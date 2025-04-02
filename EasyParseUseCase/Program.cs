@@ -1,6 +1,4 @@
-﻿using EasyParser;
-
-namespace Program
+﻿namespace Program
 {
 
     /*
@@ -58,7 +56,7 @@ namespace Program
             var testArgs = new[]
             {
                 "add", "--reda", "Help File Test.txt", "--verbose", "True", "--stdin", "TRUE", "--count", "15",
-                "&", 
+                "&",
                 "process", "--input", "vacation.mp4", "--quality", "1080p", "--duration", "300", "--force", "true",
                 "&",
                 "backup", "--host", "db.example.com", "--port", "5432", "--compress", "true", "--encrypt", "false",
@@ -67,16 +65,17 @@ namespace Program
             };
 
             //EasyParser.EasyParse.ExportDefaultConfig( exportWithMain: true );
-            var parser = EasyParser.EasyParse.Initialize( 
-                minLogLevel: EasyParser.LogLevel.BackTrace, 
-                redirectLogsToFile: false, 
-                logDirectory: @"C:\Users\kuike\Desktop\EasyParseLogs" 
+            var parser = EasyParse.EasyParser.Initialize(
+                minLogLevel: EasyParse.LogLevel.BackTrace,
+                redirectLogsToFile: false,
+                logDirectory: @"C:\Users\kuike\Desktop\EasyParseLogs"
             );
 
             parser.SetLoggerStatusEnabled( true );
             //var parsingResult = parser.Parse<ParseVerbs>( args1 );
 
-            var parsingResult = parser.Parse<ParseVerbs, VideoProcessVerbs, DatabaseBackupVerbs, WeatherStationVerbs>( testArgs );
+            //var parsingResult = parser.Parse<ParseVerbs, VideoProcessVerbs, DatabaseBackupVerbs, WeatherStationVerbs>( testArgs );
+            var parsingResult = EasyParse.EasyParser.Parse<ParseVerbs, VideoProcessVerbs, DatabaseBackupVerbs, WeatherStationVerbs>( testArgs );
             if( parsingResult.Success )
             {
                 var instances = parsingResult.ParsedInstances;
@@ -100,7 +99,7 @@ namespace Program
             }
             else
             {
-               // Console.WriteLine( "dsdasd" );
+                // Console.WriteLine( "dsdasd" );
                 //Console.WriteLine( parsingResult.Errors );
             }
         }

@@ -2,7 +2,7 @@
 using System.Security.AccessControl;
 using EasyParse.Misc;
 
-namespace EasyParser.MiscTests
+namespace EasyParse.MiscTests
 {
     [SupportedOSPlatform( "windows" )]
     [TestFixture]

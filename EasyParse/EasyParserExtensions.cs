@@ -1,17 +1,17 @@
-﻿using EasyParser.Core;
-using EasyParser.Misc;
+﻿using EasyParse.Core;
+using EasyParse.Misc;
 
-namespace EasyParser
+namespace EasyParse
 {
     /// <summary>
-    /// Common extension class for <see cref="EasyParse"/>
+    /// Common extension class for <see cref="EasyParser"/>
     /// </summary>
     public static class EasyParseExtensions
     {
         /// <summary>
         /// Parses a type from the provided arguments
         /// </summary>
-        public static ParsingResultStore Parse<T1>( this EasyParse parser, string[] args )
+        public static ParsingResultStore Parse<T1>( this EasyParser parser, string[] args )
             where T1 : class, new()
         {
             var store = new ParsingResultStore();
@@ -35,7 +35,7 @@ namespace EasyParser
         /// Parses two types simultaneously from the provided arguments
         /// </summary>
         public static ParsingResultStore Parse<T1, T2>(
-            this EasyParse parser,
+            this EasyParser parser,
             string[] args
         )
              where T1 : class, new()
@@ -67,7 +67,7 @@ namespace EasyParser
         /// Parses three types simultaneously from the provided arguments
         /// </summary>
         public static ParsingResultStore Parse<T1, T2, T3>(
-            this EasyParse parser,
+            this EasyParser parser,
             string[] args
         )
             where T1 : class, new()
@@ -105,7 +105,7 @@ namespace EasyParser
         /// Parses four types simultaneously from the provided arguments
         /// </summary>
         public static ParsingResultStore Parse<T1, T2, T3, T4>(
-            this EasyParse parser,
+            this EasyParser parser,
             string[] args
         )
             where T1 : class, new()
@@ -149,7 +149,7 @@ namespace EasyParser
         /// Parses five types simultaneously from the provided arguments
         /// </summary>
         public static ParsingResultStore Parse<T1, T2, T3, T4, T5>(
-            this EasyParse parser,
+            this EasyParser parser,
             string[] args
         )
             where T1 : class, new()
@@ -199,7 +199,7 @@ namespace EasyParser
         /// Parses six types simultaneously from the provided arguments
         /// </summary>
         public static ParsingResultStore Parse<T1, T2, T3, T4, T5, T6>(
-            this EasyParse parser,
+            this EasyParser parser,
             string[] args
         )
             where T1 : class, new()
@@ -255,7 +255,7 @@ namespace EasyParser
         /// Parses seven types simultaneously from the provided arguments
         /// </summary>
         public static ParsingResultStore Parse<T1, T2, T3, T4, T5, T6, T7>(
-            this EasyParse parser,
+            this EasyParser parser,
             string[] args
         )
             where T1 : class, new()
@@ -317,7 +317,7 @@ namespace EasyParser
         /// Parses eight types simultaneously from the provided arguments
         /// </summary>
         public static ParsingResultStore Parse<T1, T2, T3, T4, T5, T6, T7, T8>(
-            this EasyParse parser,
+            this EasyParser parser,
             string[] args
         )
             where T1 : class, new()
@@ -385,7 +385,7 @@ namespace EasyParser
         /// Parses nine types simultaneously from the provided arguments
         /// </summary>
         public static ParsingResultStore Parse<T1, T2, T3, T4, T5, T6, T7, T8, T9>(
-            this EasyParse parser,
+            this EasyParser parser,
             string[] args
         )
             where T1 : class, new()
@@ -458,7 +458,7 @@ namespace EasyParser
         /// Parses ten types simultaneously from the provided arguments
         /// </summary>
         public static ParsingResultStore Parse<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
-            this EasyParse parser,
+            this EasyParser parser,
             string[] args
         )
             where T1 : class, new()
@@ -537,7 +537,7 @@ namespace EasyParser
         /// Parses eleven types simultaneously from the provided arguments
         /// </summary>
         public static ParsingResultStore Parse<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(
-            this EasyParse parser,
+            this EasyParser parser,
             string[] args
         )
             where T1 : class, new()
@@ -622,7 +622,7 @@ namespace EasyParser
         /// Parses twelve types simultaneously from the provided arguments
         /// </summary>
         public static ParsingResultStore Parse<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(
-            this EasyParse parser,
+            this EasyParser parser,
             string[] args
         )
             where T1 : class, new()
@@ -713,7 +713,7 @@ namespace EasyParser
         /// Parses thirteen types simultaneously from the provided arguments
         /// </summary>
         public static ParsingResultStore Parse<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(
-            this EasyParse parser,
+            this EasyParser parser,
             string[] args
         )
             where T1 : class, new()
@@ -811,7 +811,7 @@ namespace EasyParser
         /// Parses fourteen types simultaneously from the provided arguments
         /// </summary>
         public static ParsingResultStore Parse<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(
-            this EasyParse parser,
+            this EasyParser parser,
             string[] args
         )
             where T1 : class, new()

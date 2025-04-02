@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace EasyParser.Core
+namespace EasyParse.Core
 {
     /// <summary>
     /// Attribute for defining settings for options.
@@ -36,7 +36,7 @@ namespace EasyParser.Core
         /// <summary>
         /// holds the error message to be shown explicitly only when the regex validation fails.
         /// </summary>
-        [Validated] private const string regexOnFailureMessage = "Validation against Regex Pattern failed";
+        [Validated] private string regexOnFailureMessage = "Validation against Regex Pattern failed";
         #endregion
 
         #region AutoProperties

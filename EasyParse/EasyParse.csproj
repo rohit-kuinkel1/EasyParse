@@ -14,4 +14,8 @@
     <ItemGroup>
         <InternalsVisibleTo Include="EasyParse.UnitTests" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Fluent\" />
+    </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EasyParser.Core
+namespace EasyParse.Core
 {
     /// <summary>
     /// Represents a command-line verb, including its associated options.

@@ -1,22 +1,22 @@
 ﻿using System;
 using System.IO;
-using EasyParser.Utility;
+using EasyParse.Utility;
 
-namespace EasyParser
+namespace EasyParse
 {
     /// <summary>
-    /// Internal logger for <see cref="EasyParse"/>
+    /// Internal logger for <see cref="EasyParser"/>
     /// </summary>
     internal static class Logger
     {
         /// <summary>
-        /// minimum LogLevel for <see cref="EasyParse"/>.
+        /// minimum LogLevel for <see cref="EasyParser"/>.
         /// Only log messages equal or above this level will be printed to the console.
         /// </summary>
         private static LogLevel _minLogLevel;
 
         /// <summary>
-        /// minimum LogLevel for <see cref="EasyParse"/>.
+        /// minimum LogLevel for <see cref="EasyParser"/>.
         /// Only log messages equal or above this level will be printed to the console.
         /// </summary>
         public static LogLevel MinLogLevel
@@ -47,7 +47,7 @@ namespace EasyParser
 
         /// <summary>
         /// Represents the base directory where a new directory <see cref="EasyParseLogDir"/> will be created 
-        /// which will hold all the logs from <see cref="EasyParser"/>
+        /// which will hold all the logs from <see cref="EasyParse"/>
         /// </summary>
         private static string BaseLogDirectory { get; set; }
 

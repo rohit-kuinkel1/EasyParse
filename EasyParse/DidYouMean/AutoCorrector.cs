@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EasyParser.Core
+namespace EasyParse.Core
 {
     /// <summary>
     /// Provides auto-correction functionality for command-line verbs and options.

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace EasyParser.Core
+namespace EasyParse.Core
 {
     /// <summary>
     /// <see cref="ParsingResultStore"/> represents a store or collection of all the <see cref="ParsingResult{T}"/>.
@@ -76,7 +76,7 @@ namespace EasyParser.Core
         /// <remarks>
         /// It only returns a <see cref="ICollection{T}"/> of <see cref="ParsingResult{T}"/> where
         /// the <see cref="ParsingResult{T}.Success"/> property was set to <see langword="true"/>
-        /// by a <see cref="EasyParser.Parsing.BaseParsing"/> instance.
+        /// by a <see cref="EasyParse.Parsing.BaseParsing"/> instance.
         /// Use <see cref="MentionedInstances"/> to get all the mentioned instances
         /// </remarks>
         public IEnumerable<object> ParsedInstances => _parsedInstances;

@@ -1,7 +1,7 @@
 ﻿using EasyParse.Tests;
-using EasyParser.Utility;
+using EasyParse.Utility;
 
-namespace EasyParser.MiscTests
+namespace EasyParse.MiscTests
 {
     [TestFixture]
     public class UtilityTests

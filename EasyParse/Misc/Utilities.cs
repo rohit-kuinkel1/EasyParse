@@ -3,7 +3,7 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-namespace EasyParser.Utility
+namespace EasyParse.Utility
 {
     /// <summary>
     /// Contains misc Utilities for use by the tool.

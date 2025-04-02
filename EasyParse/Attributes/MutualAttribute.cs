@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using EasyParser.Enums;
+using EasyParse.Enums;
 
-namespace EasyParser.Core
+namespace EasyParse.Core
 {
     /// <summary>
     /// Specifies the mutual relationship between entities (options or verbs).

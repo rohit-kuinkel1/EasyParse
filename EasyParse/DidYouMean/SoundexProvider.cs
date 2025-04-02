@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace EasyParser.Core
+namespace EasyParse.Core
 {
     /// <summary>
     /// Provides functionality for generating Soundex codes for given input strings.
@@ -10,7 +10,7 @@ namespace EasyParser.Core
     {
         /// <summary>
         /// Retrieves the Soundex code for a given input string.
-        /// No cache is needed in our case of <see cref="EasyParse"/> because its a command line 
+        /// No cache is needed in our case of <see cref="EasyParser"/> because its a command line 
         /// parsing tool, meaning it will most likely just run once during cold start, which means we will never have cache anyways
         /// </summary>
         /// <param name="input">The string to generate the Soundex code for.</param>

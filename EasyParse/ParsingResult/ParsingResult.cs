@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Reflection;
 using System.Text;
-using EasyParser.Utility;
+using EasyParse.Utility;
 
-namespace EasyParser.Core
+namespace EasyParse.Core
 {
     /// <summary>
     /// <see cref="ParsingResult{T}"/> represents the result of a parsing operation, 
@@ -63,7 +63,7 @@ namespace EasyParser.Core
                     return stringBuilder.ToString();
                 }
 
-                _ = EasyParser.Utility.Utility.NotNullValidation(
+                _ = EasyParse.Utility.Utility.NotNullValidation(
                     obj: ParsedInstance,
                     throwIfNull: true,
                     $"The property {nameof( ParsedInstance )} was null or empty when it was not expected to be" );

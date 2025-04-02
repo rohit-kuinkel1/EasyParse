@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using EasyParser.Core;
-using EasyParser.Enums;
-using EasyParser.Utility;
+using EasyParse.Core;
+using EasyParse.Enums;
+using EasyParse.Utility;
 
-namespace EasyParser.Parsing
+namespace EasyParse.Parsing
 {
     /// <summary>
     /// Base class containing common functionality for parsing implementations

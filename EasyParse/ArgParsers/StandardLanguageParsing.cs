@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using EasyParser.Core;
-using EasyParser.Utility;
+using EasyParse.Core;
+using EasyParse.Utility;
 
-namespace EasyParser.Parsing
+namespace EasyParse.Parsing
 {
     /// <summary>
     /// <see cref="StandardLanguageParsing"/>is contrary to <see cref="NaturalLanguageParsing"/>
@@ -109,7 +109,7 @@ namespace EasyParser.Parsing
         /// <param name="verbStore"></param>
         /// <param name="instance"></param>
         /// <returns></returns>
-        /// <exception cref="EasyParser.Utility.NullException"></exception>
+        /// <exception cref="EasyParse.Utility.NullException"></exception>
         protected override bool ParseOptions(
             string[] args,
             Verb verbStore,

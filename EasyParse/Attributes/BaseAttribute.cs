@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace EasyParser.Core
+namespace EasyParse.Core
 {
     /// <summary>
     /// Base class for defining shared properties between options and verbs.

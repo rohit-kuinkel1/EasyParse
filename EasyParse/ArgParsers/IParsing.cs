@@ -1,6 +1,6 @@
-﻿using EasyParser.Core;
+﻿using EasyParse.Core;
 
-namespace EasyParser.Parsing
+namespace EasyParse.Parsing
 {
     /// <summary>
     /// <see cref="IParsing"/> is the contract for all the parsers to follow.

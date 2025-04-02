@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Versioning;
 using EasyParse.Misc;
-using EasyParser.Core;
-using EasyParser.Enums;
-using EasyParser.Parsing;
-using EasyParser.Utility;
+using EasyParse.Core;
+using EasyParse.Enums;
+using EasyParse.Parsing;
+using EasyParse.Utility;
 
-namespace EasyParser
+namespace EasyParse
 {
     /// <summary>
     /// public entry point for the Parser.
     /// </summary>
-    public sealed partial class EasyParse
+    public sealed partial class EasyParser
     {
         /// <summary>
         /// abstraction of the parsing type to parse the args
@@ -22,7 +22,7 @@ namespace EasyParser
 
         /// <summary>
         /// HashSet of reserved keywords during arg parsing.
-        /// Contains all the values of the <see cref="EasyParser.Enums.ParsingKeyword"/> in string format.
+        /// Contains all the values of the <see cref="EasyParse.Enums.ParsingKeyword"/> in string format.
         /// </summary>
         private static readonly HashSet<string> Keywords = new HashSet<string>(
             Enum.GetNames( typeof( ParsingKeyword ) )
@@ -30,7 +30,7 @@ namespace EasyParser
         );
 
         /// <summary>
-        /// Parameterized Constructor for <see cref="EasyParse"/>.
+        /// Parameterized Constructor for <see cref="EasyParser"/>.
         /// Set the <paramref name="minLogLevel"/> to the desired minimum logLevel from <see cref="LogLevel"/>.
         /// Set the <paramref name="redirectLogsToFile"/> to <see langword="true"/> if you want to redirect all the logs to the desired directory.
         /// Set the <paramref name="logDirectory"/> to the desired directory to redirect file logs to. When <paramref name="logDirectory"/> is set to <see langword="null"/>
@@ -39,7 +39,7 @@ namespace EasyParser
         /// <remarks>
         /// <see cref="LogLevel.BackTrace"/> cannot be set by users.
         /// </remarks>
-        private EasyParse( 
+        private EasyParser( 
             LogLevel minLogLevel = LogLevel.Info, 
             bool redirectLogsToFile = false, 
             string? logDirectory = null 
@@ -50,19 +50,19 @@ namespace EasyParser
 
         #region Singelton
         /// <summary>
-        /// <see cref="_instance"/> holds the singelton instance for <see cref="EasyParse"/>
+        /// <see cref="_instance"/> holds the singelton instance for <see cref="EasyParser"/>
         /// </summary>
-        private static EasyParse? _instance;
+        private static EasyParser? _instance;
 
         /// <summary>
-        /// public constructor call for <see cref="EasyParse"/>
+        /// public constructor call for <see cref="EasyParser"/>
         /// </summary>
         /// <param name="minLogLevel"></param>
         /// <param name="redirectLogsToFile"></param>
         /// <param name="logDirectory"></param>
         /// <returns></returns>
         // Helps keep the code base for the users of the tool cleaner since they dont have to hassle with instantiating an instance with new
-        public static EasyParse Initialize(
+        public static EasyParser Initialize(
             LogLevel minLogLevel = LogLevel.Info,
             bool redirectLogsToFile = false,
             string? logDirectory = null
@@ -70,21 +70,21 @@ namespace EasyParser
         {
             if( _instance == null )
             {
-                _instance = new EasyParse( minLogLevel, redirectLogsToFile, logDirectory );
+                _instance = new EasyParser( minLogLevel, redirectLogsToFile, logDirectory );
             }
             return _instance;
         }
 
         /// <summary>
-        /// Auto GET property to access the singelton instance of <see cref="EasyParse"/>
+        /// Auto GET property to access the singelton instance of <see cref="EasyParser"/>
         /// </summary>
-        public static EasyParse Instance
+        public static EasyParser Instance
         {
             get
             {
                 if( _instance == null )
                 {
-                    _instance = new EasyParse();
+                    _instance = new EasyParser();
                 }
 
                 return _instance;
@@ -98,8 +98,8 @@ namespace EasyParser
         /// </summary>
         /// <remarks>
         /// Keep in mind however, when <see cref="Logger"/> is disabled (for example by passing <see langword="false"/> to <see cref="SetLoggerStatusEnabled(bool)"/>),
-        /// the internal logs from <see cref="EasyParse"/> cannot be viewed or exported.
-        /// Alternatively you can pass <see cref="LogLevel.None"/> to <see cref="EasyParse"/> constructor 
+        /// the internal logs from <see cref="EasyParser"/> cannot be viewed or exported.
+        /// Alternatively you can pass <see cref="LogLevel.None"/> to <see cref="EasyParser"/> constructor 
         /// which will do the same as passing <see langword="false"/> to <see cref="SetLoggerStatusEnabled(bool)"/>
         /// </remarks>
         /// <param name="isLoggerEnabled"></param>
@@ -109,7 +109,7 @@ namespace EasyParser
         }
 
         /// <summary>
-        /// Parses the arguments provided to an instance of <see cref="EasyParse"/> and delegates the processing to the respective class.
+        /// Parses the arguments provided to an instance of <see cref="EasyParser"/> and delegates the processing to the respective class.
         /// <para>
         /// If the natural language syntax was used, the keyword 'where' must be used at index 1 to denote that natural language has been used.
         /// Example: add where FilePath is ABCDEFG/HIJKLMNOP Contains is "photos, text, data" IsPasswordLocked is false

@@ -1,4 +1,4 @@
-﻿namespace EasyParser.Enums
+﻿namespace EasyParse.Enums
 {
     /// <summary>
     /// Specifies the type of mutual relationship between options.

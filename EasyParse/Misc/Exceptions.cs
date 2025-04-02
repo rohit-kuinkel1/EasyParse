@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EasyParser.Utility
+namespace EasyParse.Utility
 {
     /// <summary>
     /// Base class for all utility-related exceptions.

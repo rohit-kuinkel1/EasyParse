@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using EasyParser.Core;
+using EasyParse.Core;
 
-namespace EasyParser.Misc
+namespace EasyParse.Misc
 {
     /// <summary>
     /// <see cref="VerbParsingUtility"/> helps with multi parsing of the <see cref="VerbAttribute"/>.
     /// When the user provides multiple verbs within a single go, then <see cref="VerbParsingUtility"/>
     /// helps to parse the input in a more efficient manner by aiming to reduce reflections or having to
-    /// call <see cref="EasyParser.Parsing.BaseParsing.ParseOne{T}(string[])"/> for each template T 
-    /// passed to <see cref="EasyParser.EasyParseExtensions.Parse{T1}(EasyParse, string[])"/> where it can
+    /// call <see cref="EasyParse.Parsing.BaseParsing.ParseOne{T}(string[])"/> for each template T 
+    /// passed to <see cref="EasyParse.EasyParseExtensions.Parse{T1}(EasyParser, string[])"/> where it can
     /// take multiple templates like T1.
     /// </summary>
     internal static class VerbParsingUtility

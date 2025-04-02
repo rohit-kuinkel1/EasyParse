@@ -1,6 +1,6 @@
-﻿using EasyParser.Core;
+﻿using EasyParse.Core;
 
-namespace EasyParser.Tests.Core
+namespace EasyParse.Tests.Core
 {
     [TestFixture]
     public class OptionsAttributeTests

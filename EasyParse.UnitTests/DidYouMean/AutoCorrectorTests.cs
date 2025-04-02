@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using EasyParse.Tests;
-using EasyParser.Core;
+using EasyParse.Core;
 
-namespace EasyParser.DidYouMeanTests
+namespace EasyParse.DidYouMeanTests
 {
     [TestFixture]
     public class AutoCorrectorTests

@@ -1,4 +1,4 @@
-﻿namespace EasyParser.MiscTests
+﻿namespace EasyParse.MiscTests
 {
     [TestFixture]
     public class LoggerTests

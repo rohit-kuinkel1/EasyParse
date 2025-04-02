@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
-using EasyParser.Core;
-using EasyParser.Utility;
+using EasyParse.Core;
+using EasyParse.Utility;
 
-namespace EasyParser.Tests.Core
+namespace EasyParse.Tests.Core
 {
     [TestFixture]
     public class SettingsAttributeTests

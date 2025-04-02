@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using EasyParser.Core;
-using EasyParser.Enums;
+using EasyParse.Core;
+using EasyParse.Enums;
 
-namespace EasyParser.Parsing
+namespace EasyParse.Parsing
 {
     /// <summary>
     /// This class is contrary to <see cref="StandardLanguageParsing"/>.
-    /// <see cref="NaturalLanguageParsing"/> aims to parse the args provided to <see cref="EasyParse"/> 
+    /// <see cref="NaturalLanguageParsing"/> aims to parse the args provided to <see cref="EasyParser"/> 
     /// where the args are passed in a natural flow of language
     /// for instance: 
     /// addFile where name is Text123.txt filePath is D:/git/Tools/ smallerThan is 5KB

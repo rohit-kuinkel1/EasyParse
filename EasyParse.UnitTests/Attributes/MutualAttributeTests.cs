@@ -1,8 +1,8 @@
-﻿using EasyParser.Core;
-using EasyParser.Enums;
+﻿using EasyParse.Core;
+using EasyParse.Enums;
 
 //testing attributes by themselves is a bit weird but im gonna do it anyways
-namespace EasyParser.Tests.Core
+namespace EasyParse.Tests.Core
 {
     [TestFixture]
     public class MutualAttributeTests
