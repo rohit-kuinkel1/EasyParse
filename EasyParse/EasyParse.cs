@@ -13,7 +13,7 @@ namespace EasyParser
     /// <summary>
     /// public entry point for the Parser.
     /// </summary>
-    public sealed class EasyParse
+    public sealed partial class EasyParse
     {
         /// <summary>
         /// abstraction of the parsing type to parse the args
@@ -39,7 +39,11 @@ namespace EasyParser
         /// <remarks>
         /// <see cref="LogLevel.BackTrace"/> cannot be set by users.
         /// </remarks>
-        private EasyParse( LogLevel minLogLevel = LogLevel.Info, bool redirectLogsToFile = false, string? logDirectory = null )
+        private EasyParse( 
+            LogLevel minLogLevel = LogLevel.Info, 
+            bool redirectLogsToFile = false, 
+            string? logDirectory = null 
+        )
         {
             Logger.Initialize( minLogLevel, redirectLogsToFile, logDirectory );
         }
@@ -183,7 +187,10 @@ namespace EasyParser
         /// </summary>
         [SupportedOSPlatform( "windows" )]
         [SupportedOSPlatform( "linux" )]
-        public static void ExportDefaultConfig( string? targetDirectory = null, bool exportWithMain = false )
+        public static void ExportDefaultConfig( 
+            string? targetDirectory = null, 
+            bool exportWithMain = false 
+        )
         {
             var configCode = exportWithMain
                 ? Template.GetConfigTemplateWithMain()

@@ -4,55 +4,6 @@ using EasyParser.Utility;
 
 namespace EasyParser
 {
-    #region enum LogLevel
-    /// <summary>
-    /// LogLevels for our internal logger.
-    /// </summary>
-    public enum LogLevel
-    {
-        /// <summary>
-        /// For internal use case only. 
-        /// Set to <see cref="BackTrace"/> if you wish to see detailed internal logs from EasyParse.
-        /// </summary>
-        BackTrace,
-
-        /// <summary>
-        /// Log level for debugging purposes.
-        /// Set to <see cref="Debug"/> if you wish to see debug logs from EasyParse.
-        /// </summary>
-        Debug,
-
-        /// <summary>
-        /// Log level for general informational messages.
-        /// Set to <see cref="Info"/> if you wish to see informational logs from EasyParse.
-        /// </summary>
-        Info,
-
-        /// <summary>
-        /// Log level for potential issues that may require attention.
-        /// Set to <see cref="Warning"/> if you wish to see warning logs from EasyParse.
-        /// </summary>
-        Warning,
-
-        /// <summary>
-        /// Log level for errors that have occurred.
-        /// Set to <see cref="Error"/> if you wish to see error logs from EasyParse.
-        /// </summary>
-        Error,
-
-        /// <summary>
-        /// Log level for critical errors that require immediate attention.
-        /// Set to <see cref="Critical"/> if you wish to see critical logs from EasyParse.
-        /// </summary>
-        Critical,
-
-        /// <summary>
-        /// Set to <see cref="None"/> if you wish to see no logging from EasyParse.
-        /// </summary>
-        None,
-    }
-    #endregion
-
     /// <summary>
     /// Internal logger for <see cref="EasyParse"/>
     /// </summary>
@@ -150,7 +101,11 @@ namespace EasyParser
         /// <param name="minLogLevel">The minimum log level for messages to be logged. Defaults to Debug.</param>
         /// <param name="redirectLogsToFile"> Flag to specify the redirection of all the logs to a file.</param>
         /// <param name="baseLogDirectory"> The base directory passed by the user for the log files to be stored in.</param>
-        internal static void Initialize( LogLevel minLogLevel = LogLevel.Debug, bool redirectLogsToFile = false, string? baseLogDirectory = null )
+        internal static void Initialize(
+            LogLevel minLogLevel = LogLevel.Debug,
+            bool redirectLogsToFile = false,
+            string? baseLogDirectory = null
+        )
         {
             RedirectLogsToFile = redirectLogsToFile;
             FinalLogDirectory = !string.IsNullOrEmpty( baseLogDirectory )
@@ -190,7 +145,10 @@ namespace EasyParser
         /// </summary>
         /// <param name="level">The log level of the message.</param>
         /// <param name="message">The message to log.</param>
-        internal static void Log( LogLevel level, string? message )
+        internal static void Log(
+            LogLevel level,
+            string? message
+        )
         {
             if( !_isLoggerEnabled || level < _minLogLevel )
             {
@@ -219,7 +177,10 @@ namespace EasyParser
         /// <param name="level">The log level associated with the message.</param>
         /// <param name="message">The message to color.</param>
         /// <returns>A colored string representation of the message.</returns>
-        private static string GetColoredMessage( LogLevel level, string message )
+        private static string GetColoredMessage(
+            LogLevel level,
+            string message
+        )
         {
             return level switch
             {

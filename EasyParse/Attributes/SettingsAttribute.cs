@@ -36,7 +36,7 @@ namespace EasyParser.Core
         /// <summary>
         /// holds the error message to be shown explicitly only when the regex validation fails.
         /// </summary>
-        [Validated] private string regexOnFailureMessage = "Validation against Regex Pattern failed";
+        [Validated] private const string regexOnFailureMessage = "Validation against Regex Pattern failed";
         #endregion
 
         #region AutoProperties
@@ -126,7 +126,7 @@ namespace EasyParser.Core
         /// helping attribute to the <see cref="OptionsAttribute"/> it can 
         /// be used to leverage runtime regex pattern matching checks automatically.
         /// </summary>
-        internal Regex? CompiledRegex { get; private set; } = null;
+        [NoValidationRequired] internal Regex? CompiledRegex { get; private set; } = null;
 
         /// <summary>
         /// Error message for regex validation.

@@ -77,7 +77,6 @@ namespace Program
             //var parsingResult = parser.Parse<ParseVerbs>( args1 );
 
             var parsingResult = parser.Parse<ParseVerbs, VideoProcessVerbs, DatabaseBackupVerbs, WeatherStationVerbs>( testArgs );
-
             if( parsingResult.Success )
             {
                 var instances = parsingResult.ParsedInstances;
@@ -104,7 +103,6 @@ namespace Program
                // Console.WriteLine( "dsdasd" );
                 //Console.WriteLine( parsingResult.Errors );
             }
-
         }
     }
 }
